@@ -107,6 +107,8 @@ export interface GenerateMessageRequest {
   mode: GenerateMessageRequestMode
   persona?: string
   relationship?: string
+  recipientName?: string
+  recipientRelationship?: string
   userId?: string
   sessionId?: string
   language?: string

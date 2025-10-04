@@ -12,6 +12,8 @@ interface UseGenerationOptions {
 export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptions) {
   const { currentLanguage } = useTranslation()
   const [originalText, setOriginalText] = useState('')
+  const [recipientName, setRecipientName] = useState('')
+  const [recipientRelationship, setRecipientRelationship] = useState('')
   const [generatedText, setGeneratedText] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
@@ -36,6 +38,8 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
       const request: GenerateMessageRequest = {
         mode,
         originalText: originalText.trim(),
+        recipientName: recipientName.trim(),
+        recipientRelationship: recipientRelationship.trim(),
         language: currentLanguage.code,
         sessionId: localStorage.getItem('oops-ask-session') || '',
       }
@@ -132,6 +136,10 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
     // State
     originalText,
     setOriginalText,
+    recipientName,
+    setRecipientName,
+    recipientRelationship,
+    setRecipientRelationship,
     generatedText,
     isGenerating,
     isCopied,

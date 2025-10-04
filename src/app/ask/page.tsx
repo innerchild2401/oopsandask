@@ -16,6 +16,10 @@ export default function AskPage() {
   const {
     originalText,
     setOriginalText,
+    recipientName,
+    setRecipientName,
+    recipientRelationship,
+    setRecipientRelationship,
     generatedText,
     isGenerating,
     isCopied,

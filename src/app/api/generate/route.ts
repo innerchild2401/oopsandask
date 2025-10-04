@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Prepare AI prompt based on mode and language
-    const prompt = generatePrompt(body.mode, body.originalText)
+    const prompt = generatePrompt(body.mode, body.originalText, body.recipientName, body.recipientRelationship)
 
     console.log('🤖 Generating AI response:', {
       mode: body.mode,
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
             content: prompt
           }
         ],
-        max_tokens: 600,
+        max_tokens: 300,
         temperature: 0.9,
       }),
     })
@@ -241,8 +241,16 @@ async function getLanguageId(languageCode: string): Promise<string> {
   }
 }
 
-function generatePrompt(mode: string, originalText: string): string {
-  return `Original request: "${originalText}"
-
-Please transform this into a dramatic, over-the-top response that matches your personality and expertise. Use all the cultural references, fake citations, and theatrical flair you're known for.`
+function generatePrompt(mode: string, originalText: string, recipientName?: string, recipientRelationship?: string): string {
+  let prompt = `Original request: "${originalText}"`
+  
+  if (recipientName && recipientRelationship) {
+    prompt += `\n\nThis message is for ${recipientName} (${recipientRelationship}). Please personalize the response to address them directly and consider the relationship context.`
+  } else if (recipientName) {
+    prompt += `\n\nThis message is for ${recipientName}. Please personalize the response to address them directly.`
+  }
+  
+  prompt += `\n\nPlease transform this into a dramatic, over-the-top response that matches your personality and expertise. Use all the cultural references, fake citations, and theatrical flair you're known for.`
+  
+  return prompt
 }

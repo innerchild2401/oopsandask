@@ -15,6 +15,10 @@ export default function OopsPage() {
   const {
     originalText,
     setOriginalText,
+    recipientName,
+    setRecipientName,
+    recipientRelationship,
+    setRecipientRelationship,
     generatedText,
     isGenerating,
     isCopied,
@@ -44,62 +48,136 @@ export default function OopsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-950 dark:to-pink-950">
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-8">
-            <div className="text-6xl mb-4 animate-dramatic-appeal">😬</div>
-            <h1 className="text-4xl font-bold mb-4 text-red-600">
+          <div className="text-center mb-12">
+            <div className="text-7xl mb-6 animate-float">😬</div>
+            <h1 className="text-5xl font-bold mb-6 text-red-600">
               {t('oops.title')}
             </h1>
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
               {t('oops.description')}
             </p>
             
             {/* Language indicator */}
-            <div className="inline-flex items-center space-x-2 bg-red-100 dark:bg-red-900 rounded-full px-4 py-2 mb-6">
+            <div className="inline-flex items-center space-x-2 bg-red-100 dark:bg-red-900 rounded-full px-6 py-3 border border-red-200 dark:border-red-800">
               <span className="text-sm font-medium text-red-700 dark:text-red-300">
                 {currentLanguage.flag} {currentLanguage.nativeName}
               </span>
             </div>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-8">
-            {/* Input Section */}
-            <div className="space-y-6">
-              <div className="bg-card rounded-lg p-6 border shadow-sm">
-                <h2 className="text-xl font-semibold mb-4 flex items-center">
-                  <Zap className="mr-2 h-5 w-5 text-red-500" />
-                  {t('common.original_text')}
-                </h2>
-                
+          {/* Main Input Section - Prominent and Clear */}
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-xl border border-red-200 dark:border-red-800 mb-8">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold mb-4 text-red-600 flex items-center justify-center">
+                <Zap className="mr-3 h-8 w-8" />
+                {t('common.original_text')}
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                Tell us what you need to apologize for, and we&apos;ll make it dramatic!
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              {/* Recipient Information */}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Who are you apologizing to? (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={recipientName}
+                    onChange={(e) => setRecipientName(e.target.value)}
+                    placeholder="e.g., Sarah, Mom, Boss"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300"
+                    disabled={isGenerating}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Relationship (Optional)
+                  </label>
+                  <select
+                    value={recipientRelationship}
+                    onChange={(e) => setRecipientRelationship(e.target.value)}
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300"
+                    disabled={isGenerating}
+                  >
+                    <option value="">Select relationship...</option>
+                    <option value="friend">Friend</option>
+                    <option value="family">Family Member</option>
+                    <option value="partner">Partner/Spouse</option>
+                    <option value="colleague">Colleague</option>
+                    <option value="boss">Boss/Supervisor</option>
+                    <option value="acquaintance">Acquaintance</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Main Text Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  What happened? *
+                </label>
                 <textarea
                   value={originalText}
                   onChange={(e) => setOriginalText(e.target.value)}
                   placeholder={t('oops.input_placeholder')}
-                  className="w-full min-h-[200px] p-4 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300"
+                  className="w-full min-h-[200px] p-4 border border-gray-300 dark:border-gray-600 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300"
                   disabled={isGenerating}
                 />
-                
-                <div className="mt-4">
-                  <Button 
-                    onClick={handleGenerate}
-                    disabled={!originalText.trim() || isGenerating}
-                    className="w-full bg-gradient-to-r from-red-500 to-pink-600 text-white hover:shadow-lg transition-all duration-300 hover:scale-105"
-                  >
-                    {isGenerating ? (
-                      <>
-                        <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                        {t('common.loading')}
-                      </>
-                    ) : (
-                      <>
-                        {t('oops.generate_button')}
-                        <Zap className="ml-2 h-4 w-4" />
-                      </>
-                    )}
-                  </Button>
-                </div>
               </div>
+            </div>
+            
+            {/* Generate Button */}
+            <div className="text-center">
+              <Button 
+                onClick={handleGenerate}
+                disabled={!originalText.trim() || isGenerating}
+                size="xl"
+                variant="gradient"
+                className="bg-gradient-to-r from-red-500 to-pink-600 text-white hover:shadow-xl transition-all duration-300 hover:scale-105"
+              >
+                {isGenerating ? (
+                  <>
+                    <div className="mr-3 h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    {t('common.loading')}
+                  </>
+                ) : (
+                  <>
+                    {t('oops.generate_button')}
+                    <Zap className="ml-3 h-5 w-5" />
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+
+          {/* Two Column Layout for Output and Examples */}
+          <div className="grid lg:grid-cols-2 gap-8">
+            {/* Left Column - Output */}
+            <div className="space-y-6">
+              <OutputCard
+                generatedText={generatedText}
+                originalText={originalText}
+                mode="oops"
+                isGenerating={isGenerating}
+                isCopied={isCopied}
+                isShared={isShared}
+                userRating={userRating}
+                onCopy={handleCopy}
+                onShare={handleShare}
+                onRegenerate={handleRegenerate}
+                onTryAgain={handleTryAgain}
+                onRatingChange={setUserRating}
+              />
+            </div>
+
+            {/* Right Column - Examples and Tips */}
+            <div className="space-y-6">
 
               {/* Example Apologies */}
                      <div className="bg-card rounded-lg p-6 border shadow-sm">
