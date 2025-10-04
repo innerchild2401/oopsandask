@@ -17,10 +17,11 @@ export async function POST(request: NextRequest) {
     
     // Delete all cached translations for this language
     const { supabase } = await import('@/lib/supabase')
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('localized_strings')
       .delete()
       .eq('language_id', languageId)
+      .select()
 
     if (error) {
       console.error('Failed to clear cache:', error)
@@ -30,9 +31,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    console.log(`Cleared ${data?.length || 0} cached translations for ${languageCode}`)
+
     return NextResponse.json({
       message: `Cache cleared for language: ${languageCode}`,
-      languageId
+      languageId,
+      deletedCount: data?.length || 0
     })
 
   } catch (error) {

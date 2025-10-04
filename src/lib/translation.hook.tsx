@@ -193,7 +193,7 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
   const loadTranslations = async (lang: string, forceRegenerate = false) => {
     setIsLoading(true)
     try {
-      // If force regenerate, clear cache first
+      // If force regenerate, clear cache first and skip cache check
       if (forceRegenerate) {
         console.log(`Force regenerating translations for ${lang}`)
         await fetch('/api/clear-cache', {
@@ -201,19 +201,24 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ languageCode: lang })
         })
+        
+        // Skip cache check and go straight to generation
+        console.log(`Generating new translations for ${lang} (force regenerate)`)
+        await generateAndCacheTranslations(lang)
+        return
       }
 
       // First try to load from cache
       const cachedTranslations = await TranslationSupabase.getLanguageTranslations(lang)
       
-      if (Object.keys(cachedTranslations).length > 0 && !forceRegenerate) {
+      if (Object.keys(cachedTranslations).length > 0) {
         console.log(`Using cached translations for ${lang}`)
         setTranslations(cachedTranslations)
         setIsLoading(false)
         return
       }
 
-      // If no cached translations or force regenerate, generate them
+      // If no cached translations, generate them
       console.log(`Generating new translations for ${lang}`)
       await generateAndCacheTranslations(lang)
     } catch (error) {
