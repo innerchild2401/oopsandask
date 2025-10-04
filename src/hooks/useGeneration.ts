@@ -136,7 +136,7 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
       .replace(/\*(.*?)\*/g, '*$1*') // Ensure single asterisks work
       .trim()
     
-    return `${originalText}\n\n${formattedGeneratedText}\n\nWant to answer in the same witty manner?\nhttps://oopsandask.com`
+    return `${originalText}\n\n${formattedGeneratedText}\n\nWant to answer in the same witty manner?\nhttps://oopsnandask.vercel.app`
   }
 
   const handleWhatsAppShare = async () => {
