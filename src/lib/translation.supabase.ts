@@ -118,7 +118,7 @@ export class TranslationSupabase {
         .from('languages')
         .select('id')
         .eq('code', languageCode)
-        .single()
+        .maybeSingle() // Use maybeSingle() instead of single() to avoid 406 error
       
       if (lookupError) {
         console.log(`Language lookup error for ${languageCode}:`, lookupError)
@@ -164,7 +164,7 @@ export class TranslationSupabase {
         .from('languages')
         .select('id')
         .eq('code', 'en')
-        .single()
+        .maybeSingle() // Use maybeSingle() instead of single() to avoid 406 error
       
       if (data?.id) {
         return data.id

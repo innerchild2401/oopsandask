@@ -204,7 +204,7 @@ async function getLanguageId(languageCode: string): Promise<string> {
       .from('languages')
       .select('id')
       .eq('code', languageCode)
-      .single()
+      .maybeSingle() // Use maybeSingle() instead of single() to avoid 406 error
     
     if (existing?.id) {
       return existing.id
@@ -230,7 +230,7 @@ async function getLanguageId(languageCode: string): Promise<string> {
         .from('languages')
         .select('id')
         .eq('code', 'en')
-        .single()
+        .maybeSingle() // Use maybeSingle() instead of single() to avoid 406 error
       return enData?.id || '00000000-0000-0000-0000-000000000000'
     }
 

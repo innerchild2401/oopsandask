@@ -63,7 +63,7 @@ export const supabaseHelpers = {
       .from('languages')
       .select('id')
       .eq('code', languageCode)
-      .single()
+      .maybeSingle() // Use maybeSingle() instead of single() to avoid 406 error
 
     if (!languageData?.id) {
       console.warn(`Language not found: ${languageCode}`)
