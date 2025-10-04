@@ -150,6 +150,9 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
   const [detectedLanguage, setDetectedLanguage] = useState<string | null>(null)
   const [showLanguageModal, setShowLanguageModal] = useState(false)
   const [translations, setTranslations] = useState<Record<string, string>>({})
+  
+  // Add unique instance ID for debugging
+  const instanceId = React.useMemo(() => Math.random().toString(36).substr(2, 9), [])
 
   // Load language from localStorage on mount
   useEffect(() => {
@@ -210,11 +213,14 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
 
       // First try to load from cache
       const cachedTranslations = await TranslationSupabase.getLanguageTranslations(lang)
-      console.log(`Cached translations for ${lang}:`, Object.keys(cachedTranslations).length, 'keys')
+      console.log(`[${instanceId}] Cached translations for ${lang}:`, Object.keys(cachedTranslations).length, 'keys')
       
       if (Object.keys(cachedTranslations).length > 0) {
-        console.log(`Using cached translations for ${lang}`)
+        console.log(`[${instanceId}] Using cached translations for ${lang}`)
+        console.log(`[${instanceId}] Cached translations sample:`, Object.entries(cachedTranslations).slice(0, 3))
+        console.log(`[${instanceId}] Setting cached translations in state...`)
         setTranslations(cachedTranslations)
+        console.log(`[${instanceId}] Cached translations set in state`)
         setIsLoading(false)
         return
       }
@@ -333,15 +339,16 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
     const result = translations[key] || fallback || ENGLISH_TRANSLATIONS[key] || key
     // Debug logging for Romanian
     if (language === 'ro' && key.startsWith('nav.')) {
-      console.log(`Translation for ${key}:`, { 
+      console.log(`[${instanceId}] Translation for ${key}:`, { 
         fromCache: translations[key], 
         fallback, 
         english: ENGLISH_TRANSLATIONS[key], 
-        result 
+        result,
+        translationsKeys: Object.keys(translations).length
       })
     }
     return result
-  }, [translations, language])
+  }, [translations, language, instanceId])
 
   const value: TranslationContextType = {
     language,
