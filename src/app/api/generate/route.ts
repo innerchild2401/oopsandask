@@ -39,7 +39,22 @@ export async function POST(request: NextRequest) {
     // Load or create user session
     await supabaseHelpers.getOrCreateSession(sessionId)
 
-    // Prepare AI prompt based on mode
+    // Check for cached response first (within last 24 hours)
+    const cacheKey = `${body.mode}_${body.language || 'en'}_${body.originalText.trim().toLowerCase()}`
+    const cachedResponse = await checkCachedResponse(cacheKey, body.language || 'en')
+    
+    if (cachedResponse) {
+      console.log('🎭 Using cached response for:', cacheKey.substring(0, 50) + '...')
+      return NextResponse.json({
+        id: cachedResponse.id,
+        generatedText: cachedResponse.ai_generated_text,
+        tokensUsed: cachedResponse.tokens_used || 0,
+        processingTimeMs: cachedResponse.processing_time_ms || 0,
+        cached: true
+      })
+    }
+
+    // Prepare AI prompt based on mode and language
     const prompt = generatePrompt(body.mode, body.originalText, body.language || 'en')
 
     console.log('🤖 Generating AI response:', {
@@ -62,15 +77,15 @@ export async function POST(request: NextRequest) {
         messages: [
           {
             role: 'system',
-            content: getSystemPrompt(body.mode)
+            content: getSystemPrompt(body.mode, body.language || 'en')
           },
           {
             role: 'user',
             content: prompt
           }
         ],
-        max_tokens: 500,
-        temperature: 0.8,
+        max_tokens: 600,
+        temperature: 0.9,
       }),
     })
 
@@ -104,11 +119,14 @@ export async function POST(request: NextRequest) {
       textLength: generatedText.length
     })
 
-    // Save to database (we'll implement this function)
+    // Get language ID for database
+    const languageId = await getLanguageId(body.language || 'en')
+
+    // Save to database
     const messageData = {
       session_id: sessionId,
       mode: body.mode,
-      language_id: 'en', // Will be dynamic based on language
+      language_id: languageId,
       original_text: body.originalText.trim(),
       ai_generated_text: generatedText,
       ai_model: 'gpt-4o-mini',
@@ -117,7 +135,8 @@ export async function POST(request: NextRequest) {
       context_metadata: {
         persona: body.persona,
         relationship: body.relationship,
-        language: body.language || 'en'
+        language: body.language || 'en',
+        cache_key: cacheKey
       }
     }
 
@@ -151,83 +170,187 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function generatePrompt(mode: string, originalText: string, _language: string): string {
+// Check for cached response within last 24 hours
+async function checkCachedResponse(cacheKey: string, language: string) {
+  try {
+    const { supabase } = await import('@/lib/supabase')
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+    
+    const { data } = await supabase
+      .from('generated_messages')
+      .select('*')
+      .eq('context_metadata->>cache_key', cacheKey)
+      .eq('language_id', await getLanguageId(language))
+      .gte('created_at', twentyFourHoursAgo)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single()
+
+    return data
+  } catch (error) {
+    console.warn('Cache check failed:', error)
+    return null
+  }
+}
+
+// Get language ID from language code
+async function getLanguageId(languageCode: string): Promise<string> {
+  try {
+    const { supabase } = await import('@/lib/supabase')
+    const { data } = await supabase
+      .from('languages')
+      .select('id')
+      .eq('code', languageCode)
+      .single()
+    
+    return data?.id || 'en' // Fallback to English
+  } catch (error) {
+    console.warn('Language ID lookup failed:', error)
+    return 'en'
+  }
+}
+
+function generatePrompt(mode: string, originalText: string, language: string): string {
   const baseText = `Original request: "${originalText}"`
   
   switch (mode) {
     case 'oops':
       return `${baseText}
 
-Please write an extremely dramatic, over-the-top, theatrical apology. Make it humorous, exaggerated, and filled with drama. The apology should be:
-- Dramatically overstated
-- Funny but still sincere
-- Use theatrical language and metaphors
-- End with a heartfelt resolution
+Please write an EXTREMELY dramatic, over-the-top, theatrical apology in ${getLanguageName(language)}. Make it hilariously exaggerated and filled with drama. The apology should be:
+- Dramatically overstated with fake historical scandal references
+- Funny but still heartfelt and sincere
+- Use theatrical language, metaphors, and dramatic flair
+- Reference made-up historical events (like "The Great Spilled Coffee Incident of 1847")
+- Include dramatic gestures and emotional crescendos
+- End with a heartfelt resolution and promise of redemption
 
-Make it so dramatic that it turns a simple mistake into an epic tale of redemption.`
+Make it so dramatic that it turns a simple mistake into an epic tale of redemption worthy of Shakespeare. Use the cultural context and humor appropriate for ${getLanguageName(language)} speakers.`
       
     case 'ask':
       return `${baseText}
 
-Please write a persuasive, dramatic request that convinces the recipient to say yes. Make it:
-- Compelling and passionate
-- Uses emotional appeal
-- Builds urgency and importance
+Please write a persuasive, dramatic request in ${getLanguageName(language)} that convinces the recipient to say yes. Make it like a manifesto of desire:
+- Compelling and passionate with emotional crescendos
+- Uses dramatic emotional appeal and storytelling
+- Builds urgency and importance like a grand declaration
 - Convincing without being manipulative
-- Elegant and refined
+- Elegant, refined, and theatrical
+- Include references to grand gestures and noble causes
+- Use the cultural persuasion techniques appropriate for ${getLanguageName(language)} speakers
 
-Be persuasive but not pushy.`
+Be persuasive but not pushy - make it sound like a grand romantic gesture or noble quest.`
       
     case 'attorney_ask':
       return `${baseText}
 
-Please write this request using fake legal language, dramatic attorney-style arguments, and made-up citations. Include:
-- Fake legal statutes and citations
-- Dramatic legal terminology
-- Formal courtroom-style language
-- Made-up case precedents
-- Theatrical legal arguments
+Please write this request in ${getLanguageName(language)} using fake legal language, dramatic attorney-style arguments, and made-up citations. Include:
+- Fake legal statutes with random numbers and dramatic names
+- Invented case precedents with theatrical names
+- Formal courtroom-style language with dramatic flair
+- Made-up legal citations using localized names and places
+- Theatrical legal arguments with fake historical cases
+- References to non-existent legal codes and regulations
+- Use legal terminology appropriate for ${getLanguageName(language)} legal systems
 
-Make it sound like a dramatic legal brief that's completely fabricated but hilariously convincing.`
+Create fictional legal citations like "Pursuant to Title 47, Section 892.4 of the Interpersonal Request Code of ${getCountryName(language)}..." Make it sound like a dramatic legal brief that's completely fabricated but hilariously convincing.`
       
     default:
       return baseText
   }
 }
 
-function getSystemPrompt(mode: string): string {
+function getSystemPrompt(mode: string, language: string): string {
+  const languageName = getLanguageName(language)
+  
   switch (mode) {
     case 'oops':
-      return `You are a theatrical drama specialist who turns ordinary apologies into dramatic masterpieces. Your apologies are:
-- Exaggerated and over-the-top
-- Humorous but still heartfelt
-- Full of dramatic metaphors and theatrical language
-- Memorable and entertaining
+      return `You are a theatrical drama specialist who turns ordinary apologies into dramatic masterpieces in ${languageName}. Your apologies are:
+- Exaggerated and over-the-top with fake historical scandal references
+- Humorous but still heartfelt and sincere
+- Full of dramatic metaphors, theatrical language, and cultural references
+- Memorable and entertaining with made-up historical events
 - Sincere despite the theatrical presentation
+- Include dramatic gestures and emotional crescendos
+- Reference fake historical scandals and events appropriate for ${languageName} culture
 
-Always respond with a single dramatic apology, no explanations or meta-commentary.`
+Always respond with a single dramatic apology in ${languageName}, no explanations or meta-commentary.`
       
     case 'ask':
-      return `You are a master persuader who crafts compelling, elegant requests. Your writing is:
-- Convincing and persuasive
-- Emotionally engaging
-- Urgent but not pushy
-- Elegant and refined
-- Cleverly argumentative
+      return `You are a master persuader who crafts compelling, elegant requests in ${languageName}. Your writing is:
+- Convincing and persuasive like a manifesto of desire
+- Emotionally engaging with dramatic storytelling
+- Urgent but not pushy, like a grand romantic gesture
+- Elegant, refined, and theatrical
+- Cleverly argumentative with cultural persuasion techniques
+- Include references to grand gestures and noble causes
+- Use the cultural context appropriate for ${languageName} speakers
 
-Always respond with a single persuasive request, no explanations or meta-commentary.`
+Always respond with a single persuasive request in ${languageName}, no explanations or meta-commentary.`
       
     case 'attorney_ask':
-      return `You are a theatrical attorney who argues using completely made-up legal language. Your writing features:
-- Fake legal statutes with random numbers
-- Invented case precedents
-- Dramatic legal terminology
-- Formal courtroom-style presentations
-- Hilariously complex legal arguments
+      return `You are a theatrical attorney who argues using completely made-up legal language in ${languageName}. Your writing features:
+- Fake legal statutes with random numbers and dramatic names
+- Invented case precedents with theatrical names
+- Dramatic legal terminology appropriate for ${languageName} legal systems
+- Formal courtroom-style presentations with dramatic flair
+- Hilariously complex legal arguments with fake historical cases
+- References to non-existent legal codes and regulations
+- Use localized names and places in legal citations
 
-Create fictional legal citations like "Pursuant to Title 47, Section 892.4 of the Interpersonal Request Code..." Always respond with a single attorney-style request, no explanations or meta-commentary.`
+Create fictional legal citations like "Pursuant to Title 47, Section 892.4 of the Interpersonal Request Code of ${getCountryName(language)}..." Always respond with a single attorney-style request in ${languageName}, no explanations or meta-commentary.`
       
     default:
-      return 'You are a helpful AI assistant for dramatic communication.'
+      return `You are a helpful AI assistant for dramatic communication in ${languageName}.`
   }
+}
+
+// Helper function to get language name from code
+function getLanguageName(languageCode: string): string {
+  const languageMap: Record<string, string> = {
+    'en': 'English',
+    'es': 'Spanish',
+    'fr': 'French',
+    'de': 'German',
+    'it': 'Italian',
+    'pt': 'Portuguese',
+    'ru': 'Russian',
+    'ja': 'Japanese',
+    'ko': 'Korean',
+    'zh': 'Chinese',
+    'ar': 'Arabic',
+    'nl': 'Dutch',
+    'sv': 'Swedish',
+    'no': 'Norwegian',
+    'da': 'Danish',
+    'fi': 'Finnish',
+    'pl': 'Polish',
+    'tr': 'Turkish'
+  }
+  return languageMap[languageCode] || 'English'
+}
+
+// Helper function to get country name for legal citations
+function getCountryName(languageCode: string): string {
+  const countryMap: Record<string, string> = {
+    'en': 'the United States',
+    'es': 'Spain',
+    'fr': 'France',
+    'de': 'Germany',
+    'it': 'Italy',
+    'pt': 'Portugal',
+    'ru': 'Russia',
+    'ja': 'Japan',
+    'ko': 'South Korea',
+    'zh': 'China',
+    'ar': 'Saudi Arabia',
+    'nl': 'the Netherlands',
+    'sv': 'Sweden',
+    'no': 'Norway',
+    'da': 'Denmark',
+    'fi': 'Finland',
+    'pl': 'Poland',
+    'tr': 'Turkey'
+  }
+  return countryMap[languageCode] || 'the United States'
 }

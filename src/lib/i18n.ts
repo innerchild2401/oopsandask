@@ -149,7 +149,7 @@ export class I18n {
     this.loadFromSupabase(languageCode)
   }
 
-  private async loadFromSupabase(_languageCode: string): Promise<void> {
+  private async loadFromSupabase(languageCode: string): Promise<void> {
     try {
       // This will be implemented with actual Supabase call
       // const { supabaseHelpers } = await import('@/lib/supabase')
