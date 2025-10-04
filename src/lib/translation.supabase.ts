@@ -46,6 +46,8 @@ export class TranslationSupabase {
           language_id: languageId,
           value,
           context: 'ui_translation'
+        }, {
+          onConflict: 'key,language_id'
         })
 
       if (error) {

@@ -7,7 +7,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import type { TranslationContext as TranslationContextType, TranslationKey } from './translation.types'
 import { TranslationSupabase } from './translation.supabase'
-import { GPTTranslationService } from './translation.gpt'
 import { LanguageDetectionService } from './translation.detection'
 
 // English fallback translations
@@ -230,18 +229,24 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
         tone: getToneForKey(key)
       }))
 
-      // Generate translations in batches
-      const generatedTranslations = await GPTTranslationService.translateBatch(
-        translationsToGenerate,
-        lang
-      )
+      // Call server-side API to generate translations
+      const response = await fetch('/api/translate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          languageCode: lang,
+          translationKeys: translationsToGenerate
+        })
+      })
 
-      // Save to cache
-      for (const [key, value] of Object.entries(generatedTranslations)) {
-        await TranslationSupabase.saveTranslation(key, lang, value)
+      if (!response.ok) {
+        throw new Error('Failed to generate translations')
       }
 
-      setTranslations(generatedTranslations)
+      const data = await response.json()
+      setTranslations(data.translations)
     } catch (error) {
       console.error('Failed to generate translations:', error)
       setTranslations(ENGLISH_TRANSLATIONS)
