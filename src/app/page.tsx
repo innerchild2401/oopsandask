@@ -9,7 +9,7 @@ import { generateSessionToken } from '@/lib/utils'
 
 export default function HomePage() {
   const { t, currentLanguage } = useTranslation()
-  const [sessionToken, setSessionToken] = useState<string>('')
+  const [, setSessionToken] = useState<string>('')
 
   // Initialize session token
   useEffect(() => {

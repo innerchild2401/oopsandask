@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { UserSession, Persona, Relationship, GeneratedMessage, Language, LocalizedString, Donation, AnalyticsMetric } from '@/lib/types'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
@@ -12,8 +13,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 // Helper functions for common operations
 export const supabaseHelpers = {
   // Get or create user session
-  async getOrCreateSession(sessionToken: string, userAgent?: string): Promise<any> {
-    const { data: existingSession } = await supabase
+  async getOrCreateSession(sessionToken: string, userAgent?: string): Promise<UserSession | null> {
+    const { data: existingSession }: { data: UserSession | null } = await supabase
       .from('user_sessions')
       .select('*')
       .eq('session_token', sessionToken)
@@ -44,7 +45,7 @@ export const supabaseHelpers = {
   },
 
   // Save generated message
-  async saveGeneratedMessage(messageData: Partial<any>): Promise<any> {
+  async saveGeneratedMessage(messageData: Partial<GeneratedMessage>): Promise<GeneratedMessage | null> {
     const { data, error } = await supabase
       .from('generated_messages')
       .insert(messageData)
@@ -64,14 +65,14 @@ export const supabaseHelpers = {
 
     if (error) throw error
 
-    return data?.reduce((acc: any, item: any) => {
+    return data?.reduce((acc, item) => {
       acc[item.key] = item.value
       return acc
     }, {} as Record<string, string>) || {}
   },
 
   // Get active languages
-  async getActiveLanguages(): Promise<any[]> {
+  async getActiveLanguages(): Promise<Language[]> {
     const { data, error } = await supabase
       .from('languages')
       .select('*')
@@ -83,7 +84,7 @@ export const supabaseHelpers = {
   },
 
   // Get personas
-  async getPersonas(): Promise<any[]> {
+  async getPersonas(): Promise<Persona[]> {
     const { data, error } = await supabase
       .from('personas')
       .select('*')
@@ -95,7 +96,7 @@ export const supabaseHelpers = {
   },
 
   // Get relationships
-  async getRelationships(): Promise<any[]> {
+  async getRelationships(): Promise<Relationship[]> {
     const { data, error } = await supabase
       .from('relationships')
       .select('*')
@@ -107,12 +108,7 @@ export const supabaseHelpers = {
   },
 
   // Track donation
-  async trackDonation(donationData: {
-    session_id: string
-    amount: number
-    currency: string
-    platform: string
-  }): Promise<any> {
+  async trackDonation(donationData: Partial<Donation>): Promise<Donation | null> {
     const { data, error } = await supabase
       .from('donations')
       .insert(donationData)
@@ -124,7 +120,7 @@ export const supabaseHelpers = {
   },
 
   // Get analytics data
-  async getAnalytics(): Promise<any> {
+  async getAnalytics(): Promise<AnalyticsMetric[]> {
     const { data, error } = await supabase
       .from('analytics')
       .select('*')

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ChevronDown, Globe } from 'lucide-react'
+import { Globe } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Select,

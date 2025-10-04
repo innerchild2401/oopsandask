@@ -1,142 +1,144 @@
-// Database types for Supabase integration
+// Core types for the Oops & Ask application
+
 export interface Language {
-  id: string;
-  code: string;
-  name: string;
-  native_name: string;
-  country_codes: string[];
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface UserSession {
-  id: string;
-  session_token: string;
-  device_fingerprint?: string;
-  ip_address?: string;
-  user_agent?: string;
-  country_code?: string;
-  preferred_language_id?: string;
-  timezone?: string;
-  first_session_at: string;
-  last_active_at: string;
-  is_active: boolean;
-  total_generations: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Persona {
-  id: string;
-  name: string;
-  description?: string;
-  personality_traits?: string[];
-  example_inputs?: string[];
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Relationship {
-  id: string;
-  name: string;
-  description?: string;
-  formality_level?: number;
-  context_hints?: string[];
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface GeneratedMessage {
-  id: string;
-  session_id?: string;
-  mode: 'oops' | 'ask' | 'attorney_ask';
-  persona_id?: string;
-  relationship_id?: string;
-  language_id: string;
-  original_text: string;
-  ai_generated_text: string;
-  ai_model?: string;
-  tokens_used?: number;
-  processing_time_ms?: number;
-  context_metadata?: Record<string, any>;
-  user_feedback?: number;
-  is_shared: boolean;
-  created_at: string;
+  id: string
+  code: string
+  name: string
+  flag: string
+  is_active: boolean
+  created_at: string
+  updated_at: string
 }
 
 export interface LocalizedString {
-  id: string;
-  key: string;
-  language_id: string;
-  value: string;
-  context?: string;
-  created_at: string;
-  updated_at: string;
+  id: string
+  language_id: string
+  key: string
+  value: string
+  created_at: string
+  updated_at: string
 }
 
-// UI Component interfaces
-export interface LanguageOption {
-  code: string;
-  name: string;
-  nativeName: string;
-  flag: string;
+export interface UserSession {
+  id: string
+  session_token: string
+  device_fingerprint: string | null
+  ip_address: string | null
+  country_code: string | null
+  language: string | null
+  user_agent: string | null
+  created_at: string
+  updated_at: string
+  last_active_at: string
 }
 
-// Application state interfaces
-export interface AppState {
-  currentLanguage: LanguageOption;
-  isLoading: boolean;
-  error?: string;
-  userSession?: UserSession;
+export interface Persona {
+  id: string
+  name: string
+  description: string
+  system_prompt: string
+  is_active: boolean
+  created_at: string
+  updated_at: string
 }
 
-// API request/response interfaces
+export interface Relationship {
+  id: string
+  name: string
+  description: string
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface GeneratedMessage {
+  id: string
+  session_id: string
+  mode: 'oops' | 'ask' | 'ask_attorney'
+  persona_id: string
+  relationship_id: string
+  user_input: string
+  ai_response: string
+  language_detected: string
+  country: string
+  tokens_used?: number | null
+  response_time_ms?: number | null
+  created_at: string
+  updated_at: string
+}
+
+export interface PromptTemplate {
+  id: string
+  mode: 'oops' | 'ask' | 'ask_attorney'
+  persona_id?: string
+  relationship_id?: string
+  language_id?: string
+  template: string
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface Donation {
+  id: string
+  session_id: string
+  donation_type: 'prompt_count' | 'actual_donation'
+  amount_cents: number
+  currency: string
+  platform: string
+  transaction_id?: string | null
+  donor_email?: string | null
+  anonymous: boolean
+  created_at: string
+}
+
+export interface AnalyticsMetric {
+  id: string
+  metric_type: 'daily_generations' | 'language_detection' | 'mode_usage' | 'donation_tracking'
+  value_json: Record<string, unknown>
+  date: string
+  created_at: string
+}
+
+export type GenerateMessageRequestMode = 'oops' | 'ask' | 'ask_attorney'
+
 export interface GenerateMessageRequest {
-  mode: 'oops' | 'ask' | 'attorney_ask';
-  originalText: string;
-  persona?: string;
-  relationship?: string;
-  language: string;
-  sessionId?: string;
+  originalText: string
+  mode: GenerateMessageRequestMode
+  persona?: string
+  relationship?: string
+  userId?: string
+  sessionId?: string
+  language?: string
 }
 
 export interface GenerateMessageResponse {
-  id: string;
-  generatedText: string;
-  tokensUsed: number;
-  processingTimeMs: number;
-  persona?: Persona;
-  relationship?: Relationship;
+  id: string
+  generatedText: string
+  tokensUsed: number
+  processingTimeMs: number
+  success?: boolean
+  error?: string
+  mode?: GenerateMessageRequestMode
+  language?: string
+  sessionId?: string
 }
 
-// Form interfaces
-export interface MessageFormData {
-  originalText: string;
-  persona?: string;
-  relationship?: string;
-  mode: 'oops' | 'ask' | 'attorney_ask';
+export interface LanguageOption {
+  code: string
+  name: string
+  nativeName: string
+  flag: string
 }
 
-// Navigation interfaces
 export interface NavItem {
-  title: string;
-  href: string;
-  description?: string;
-  icon?: React.ComponentType<{ className?: string }>;
+  title: string
+  href: string
+  icon?: string
 }
 
-// Error interfaces
 export interface ApiError {
-  message: string;
-  code?: string;
-  details?: Record<string, any>;
-}
-
-// Donation interfaces
-export interface DonationInfo {
-  url: string;
-  isEnabled: boolean;
+  error: string
+  message: string
+  statusCode: number
 }

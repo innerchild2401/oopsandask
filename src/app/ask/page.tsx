@@ -22,7 +22,7 @@ export default function AskPage() {
     setIsGenerating(true)
     try {
       const request: GenerateMessageRequest = {
-        mode: attorneyMode ? 'attorney_ask' : 'ask',
+        mode: attorneyMode ? 'ask_attorney' : 'ask',
         originalText: originalText.trim(),
         language: 'en', // Will be dynamic based on language selector
         sessionId: localStorage.getItem('oops-ask-session') || '',
@@ -295,7 +295,7 @@ export default function AskPage() {
                   💡 Tips for Better Requests
                 </h3>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>• Be clear about what you're asking for</li>
+                  <li>• Be clear about what you&apos;re asking for</li>
                   <li>• Explain why this request is important to you</li>
                   <li>• Mention how the other person can help</li>
                   <li>• Offer something in return if appropriate</li>

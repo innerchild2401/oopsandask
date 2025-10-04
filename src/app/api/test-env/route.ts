@@ -20,7 +20,7 @@ export async function GET() {
           },
         });
         supabaseStatus = response.ok ? '✅ Connected' : '❌ Connection failed';
-      } catch (error) {
+      } catch {
         supabaseStatus = '❌ Connection error';
       }
     }

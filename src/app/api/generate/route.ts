@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Load or create user session
-    const session = await supabaseHelpers.getOrCreateSession(sessionId)
+    await supabaseHelpers.getOrCreateSession(sessionId)
 
     // Prepare AI prompt based on mode
     const prompt = generatePrompt(body.mode, body.originalText, body.language || 'en')
@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function generatePrompt(mode: string, originalText: string, language: string): string {
+function generatePrompt(mode: string, originalText: string, _language: string): string {
   const baseText = `Original request: "${originalText}"`
   
   switch (mode) {

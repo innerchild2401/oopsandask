@@ -232,7 +232,7 @@ export default function OopsPage() {
                   <li>• Be specific about what you did wrong</li>
                   <li>• Mention how it affected the other person</li>
                   <li>• Include details about your regret</li>
-                  <li>• Suggest how you'll make things right</li>
+                  <li>• Suggest how you&apos;ll make things right</li>
                   <li>• Be genuine and heartfelt</li>
                 </ul>
               </div>
