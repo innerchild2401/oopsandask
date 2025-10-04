@@ -74,6 +74,8 @@ export class LanguageDetectionService {
     try {
       const ipLang = await this.detectIPLanguage()
       
+      console.log(`Language detection: browser=${browserLang}, ip=${ipLang}`)
+      
       // If both methods agree, high confidence
       if (browserLang === ipLang) {
         return {
@@ -83,7 +85,17 @@ export class LanguageDetectionService {
         }
       }
 
-      // If they disagree, prefer browser but with lower confidence
+      // If they disagree, prefer IP detection for non-English countries
+      // IP detection is more reliable for location-based language selection
+      if (ipLang !== 'en') {
+        return {
+          detectedLanguage: ipLang,
+          confidence: 0.8,
+          source: 'ip'
+        }
+      }
+
+      // If IP detected English but browser has something else, prefer browser
       return {
         detectedLanguage: browserLang,
         confidence: 0.6,

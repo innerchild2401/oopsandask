@@ -169,12 +169,15 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
     setIsDetecting(true)
     try {
       const detection = await LanguageDetectionService.detectLanguage()
+      console.log('Language detection result:', detection)
       setDetectedLanguage(detection.detectedLanguage)
       
       // Only show modal if confidence is high and it's not English
       if (detection.confidence > 0.7 && detection.detectedLanguage !== 'en') {
+        console.log('Showing language modal for:', detection.detectedLanguage)
         setShowLanguageModal(true)
       } else {
+        console.log('Using English, confidence:', detection.confidence, 'language:', detection.detectedLanguage)
         setLanguageState('en')
         loadTranslations('en')
       }
