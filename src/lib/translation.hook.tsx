@@ -190,19 +190,31 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
   }
 
   // Load translations for a language
-  const loadTranslations = async (lang: string) => {
+  const loadTranslations = async (lang: string, forceRegenerate = false) => {
     setIsLoading(true)
     try {
+      // If force regenerate, clear cache first
+      if (forceRegenerate) {
+        console.log(`Force regenerating translations for ${lang}`)
+        await fetch('/api/clear-cache', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ languageCode: lang })
+        })
+      }
+
       // First try to load from cache
       const cachedTranslations = await TranslationSupabase.getLanguageTranslations(lang)
       
-      if (Object.keys(cachedTranslations).length > 0) {
+      if (Object.keys(cachedTranslations).length > 0 && !forceRegenerate) {
+        console.log(`Using cached translations for ${lang}`)
         setTranslations(cachedTranslations)
         setIsLoading(false)
         return
       }
 
-      // If no cached translations, generate them
+      // If no cached translations or force regenerate, generate them
+      console.log(`Generating new translations for ${lang}`)
       await generateAndCacheTranslations(lang)
     } catch (error) {
       console.error('Failed to load translations:', error)
@@ -270,7 +282,7 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
   }
 
   // Set language and load translations
-  const setLanguage = useCallback(async (newLanguage: string) => {
+  const setLanguage = useCallback(async (newLanguage: string, forceRegenerate = false) => {
     setLanguageState(newLanguage)
     localStorage.setItem('oops-ask-language', newLanguage)
     
@@ -280,7 +292,7 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
       await TranslationSupabase.saveLanguagePreference(sessionId, newLanguage)
     }
     
-    await loadTranslations(newLanguage)
+    await loadTranslations(newLanguage, forceRegenerate)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Get translation with fallback

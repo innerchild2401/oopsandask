@@ -18,7 +18,7 @@ export interface LanguageDetection {
 
 export interface TranslationContext {
   language: string
-  setLanguage: (language: string) => void
+  setLanguage: (language: string, forceRegenerate?: boolean) => void
   t: (key: TranslationKey, fallback?: string) => string
   isLoading: boolean
   isDetecting: boolean
