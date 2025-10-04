@@ -67,27 +67,45 @@ export class GPTTranslationService {
     context: string, 
     tone: string
   ): string {
-    // GPT will handle language-specific cultural adaptation
+    const languageName = this.getLanguageName(targetLanguage)
     
-    const basePrompt = `You are a master translator specializing in dramatic, humorous, and culturally-appropriate translations for the "Oops & Ask" app. Your translations must maintain the app's over-the-top, theatrical tone while being culturally relevant for ${targetLanguage} speakers.
+    // Determine if this is UI content that should be professional
+    const isUI = context === 'ui' || context === 'nav' || context === 'common' || context === 'modal'
+    
+    if (isUI) {
+      return `You are a professional translator specializing in UI/UX localization. Translate the following English text to ${languageName} for a web application interface.
+
+REQUIREMENTS FOR UI TRANSLATION:
+- Use NORMAL, PROFESSIONAL language that users would expect on local websites in ${languageName}
+- Keep it clean, clear, and user-friendly
+- Make it sound natural and professional in ${languageName}
+- Preserve any emojis, special characters, or formatting
+- Use standard UI terminology that ${languageName} speakers are familiar with
+- Avoid dramatic or theatrical language - this is for interface elements, not generated content
+- Ensure cultural appropriateness for ${languageName} speakers
+
+RESPOND ONLY WITH THE TRANSLATED TEXT, NO EXPLANATIONS.`
+    }
+    
+    // For generated content (oops, ask, attorney), use dramatic tone
+    const basePrompt = `You are a master translator specializing in dramatic, humorous, and culturally-appropriate translations for the "Oops & Ask" app. Your translations must maintain the app's over-the-top, theatrical tone while being culturally relevant for ${languageName} speakers.
 
 CRITICAL REQUIREMENTS:
 - Maintain the dramatic, humorous, over-the-top tone of the original
-- Use culturally appropriate references, humor, and local context for ${targetLanguage} speakers
-- Create fake historical events, legal citations, and cultural references that feel authentic to ${targetLanguage} culture
+- Use culturally appropriate references, humor, and local context for ${languageName} speakers
+- Create fake historical events, legal citations, and cultural references that feel authentic to ${languageName} culture
 - Keep the theatrical flair that makes the app entertaining
-- Ensure the translation feels natural and engaging in ${targetLanguage}
+- Ensure the translation feels natural and engaging in ${languageName}
 - Preserve any emojis, special characters, or formatting
-- Make it sound like it was originally written in ${targetLanguage} by a native speaker
-- For dramatic apologies: create fake historical scandals and etiquette manuals relevant to ${targetLanguage} culture
-- For persuasive requests: use local romantic and persuasive techniques from ${targetLanguage} culture
-- For legal requests: create fake legal codes and citations using ${targetLanguage} legal terminology and local place names`
+- Make it sound like it was originally written in ${languageName} by a native speaker
+- For dramatic apologies: create fake historical scandals and etiquette manuals relevant to ${languageName} culture
+- For persuasive requests: use local romantic and persuasive techniques from ${languageName} culture
+- For legal requests: create fake legal codes and citations using ${languageName} legal terminology and local place names`
 
     const contextPrompts: Record<string, string> = {
-      oops: `This is for the "Oops" mode - dramatic apologies. Create theatrical language with fake historical scandals, etiquette manuals, and over-the-top expressions of regret that feel authentic to ${targetLanguage} culture.`,
-      ask: `This is for the "Ask" mode - persuasive requests. Use culturally appropriate romantic language, grand gestures, and manifesto-style requests that resonate with ${targetLanguage} speakers.`,
-      attorney: `This is for the "Attorney" mode - fake legal language. Create absurd legal terminology, fake citations, and courtroom drama using ${targetLanguage} legal terminology and local place names.`,
-      ui: `This is for UI elements - buttons, labels, instructions. Keep the playful, dramatic tone while being clear and user-friendly for ${targetLanguage} speakers.`
+      oops: `This is for the "Oops" mode - dramatic apologies. Create theatrical language with fake historical scandals, etiquette manuals, and over-the-top expressions of regret that feel authentic to ${languageName} culture.`,
+      ask: `This is for the "Ask" mode - persuasive requests. Use culturally appropriate romantic language, grand gestures, and manifesto-style requests that resonate with ${languageName} speakers.`,
+      attorney: `This is for the "Attorney" mode - fake legal language. Create absurd legal terminology, fake citations, and courtroom drama using ${languageName} legal terminology and local place names.`
     }
 
     const tonePrompts: Record<string, string> = {
@@ -99,7 +117,7 @@ CRITICAL REQUIREMENTS:
 
     return `${basePrompt}
 
-${contextPrompts[context] || contextPrompts.ui}
+${contextPrompts[context] || contextPrompts.oops}
 
 ${tonePrompts[tone] || tonePrompts.dramatic}
 

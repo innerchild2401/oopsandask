@@ -272,14 +272,27 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
 
   // Get context for a translation key
   const getContextForKey = (key: TranslationKey): string => {
+    // UI elements that should be professional
+    if (key.startsWith('nav.') || key.startsWith('common.') || key.startsWith('modal.') || 
+        key.startsWith('footer.') || key.startsWith('language.')) {
+      return 'ui'
+    }
+    // Generated content that should be dramatic
     if (key.startsWith('oops.')) return 'oops'
     if (key.startsWith('ask.')) return 'ask'
     if (key.includes('attorney')) return 'attorney'
+    // Default to UI for any other keys
     return 'ui'
   }
 
   // Get tone for a translation key
   const getToneForKey = (key: TranslationKey): string => {
+    // UI elements should be professional
+    if (key.startsWith('nav.') || key.startsWith('common.') || key.startsWith('modal.') || 
+        key.startsWith('footer.') || key.startsWith('language.')) {
+      return 'formal'
+    }
+    // Generated content can be dramatic
     if (key.includes('title') || key.includes('description')) return 'dramatic'
     if (key.includes('tip') || key.includes('example')) return 'humorous'
     if (key.includes('button') || key.includes('action')) return 'casual'
