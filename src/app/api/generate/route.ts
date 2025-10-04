@@ -40,20 +40,7 @@ export async function POST(request: NextRequest) {
     // Load or create user session
     await supabaseHelpers.getOrCreateSession(sessionId)
 
-    // Check for cached response first (within last 24 hours)
-    const cacheKey = `${body.mode}_${body.language || 'en'}_${body.originalText.trim().toLowerCase()}`
-    const cachedResponse = await checkCachedResponse(cacheKey, body.language || 'en')
-    
-    if (cachedResponse) {
-      console.log('🎭 Using cached response for:', cacheKey.substring(0, 50) + '...')
-      return NextResponse.json({
-        id: cachedResponse.id,
-        generatedText: cachedResponse.ai_generated_text,
-        tokensUsed: cachedResponse.tokens_used || 0,
-        processingTimeMs: cachedResponse.processing_time_ms || 0,
-        cached: true
-      })
-    }
+    // No caching for generated outputs - always generate fresh content
 
     // Prepare AI prompt based on mode and language
     const prompt = generatePrompt(body.mode, body.originalText, body.recipientName, body.recipientRelationship)
@@ -61,6 +48,7 @@ export async function POST(request: NextRequest) {
     console.log('🤖 Generating AI response:', {
       mode: body.mode,
       language: body.language,
+      originalText: body.originalText.substring(0, 50) + '...',
       sessionId: sessionId.substring(0, 8) + '...',
       promptLength: prompt.length
     })
@@ -144,8 +132,7 @@ export async function POST(request: NextRequest) {
       context_metadata: {
         persona: body.persona,
         relationship: body.relationship,
-        language: body.language || 'en',
-        cache_key: cacheKey
+        language: body.language || 'en'
       }
     }
 
@@ -179,28 +166,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Check for cached response within last 24 hours
-async function checkCachedResponse(cacheKey: string, language: string) {
-  try {
-    const { supabase } = await import('@/lib/supabase')
-    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-    
-    const { data } = await supabase
-      .from('generated_messages')
-      .select('*')
-      .eq('context_metadata->>cache_key', cacheKey)
-      .eq('language_id', await getLanguageId(language))
-      .gte('created_at', twentyFourHoursAgo)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single()
-
-    return data
-  } catch (error) {
-    console.warn('Cache check failed:', error)
-    return null
-  }
-}
 
 // Get language ID from language code
 async function getLanguageId(languageCode: string): Promise<string> {

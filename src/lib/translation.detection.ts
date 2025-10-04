@@ -34,7 +34,11 @@ export class LanguageDetectionService {
       const data = await response.json()
       const countryCode = data.country_code?.toLowerCase()
       
-      console.log('IP detection data:', { countryCode, country: data.country_name })
+      console.log('IP detection data:', { 
+        countryCode, 
+        country: data.country_name,
+        fullData: data 
+      })
 
       // Map country codes to language codes - basic mapping, GPT will handle cultural adaptation
       const countryToLanguage: Record<string, string> = {
@@ -60,7 +64,9 @@ export class LanguageDetectionService {
       }
 
       // Return detected language or fallback to English
-      return countryToLanguage[countryCode] || 'en'
+      const detectedLang = countryToLanguage[countryCode] || 'en'
+      console.log('IP language detection result:', { countryCode, detectedLang })
+      return detectedLang
     } catch {
       console.warn('IP language detection failed')
       return 'en'

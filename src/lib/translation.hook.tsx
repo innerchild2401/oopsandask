@@ -182,14 +182,18 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
       console.log('Language detection result:', detection)
       setDetectedLanguage(detection.detectedLanguage)
       
-      // Only show modal if confidence is high and it's not English
+      // Always use the detected language, regardless of confidence
+      // Only show modal for confirmation if confidence is high and it's not English
       if (detection.confidence > 0.7 && detection.detectedLanguage !== 'en') {
-        console.log('Showing language modal for:', detection.detectedLanguage)
+        console.log('High confidence detection, showing modal for:', detection.detectedLanguage)
         setShowLanguageModal(true)
+        // Still set the language immediately so it works even if user doesn't interact with modal
+        setLanguageState(detection.detectedLanguage)
+        loadTranslations(detection.detectedLanguage)
       } else {
-        console.log('Using English, confidence:', detection.confidence, 'language:', detection.detectedLanguage)
-        setLanguageState('en')
-        loadTranslations('en')
+        console.log('Using detected language:', detection.detectedLanguage, 'confidence:', detection.confidence)
+        setLanguageState(detection.detectedLanguage)
+        loadTranslations(detection.detectedLanguage)
       }
     } catch (error) {
       console.warn('Language detection failed:', error)

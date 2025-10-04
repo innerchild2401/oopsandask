@@ -35,6 +35,12 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
 
     setIsGenerating(true)
     try {
+      console.log('🌍 Language context:', {
+        currentLanguage: currentLanguage,
+        languageCode: currentLanguage.code,
+        originalText: originalText.trim()
+      })
+      
       const request: GenerateMessageRequest = {
         mode,
         originalText: originalText.trim(),
