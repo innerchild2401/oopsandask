@@ -17,19 +17,19 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Oops & Ask - AI-Powered Dramatic Communication",
+  title: "Oops & Ask For - AI-Powered Dramatic Communication",
   description: "Transform your messages into dramatic masterpieces. Generate over-the-top apologies and persuasive requests powered by AI.",
   keywords: "AI, apology, dramatic, multilingual, communication, GPT, language",
-  authors: [{ name: "Oops & Ask Team" }],
+  authors: [{ name: "Oops & Ask For Team" }],
   openGraph: {
-    title: "Oops & Ask - AI-Powered Dramatic Communication",
+    title: "Oops & Ask For - AI-Powered Dramatic Communication",
     description: "Generate theatrical apologies and persuasive requests in any language",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Oops & Ask - AI-Powered Dramatic Communication",
+    title: "Oops & Ask For - AI-Powered Dramatic Communication",
     description: "Transform your messages into dramatic masterpieces",
   },
   robots: {

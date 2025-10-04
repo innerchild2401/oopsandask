@@ -74,7 +74,7 @@ export function DonationModal({ isOpen, onClose, generationCount }: DonationModa
 
           {/* Message */}
           <p className="text-muted-foreground mb-6 leading-relaxed">
-            You&apos;ve been creating dramatic masterpieces! If you&apos;re enjoying Oops & Ask, 
+            You&apos;ve been creating dramatic masterpieces! If you&apos;re enjoying Oops & Ask For, 
             consider supporting us with a coffee. Every cup helps us keep the drama alive! ☕✨
           </p>
 
@@ -112,7 +112,7 @@ export function DonationModal({ isOpen, onClose, generationCount }: DonationModa
 
           {/* Footer */}
           <p className="text-xs text-muted-foreground mt-4">
-            No pressure! You can continue using Oops & Ask for free. 💝
+            No pressure! You can continue using Oops & Ask For for free. 💝
           </p>
         </div>
       </div>

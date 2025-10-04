@@ -88,7 +88,7 @@ RESPOND ONLY WITH THE TRANSLATED TEXT, NO EXPLANATIONS.`
     }
     
     // For generated content (oops, ask, attorney), use dramatic tone
-    const basePrompt = `You are a master translator specializing in dramatic, humorous, and culturally-appropriate translations for the "Oops & Ask" app. Your translations must maintain the app's over-the-top, theatrical tone while being culturally relevant for ${languageName} speakers.
+    const basePrompt = `You are a master translator specializing in dramatic, humorous, and culturally-appropriate translations for the "Oops & Ask For" app. Your translations must maintain the app's over-the-top, theatrical tone while being culturally relevant for ${languageName} speakers.
 
 CRITICAL REQUIREMENTS:
 - Maintain the dramatic, humorous, over-the-top tone of the original
@@ -104,7 +104,7 @@ CRITICAL REQUIREMENTS:
 
     const contextPrompts: Record<string, string> = {
       oops: `This is for the "Oops" mode - dramatic apologies. Create theatrical language with fake historical scandals, etiquette manuals, and over-the-top expressions of regret that feel authentic to ${languageName} culture.`,
-      ask: `This is for the "Ask" mode - persuasive requests. Use culturally appropriate romantic language, grand gestures, and manifesto-style requests that resonate with ${languageName} speakers.`,
+      ask: `This is for the "Ask For" mode - persuasive requests. Use culturally appropriate romantic language, grand gestures, and manifesto-style requests that resonate with ${languageName} speakers.`,
       attorney: `This is for the "Attorney" mode - fake legal language. Create absurd legal terminology, fake citations, and courtroom drama using ${languageName} legal terminology and local place names.`
     }
 

@@ -19,7 +19,7 @@ export function Footer() {
           <div className="md:col-span-2">
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <Heart className="h-6 w-6 text-primary animate-dramatic-appeal" />
-              <h3 className="text-xl font-bold text-primary">Oops & Ask</h3>
+              <h3 className="text-xl font-bold text-primary">Oops & Ask For</h3>
             </Link>
             <p className="text-sm text-muted-foreground mb-4 max-w-md">
               {t('nav.tagline')} Transform your messages into dramatic masterpieces, 
@@ -53,7 +53,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/ask" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  💌 Ask Mode
+                  💌 Ask For Mode
                 </Link>
               </li>
               <li>
@@ -91,7 +91,7 @@ export function Footer() {
         <div className="border-t mt-8 pt-4">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
             <p className="text-xs text-muted-foreground">
-              © {currentYear} Oops & Ask. Made with{' '}
+              © {currentYear} Oops & Ask For. Made with{' '}
               <Heart className="inline h-3 w-3 text-red-500" />{' '}
               for dramatic communication
             </p>

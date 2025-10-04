@@ -84,6 +84,38 @@ export type TranslationKey =
   | 'common.what_happened'
   | 'common.what_do_you_want'
   | 'common.regenerate'
+  | 'common.optional'
+  
+  // Relationship options
+  | 'relationship.mum'
+  | 'relationship.dad'
+  | 'relationship.brother'
+  | 'relationship.sister'
+  | 'relationship.wife'
+  | 'relationship.husband'
+  | 'relationship.lover'
+  | 'relationship.extended_family'
+  | 'relationship.friend'
+  | 'relationship.boss'
+  | 'relationship.coworker'
+  
+  // New UI text for clean design
+  | 'ui.examples'
+  | 'ui.generated_response'
+  | 'ui.generated_apology'
+  | 'ui.copy'
+  | 'ui.share'
+  | 'ui.regenerate'
+  | 'ui.what_do_you_want_to_ask'
+  | 'ui.what_did_you_mess_up'
+  | 'ui.type_your_request'
+  | 'ui.describe_what_went_wrong'
+  | 'ui.recipient_name_placeholder'
+  | 'ui.select_relationship'
+  | 'ui.generate_response'
+  | 'ui.generate_apology'
+  | 'ui.back_to_home'
+  | 'ui.choose_mode_to_start'
   
   // Oops page
   | 'oops.title'

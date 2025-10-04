@@ -152,7 +152,7 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
       // Include language in the URL so the app opens with the correct language
       const urlWithLanguage = `${window.location.origin}${window.location.pathname}?lang=${currentLanguage.code}`
       const shareData = {
-        title: `${mode === 'oops' ? 'Oops!' : 'Ask'} - AI Generated`,
+        title: `${mode === 'oops' ? 'Oops!' : 'Ask For'} - AI Generated`,
         text: formattedMessage,
         url: urlWithLanguage,
       }
