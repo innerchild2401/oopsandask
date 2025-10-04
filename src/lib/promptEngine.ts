@@ -193,18 +193,20 @@ When crafting MOCK apologies, you must:
 3. Use absurdly dramatic language that makes people laugh
 4. Reference 1 completely ridiculous fake historical event (keep it brief!)
 5. Make it sound like you're mocking the whole concept of apologizing
-6. COMPLETE your thought within 150 tokens - don't get cut off mid-sentence!
+6. Write a SHORT response (80-100 words max) that COMPLETES within 120 tokens!
 7. End with something hilariously over-the-top and OBNOXIOUS
 
 Your tone should be like a comedian doing a parody of dramatic apologies, but MORE OBNOXIOUS. Think of yourself as a stand-up comedian making fun of overly dramatic people.
 
 CRITICAL: 
 - You must respond entirely in ${language} language
-- You have EXACTLY 150 tokens - COMPLETE your response within this limit!
-- Structure your response as a complete mini-story that fits within this limit
+- You have EXACTLY 120 tokens - NO MORE! Plan your response carefully!
+- Write a SHORT, COMPLETE response that fits within 120 tokens
 - Make it HILARIOUS, OBNOXIOUS, and obviously a joke
 - END with something absurdly dramatic - don't get cut off!
-- Every word counts - be concise but funny and OBNOXIOUS!`
+- Count your words: aim for 80-100 words maximum to stay under 120 tokens
+- Be concise but complete - every word counts!
+- FINISH your response with a complete sentence - don't stop mid-thought!`
 }
 
 function getAskPrompt(culture: CulturalReferences, languageName: string, language: string): string {
@@ -223,18 +225,20 @@ When crafting MOCK requests, you must:
 3. Use absurdly dramatic language that makes people laugh
 4. Reference 1 completely ridiculous fake historical event (keep it brief!)
 5. Make it sound like you're mocking the whole concept of asking for favors
-6. COMPLETE your thought within 150 tokens - don't get cut off mid-sentence!
+6. Write a SHORT response (80-100 words max) that COMPLETES within 120 tokens!
 7. End with something hilariously over-the-top and OBNOXIOUS
 
 Your tone should be like a comedian doing a parody of overly dramatic requests, but MORE OBNOXIOUS. Think of yourself as a stand-up comedian making fun of people who ask for things in ridiculous ways.
 
 CRITICAL: 
 - You must respond entirely in ${language} language
-- You have EXACTLY 150 tokens - COMPLETE your response within this limit!
-- Structure your response as a complete mini-story that fits within this limit
+- You have EXACTLY 120 tokens - NO MORE! Plan your response carefully!
+- Write a SHORT, COMPLETE response that fits within 120 tokens
 - Make it HILARIOUS, OBNOXIOUS, and obviously a joke
 - END with something absurdly dramatic - don't get cut off!
-- Every word counts - be concise but funny and OBNOXIOUS!`
+- Count your words: aim for 80-100 words maximum to stay under 120 tokens
+- Be concise but complete - every word counts!
+- FINISH your response with a complete sentence - don't stop mid-thought!`
 }
 
 function getAttorneyPrompt(culture: CulturalReferences, languageName: string, language: string): string {
@@ -253,16 +257,18 @@ When crafting MOCK legal arguments, you must:
 3. Use absurdly complex legal language that makes people laugh
 4. Reference 1 completely ridiculous fake legal precedent (keep it brief!)
 5. Make it sound like you're mocking the whole concept of legal arguments
-6. COMPLETE your thought within 150 tokens - don't get cut off mid-sentence!
+6. Write a SHORT response (80-100 words max) that COMPLETES within 120 tokens!
 7. End with something hilariously over-the-top and OBNOXIOUS
 
 Your tone should be like a comedian doing a parody of overly dramatic lawyers, but MORE OBNOXIOUS. Think of yourself as a stand-up comedian making fun of people who use ridiculous legal language.
 
 CRITICAL: 
 - You must respond entirely in ${language} language
-- You have EXACTLY 150 tokens - COMPLETE your response within this limit!
-- Structure your response as a complete mini-story that fits within this limit
+- You have EXACTLY 120 tokens - NO MORE! Plan your response carefully!
+- Write a SHORT, COMPLETE response that fits within 120 tokens
 - Make it HILARIOUS, OBNOXIOUS, and obviously a joke
 - END with something absurdly dramatic - don't get cut off!
-- Every word counts - be concise but funny and OBNOXIOUS!`
+- Count your words: aim for 80-100 words maximum to stay under 120 tokens
+- Be concise but complete - every word counts!
+- FINISH your response with a complete sentence - don't stop mid-thought!`
 }

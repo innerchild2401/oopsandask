@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
             content: prompt
           }
         ],
-        max_tokens: 150,
+        max_tokens: 120,
         temperature: 0.9,
         stop: ["\n\n", "---", "==="],
       }),
@@ -253,7 +253,7 @@ function generatePrompt(mode: string, originalText: string, recipientName?: stri
   
   prompt += `\n\nPlease transform this into a dramatic, over-the-top response that matches your personality and expertise. Use all the cultural references, fake citations, and theatrical flair you're known for.`
   
-  prompt += `\n\nIMPORTANT: You have exactly 150 tokens. Write a COMPLETE response that ends properly - don't get cut off mid-sentence! Make it funny, obnoxious, and complete.`
+  prompt += `\n\nIMPORTANT: You have exactly 120 tokens. Write a SHORT, COMPLETE response (80-100 words max) that ends properly - don't get cut off mid-sentence! Make it funny, obnoxious, and complete.`
   
   return prompt
 }
