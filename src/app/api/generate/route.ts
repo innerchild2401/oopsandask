@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Prepare AI prompt based on mode and language
-    const prompt = generatePrompt(body.mode, body.originalText, body.language || 'en')
+    const prompt = generatePrompt(body.mode, body.originalText)
 
     console.log('🤖 Generating AI response:', {
       mode: body.mode,
@@ -211,7 +211,7 @@ async function getLanguageId(languageCode: string): Promise<string> {
   }
 }
 
-function generatePrompt(mode: string, originalText: string, _language: string): string {
+function generatePrompt(mode: string, originalText: string): string {
   return `Original request: "${originalText}"
 
 Please transform this into a dramatic, over-the-top response that matches your personality and expertise. Use all the cultural references, fake citations, and theatrical flair you're known for.`

@@ -81,14 +81,14 @@ export function OutputCard({
             {config.icon}
           </div>
           <h3 className="text-lg font-medium text-muted-foreground mb-2">
-            Your {mode === 'oops' ? 'dramatic apology' : 'persuasive request'} awaits
+            {mode === 'oops' ? t('output.awaits_apology') : mode === 'ask_attorney' ? t('output.awaits_legal') : t('output.awaits_request')}
           </h3>
           <p className="text-sm text-muted-foreground">
             {mode === 'oops'
-              ? 'Describe what you did wrong and let our AI transform it into a theatrical masterpiece.'
+              ? t('output.describe_mistake')
               : mode === 'ask_attorney'
-              ? 'Enable dramatic legal language with fake citations.'
-              : 'Craft convincing requests using dramatic flair.'
+              ? t('output.enable_legal')
+              : t('output.craft_convincing')
             }
           </p>
         </div>
@@ -161,7 +161,7 @@ export function OutputCard({
       {/* Rating */}
       <div className="flex items-center space-x-2">
         <span className="text-sm font-medium">
-          Rate this {mode === 'oops' ? 'apology' : 'request'}:
+          {mode === 'oops' ? t('output.rate_apology') : t('output.rate_request')}
         </span>
         {[1, 2, 3, 4, 5].map((star) => (
           <button

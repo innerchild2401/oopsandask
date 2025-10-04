@@ -11,7 +11,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useTranslation } from '@/lib/i18n'
-import { I18n } from '@/lib/i18n'
 
 interface LanguageSelectorProps {
   className?: string
@@ -48,19 +47,7 @@ export function LanguageSelector({ className = '', isMobile = false }: LanguageS
     }
   }, [currentLanguage.code, setLanguage])
 
-  // Detect browser language on first visit
-  useEffect(() => {
-    const hasVisitedBefore = localStorage.getItem('oops-ask-has-visited')
-    
-    if (!hasVisitedBefore) {
-      const browserLanguage = I18n.detectBrowserLanguage()
-      if (browserLanguage !== 'en') { // Only auto-detect if not English
-        setLanguage(browserLanguage)
-        localStorage.setItem('oops-ask-language', browserLanguage)
-      }
-      localStorage.setItem('oops-ask-has-visited', 'true')
-    }
-  }, [setLanguage])
+  // Language detection is now handled by the TranslationProvider
 
   return (
     <div className={`flex items-center ${className}`}>
