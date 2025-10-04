@@ -15,9 +15,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!['oops', 'ask', 'attorney_ask'].includes(body.mode)) {
+    if (!['oops', 'ask', 'ask_attorney'].includes(body.mode)) {
       return NextResponse.json(
-        { error: 'Invalid mode. Must be oops, ask, or attorney_ask' },
+        { error: 'Invalid mode. Must be oops, ask, or ask_attorney' },
         { status: 400 }
       )
     }
@@ -87,6 +87,7 @@ export async function POST(request: NextRequest) {
         ],
         max_tokens: 150,
         temperature: 0.9,
+        stop: ["\n\n", "---", "==="],
       }),
     })
 
@@ -251,6 +252,8 @@ function generatePrompt(mode: string, originalText: string, recipientName?: stri
   }
   
   prompt += `\n\nPlease transform this into a dramatic, over-the-top response that matches your personality and expertise. Use all the cultural references, fake citations, and theatrical flair you're known for.`
+  
+  prompt += `\n\nIMPORTANT: You have exactly 150 tokens. Write a COMPLETE response that ends properly - don't get cut off mid-sentence! Make it funny, obnoxious, and complete.`
   
   return prompt
 }
