@@ -106,8 +106,41 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
     }
   }
 
-  const handleWhatsAppShare = () => {
-    const message = `${originalText}\n\n${generatedText}`
+  const formatWhatsAppMessage = async () => {
+    try {
+      // Ask GPT to format the WhatsApp message in the correct language
+      const response = await fetch('/api/format-whatsapp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          originalText,
+          generatedText,
+          language: currentLanguage.code
+        }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        return data.formattedMessage
+      }
+    } catch (error) {
+      console.error('Failed to format WhatsApp message:', error)
+    }
+
+    // Fallback to simple formatting if API fails
+    const formattedGeneratedText = generatedText
+      .replace(/\n/g, '\n') // Preserve line breaks
+      .replace(/\*\*(.*?)\*\*/g, '*$1*') // Convert **bold** to *bold* for WhatsApp
+      .replace(/\*(.*?)\*/g, '*$1*') // Ensure single asterisks work
+      .trim()
+    
+    return `${originalText}\n\n${formattedGeneratedText}\n\nWant to answer in the same witty manner?\nhttps://oopsandask.com`
+  }
+
+  const handleWhatsAppShare = async () => {
+    const message = await formatWhatsAppMessage()
     const encodedMessage = encodeURIComponent(message)
     const whatsappUrl = `https://wa.me/?text=${encodedMessage}`
     window.open(whatsappUrl, '_blank')
@@ -115,9 +148,10 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
 
   const handleShare = async () => {
     try {
+      const formattedMessage = await formatWhatsAppMessage()
       const shareData = {
         title: `${mode === 'oops' ? 'Oops!' : 'Ask'} - AI Generated`,
-        text: `${originalText}\n\n${generatedText}`,
+        text: formattedMessage,
         url: window.location.href,
       }
       

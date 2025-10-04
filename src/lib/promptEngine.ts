@@ -190,6 +190,8 @@ End cleanly, no ellipsis.
 Optionally include 1-2 emojis that match the tone.
 After the text, add one short fake signature (like "—Baron von Blunder, 1842" or a localized equivalent).
 
+FORMATTING: Use line breaks and formatting to make it visually appealing. You can use *bold* for emphasis.
+
 Output only the text, nothing else.`
 }
 
@@ -206,6 +208,8 @@ End cleanly, no ellipsis.
 Optionally include 1-2 emojis that match the tone.
 After the text, add one short fake signature (like "—Madame Desirescu, 1842" or a localized equivalent).
 
+FORMATTING: Use line breaks and formatting to make it visually appealing. You can use *bold* for emphasis.
+
 Output only the text, nothing else.`
 }
 
@@ -221,6 +225,8 @@ Write 2-3 sentences max that mock the concept of legal arguments.
 End cleanly, no ellipsis.
 Optionally include 1-2 emojis that match the tone.
 After the text, add one short fake signature (like "—Dr. Legalachev, Esq., 1842" or a localized equivalent).
+
+FORMATTING: Use line breaks and formatting to make it visually appealing. You can use *bold* for emphasis.
 
 Output only the text, nothing else.`
 }
