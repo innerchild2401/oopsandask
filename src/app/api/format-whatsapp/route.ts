@@ -33,14 +33,17 @@ Format it as:
 4. A phrase meaning "Want to answer in the same witty manner?" in ${language}
 5. The link: https://oopsnandask.vercel.app?lang=${language}
 
-IMPORTANT FORMATTING RULES:
-- Preserve ALL line breaks and paragraph breaks from the generated text
-- Keep *bold* formatting for WhatsApp
-- Use proper paragraph spacing
-- Make it visually appealing with good spacing
-- Ensure the message flows naturally
+CRITICAL FORMATTING RULES:
+- Use ONLY standard ASCII characters and emojis
+- NO invisible characters, zero-width spaces, or special Unicode
+- Use regular line breaks (\n) for paragraphs
+- Use *text* for bold formatting (WhatsApp standard)
+- Use regular spaces, not non-breaking spaces
+- Clean, readable text that looks normal in WhatsApp
+- Preserve paragraph breaks with double line breaks (\n\n)
+- Make it visually appealing with proper spacing
 
-Make sure all text is in ${language} and properly formatted for WhatsApp.`
+Make sure all text is in ${language} and uses only standard characters that display normally in WhatsApp.`
 
     // Call OpenAI API
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -76,7 +79,7 @@ Make sure all text is in ${language} and properly formatted for WhatsApp.`
     }
 
     const data = await response.json()
-    const formattedMessage = data.choices[0]?.message?.content?.trim()
+    let formattedMessage = data.choices[0]?.message?.content?.trim()
 
     if (!formattedMessage) {
       return NextResponse.json(
@@ -84,6 +87,21 @@ Make sure all text is in ${language} and properly formatted for WhatsApp.`
         { status: 500 }
       )
     }
+
+    // Clean up any invisible characters or formatting issues
+    formattedMessage = formattedMessage
+      .replace(/[\u200B-\u200D\uFEFF]/g, '') // Remove zero-width characters
+      .replace(/\u00A0/g, ' ') // Replace non-breaking spaces with regular spaces
+      .replace(/\u2013/g, '-') // Replace en-dash with regular dash
+      .replace(/\u2014/g, '--') // Replace em-dash with double dash
+      .replace(/\u2018/g, "'") // Replace left single quotation mark
+      .replace(/\u2019/g, "'") // Replace right single quotation mark
+      .replace(/\u201C/g, '"') // Replace left double quotation mark
+      .replace(/\u201D/g, '"') // Replace right double quotation mark
+      .replace(/\r\n/g, '\n') // Normalize line endings
+      .replace(/\r/g, '\n') // Normalize line endings
+      .replace(/\n{3,}/g, '\n\n') // Limit consecutive line breaks to 2
+      .trim()
 
     return NextResponse.json({
       formattedMessage

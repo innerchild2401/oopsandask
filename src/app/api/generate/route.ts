@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     // No caching for generated outputs - always generate fresh content
 
     // Prepare AI prompt based on mode and language
-    const prompt = generatePrompt(body.mode, body.originalText, body.recipientName, body.recipientRelationship)
+    const prompt = generatePrompt(body.mode, body.originalText, body.recipientName, body.recipientRelationship, body.language)
 
     console.log('🤖 Generating AI response:', {
       mode: body.mode,
@@ -221,8 +221,13 @@ async function getLanguageId(languageCode: string): Promise<string> {
   }
 }
 
-function generatePrompt(mode: string, originalText: string, recipientName?: string, recipientRelationship?: string): string {
+function generatePrompt(mode: string, originalText: string, recipientName?: string, recipientRelationship?: string, language?: string): string {
   let prompt = `Original request: "${originalText}"`
+  
+  // CRITICAL: Reinforce language requirement in user prompt
+  if (language && language !== 'en') {
+    prompt += `\n\nCRITICAL: The user's input is in ${language}. You MUST respond in ${language}. Do not use English.`
+  }
   
   if (recipientName && recipientRelationship) {
     prompt += `\n\nThis message is for ${recipientName} (${recipientRelationship}). Please personalize the response to address them directly and consider the relationship context.`

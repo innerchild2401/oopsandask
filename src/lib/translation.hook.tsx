@@ -269,14 +269,9 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
 
       // First try to load from cache
       const cachedTranslations = await TranslationSupabase.getLanguageTranslations(lang)
-      console.log(`[${instanceId}] Cached translations for ${lang}:`, Object.keys(cachedTranslations).length, 'keys')
       
       if (Object.keys(cachedTranslations).length > 0) {
-        console.log(`[${instanceId}] Using cached translations for ${lang}`)
-        console.log(`[${instanceId}] Cached translations sample:`, Object.entries(cachedTranslations).slice(0, 3))
-        console.log(`[${instanceId}] Setting cached translations in state...`)
         setTranslations(cachedTranslations)
-        console.log(`[${instanceId}] Cached translations set in state`)
         setIsLoading(false)
         return
       }
@@ -336,11 +331,7 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
       }
 
       const data = await response.json()
-      console.log(`Generated translations for ${lang}:`, Object.keys(data.translations).length, 'keys')
-      console.log('Sample translations:', Object.entries(data.translations).slice(0, 3))
-      console.log('Setting translations in state...')
       setTranslations(data.translations)
-      console.log('Translations set in state')
     } catch (error) {
       console.error('Failed to generate translations:', error)
       setTranslations(ENGLISH_TRANSLATIONS)
@@ -394,16 +385,6 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
   // Get translation with fallback
   const t = useCallback((key: TranslationKey, fallback?: string): string => {
     const result = translations[key] || fallback || ENGLISH_TRANSLATIONS[key] || key
-    // Debug logging for Romanian
-    if (language === 'ro' && key.startsWith('nav.')) {
-      console.log(`[${instanceId}] Translation for ${key}:`, { 
-        fromCache: translations[key], 
-        fallback, 
-        english: ENGLISH_TRANSLATIONS[key], 
-        result,
-        translationsKeys: Object.keys(translations).length
-      })
-    }
     return result
   }, [translations, language, instanceId])
 

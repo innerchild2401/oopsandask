@@ -41,14 +41,7 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
 
     setIsGenerating(true)
     try {
-      console.log('🌍 Language context:', {
-        currentLanguage: currentLanguage,
-        languageCode: currentLanguage.code,
-        originalText: originalText.trim(),
-        userAgent: navigator.userAgent,
-        browserLanguage: navigator.language,
-        languages: navigator.languages
-      })
+      // Language context logged for debugging
       
       const request: GenerateMessageRequest = {
         mode,
@@ -59,7 +52,7 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
         sessionId: localStorage.getItem('oops-ask-session') || '',
       }
 
-      console.log('📤 Sending request to API:', request)
+      // Sending request to API
       
       const response = await fetch('/api/generate', {
         method: 'POST',
@@ -74,7 +67,7 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
       }
 
       const data: GenerateMessageResponse = await response.json()
-      console.log('📥 Received response from API:', data)
+      // Received response from API
       setGeneratedText(data.generatedText)
       
       // Update generation count
@@ -131,10 +124,21 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
 
     // Fallback to simple formatting if API fails
     const formattedGeneratedText = generatedText
+      .replace(/[\u200B-\u200D\uFEFF]/g, '') // Remove zero-width characters
+      .replace(/\u00A0/g, ' ') // Replace non-breaking spaces with regular spaces
+      .replace(/\u2013/g, '-') // Replace en-dash with regular dash
+      .replace(/\u2014/g, '--') // Replace em-dash with double dash
+      .replace(/\u2018/g, "'") // Replace left single quotation mark
+      .replace(/\u2019/g, "'") // Replace right single quotation mark
+      .replace(/\u201C/g, '"') // Replace left double quotation mark
+      .replace(/\u201D/g, '"') // Replace right double quotation mark
+      .replace(/\r\n/g, '\n') // Normalize line endings
+      .replace(/\r/g, '\n') // Normalize line endings
       .replace(/\n\n/g, '\n\n') // Preserve paragraph breaks
       .replace(/\n/g, '\n') // Preserve line breaks
       .replace(/\*\*(.*?)\*\*/g, '*$1*') // Convert **bold** to *bold* for WhatsApp
       .replace(/\*(.*?)\*/g, '*$1*') // Ensure single asterisks work
+      .replace(/\n{3,}/g, '\n\n') // Limit consecutive line breaks to 2
       .trim()
     
     return `${originalText}\n\nIn other words:\n\n${formattedGeneratedText}\n\nWant to answer in the same witty manner?\nhttps://oopsnandask.vercel.app?lang=${currentLanguage.code}`
