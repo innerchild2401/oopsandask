@@ -28,33 +28,37 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo and App Title */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="flex items-center space-x-2">
-              <MessageCircle className="h-8 w-8 text-primary animate-dramatic-appeal" />
+          <Link href="/" className="flex items-center space-x-3 group">
+            <div className="flex items-center space-x-3">
+              <div className="relative">
+                <MessageCircle className="h-8 w-8 text-primary group-hover:scale-110 transition-transform duration-300" />
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse-glow"></div>
+              </div>
               <div className="flex flex-col">
-                <h1 className="text-xl font-bold text-primary">{t('nav.app_title')}</h1>
-                <p className="text-xs text-muted-foreground hidden sm:block">{t('nav.tagline')}</p>
+                <h1 className="text-xl font-bold text-primary group-hover:text-primary/80 transition-colors">{t('nav.app_title')}</h1>
+                <p className="text-xs text-muted-foreground hidden sm:block group-hover:text-muted-foreground/80 transition-colors">{t('nav.tagline')}</p>
               </div>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden md:flex items-center space-x-2">
             {navigation.map((item) => (
               <Button
                 key={item.href}
                 asChild
                 variant={isActive(item.href) ? 'default' : 'ghost'}
-                className="relative"
+                size="sm"
+                className="relative group"
               >
                 <Link href={item.href} className="flex items-center space-x-2">
-                  {item.href === '/oops' && <span className="text-lg">😬</span>}
-                  {item.href === '/ask' && <span className="text-lg">💌</span>}
-                  <span>{item.title}</span>
+                  {item.href === '/oops' && <span className="text-lg group-hover:scale-110 transition-transform">😬</span>}
+                  {item.href === '/ask' && <span className="text-lg group-hover:scale-110 transition-transform">💌</span>}
+                  <span className="font-medium">{item.title}</span>
                 </Link>
               </Button>
             ))}
