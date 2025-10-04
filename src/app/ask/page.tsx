@@ -124,7 +124,7 @@ export default function AskPage() {
                 {t('common.original_text')}
               </h2>
               <p className="text-lg text-muted-foreground">
-                Tell us what you want to ask for, and we&apos;ll make it persuasive!
+                Tell us what you want to ask for, and we&apos;ll make it hilariously persuasive!
               </p>
             </div>
 

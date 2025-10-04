@@ -75,7 +75,7 @@ export default function OopsPage() {
                 {t('common.original_text')}
               </h2>
               <p className="text-lg text-muted-foreground">
-                Tell us what you need to apologize for, and we&apos;ll make it dramatic!
+                Tell us what you need to apologize for, and we&apos;ll make it hilariously dramatic!
               </p>
             </div>
 
