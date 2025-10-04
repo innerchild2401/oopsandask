@@ -26,24 +26,25 @@ export async function POST(request: NextRequest) {
 Original text: "${originalText}"
 Generated text: "${generatedText}"
 
-Format it as:
-1. The original text
-2. A phrase meaning "In other words:" in ${language}
-3. The generated text (preserve ALL formatting including line breaks, paragraphs, *bold*, etc.)
-4. A phrase meaning "Want to answer in the same witty manner?" in ${language}
-5. The link: https://oopsnandask.vercel.app?lang=${language}
+Create a natural, flowing WhatsApp message with this structure:
+- Start with the original text
+- Add a natural phrase meaning "In other words:" in ${language}
+- Include the generated text (preserve ALL formatting including line breaks, paragraphs, *bold*, etc.)
+- End with a friendly phrase meaning "Want to answer in the same witty manner?" in ${language}
+- Add the link: https://oopsnandask.vercel.app?lang=${language}
 
 CRITICAL FORMATTING RULES:
+- NO numbered lists or bullet points - make it flow naturally like a conversation
 - Use ONLY standard ASCII characters and emojis
 - NO invisible characters, zero-width spaces, or special Unicode
 - Use regular line breaks (\n) for paragraphs
 - Use *text* for bold formatting (WhatsApp standard)
 - Use regular spaces, not non-breaking spaces
-- Clean, readable text that looks normal in WhatsApp
+- Make it feel like a friendly, natural message
 - Preserve paragraph breaks with double line breaks (\n\n)
-- Make it visually appealing with proper spacing
+- Keep it simple, clean, and joyful
 
-Make sure all text is in ${language} and uses only standard characters that display normally in WhatsApp.`
+Make sure all text is in ${language} and flows naturally like a casual WhatsApp conversation.`
 
     // Call OpenAI API
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -101,6 +102,9 @@ Make sure all text is in ${language} and uses only standard characters that disp
       .replace(/\r\n/g, '\n') // Normalize line endings
       .replace(/\r/g, '\n') // Normalize line endings
       .replace(/\n{3,}/g, '\n\n') // Limit consecutive line breaks to 2
+      .replace(/^\d+\.\s*/gm, '') // Remove numbered list formatting
+      .replace(/^[-•]\s*/gm, '') // Remove bullet point formatting
+      .replace(/\n\s*\n\s*\n/g, '\n\n') // Clean up excessive spacing
       .trim()
 
     return NextResponse.json({

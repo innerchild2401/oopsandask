@@ -141,7 +141,7 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
       .replace(/\n{3,}/g, '\n\n') // Limit consecutive line breaks to 2
       .trim()
     
-    return `${originalText}\n\nIn other words:\n\n${formattedGeneratedText}\n\nWant to answer in the same witty manner?\nhttps://oopsnandask.vercel.app?lang=${currentLanguage.code}`
+    return `${originalText}\n\nIn other words:\n\n${formattedGeneratedText}\n\nWant to answer in the same witty manner? 😄\nhttps://oopsnandask.vercel.app?lang=${currentLanguage.code}`
   }
 
   const handleWhatsAppShare = async () => {
