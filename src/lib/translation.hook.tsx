@@ -164,13 +164,25 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
 
   // Load language from localStorage on mount
   useEffect(() => {
-    const savedLanguage = localStorage.getItem('oops-ask-language')
-    if (savedLanguage) {
-      setLanguageState(savedLanguage)
-      loadTranslations(savedLanguage)
+    // Check if language is specified in URL (from shared links)
+    const urlParams = new URLSearchParams(window.location.search)
+    const urlLanguage = urlParams.get('lang')
+    
+    if (urlLanguage) {
+      console.log('Language from URL:', urlLanguage)
+      setLanguageState(urlLanguage)
+      loadTranslations(urlLanguage)
+      // Save the language from URL to localStorage
+      localStorage.setItem('oops-ask-language', urlLanguage)
     } else {
-      // Detect language on first visit
-      detectAndSetLanguage()
+      const savedLanguage = localStorage.getItem('oops-ask-language')
+      if (savedLanguage) {
+        setLanguageState(savedLanguage)
+        loadTranslations(savedLanguage)
+      } else {
+        // Detect language on first visit
+        detectAndSetLanguage()
+      }
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 

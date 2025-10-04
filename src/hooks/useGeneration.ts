@@ -136,7 +136,7 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
       .replace(/\*(.*?)\*/g, '*$1*') // Ensure single asterisks work
       .trim()
     
-    return `${originalText}\n\n${formattedGeneratedText}\n\nWant to answer in the same witty manner?\nhttps://oopsnandask.vercel.app`
+    return `${originalText}\n\n${formattedGeneratedText}\n\nWant to answer in the same witty manner?\nhttps://oopsnandask.vercel.app?lang=${currentLanguage.code}`
   }
 
   const handleWhatsAppShare = async () => {
@@ -149,10 +149,12 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
   const handleShare = async () => {
     try {
       const formattedMessage = await formatWhatsAppMessage()
+      // Include language in the URL so the app opens with the correct language
+      const urlWithLanguage = `${window.location.origin}${window.location.pathname}?lang=${currentLanguage.code}`
       const shareData = {
         title: `${mode === 'oops' ? 'Oops!' : 'Ask'} - AI Generated`,
         text: formattedMessage,
-        url: window.location.href,
+        url: urlWithLanguage,
       }
       
       if (navigator.share) {

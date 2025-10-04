@@ -31,7 +31,7 @@ Format it as:
 2. A phrase meaning "In other words:" in ${language}
 3. The generated text (preserve any formatting like *bold*)
 4. A phrase meaning "Want to answer in the same witty manner?" in ${language}
-5. The link: https://oopsnandask.vercel.app
+5. The link: https://oopsnandask.vercel.app?lang=${language}
 
 Make sure all text is in ${language} and properly formatted for WhatsApp. Use line breaks appropriately.`
 
