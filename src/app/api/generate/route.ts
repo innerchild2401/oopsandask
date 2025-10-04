@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { GenerateMessageRequest, GenerateMessageResponse } from '@/lib/types'
 import { supabaseHelpers } from '@/lib/supabase'
+import { getPromptTemplate } from '@/lib/promptEngine'
 
 export async function POST(request: NextRequest) {
   try {
@@ -77,7 +78,7 @@ export async function POST(request: NextRequest) {
         messages: [
           {
             role: 'system',
-            content: getSystemPrompt(body.mode, body.language || 'en')
+            content: getPromptTemplate(body.mode, body.language || 'en')
           },
           {
             role: 'user',
@@ -210,147 +211,8 @@ async function getLanguageId(languageCode: string): Promise<string> {
   }
 }
 
-function generatePrompt(mode: string, originalText: string, language: string): string {
-  const baseText = `Original request: "${originalText}"`
-  
-  switch (mode) {
-    case 'oops':
-      return `${baseText}
+function generatePrompt(mode: string, originalText: string, _language: string): string {
+  return `Original request: "${originalText}"
 
-Please write an EXTREMELY dramatic, over-the-top, theatrical apology in ${getLanguageName(language)}. Make it hilariously exaggerated and filled with drama. The apology should be:
-- Dramatically overstated with fake historical scandal references
-- Funny but still heartfelt and sincere
-- Use theatrical language, metaphors, and dramatic flair
-- Reference made-up historical events (like "The Great Spilled Coffee Incident of 1847")
-- Include dramatic gestures and emotional crescendos
-- End with a heartfelt resolution and promise of redemption
-
-Make it so dramatic that it turns a simple mistake into an epic tale of redemption worthy of Shakespeare. Use the cultural context and humor appropriate for ${getLanguageName(language)} speakers.`
-      
-    case 'ask':
-      return `${baseText}
-
-Please write a persuasive, dramatic request in ${getLanguageName(language)} that convinces the recipient to say yes. Make it like a manifesto of desire:
-- Compelling and passionate with emotional crescendos
-- Uses dramatic emotional appeal and storytelling
-- Builds urgency and importance like a grand declaration
-- Convincing without being manipulative
-- Elegant, refined, and theatrical
-- Include references to grand gestures and noble causes
-- Use the cultural persuasion techniques appropriate for ${getLanguageName(language)} speakers
-
-Be persuasive but not pushy - make it sound like a grand romantic gesture or noble quest.`
-      
-    case 'attorney_ask':
-      return `${baseText}
-
-Please write this request in ${getLanguageName(language)} using fake legal language, dramatic attorney-style arguments, and made-up citations. Include:
-- Fake legal statutes with random numbers and dramatic names
-- Invented case precedents with theatrical names
-- Formal courtroom-style language with dramatic flair
-- Made-up legal citations using localized names and places
-- Theatrical legal arguments with fake historical cases
-- References to non-existent legal codes and regulations
-- Use legal terminology appropriate for ${getLanguageName(language)} legal systems
-
-Create fictional legal citations like "Pursuant to Title 47, Section 892.4 of the Interpersonal Request Code of ${getCountryName(language)}..." Make it sound like a dramatic legal brief that's completely fabricated but hilariously convincing.`
-      
-    default:
-      return baseText
-  }
-}
-
-function getSystemPrompt(mode: string, language: string): string {
-  const languageName = getLanguageName(language)
-  
-  switch (mode) {
-    case 'oops':
-      return `You are a theatrical drama specialist who turns ordinary apologies into dramatic masterpieces in ${languageName}. Your apologies are:
-- Exaggerated and over-the-top with fake historical scandal references
-- Humorous but still heartfelt and sincere
-- Full of dramatic metaphors, theatrical language, and cultural references
-- Memorable and entertaining with made-up historical events
-- Sincere despite the theatrical presentation
-- Include dramatic gestures and emotional crescendos
-- Reference fake historical scandals and events appropriate for ${languageName} culture
-
-Always respond with a single dramatic apology in ${languageName}, no explanations or meta-commentary.`
-      
-    case 'ask':
-      return `You are a master persuader who crafts compelling, elegant requests in ${languageName}. Your writing is:
-- Convincing and persuasive like a manifesto of desire
-- Emotionally engaging with dramatic storytelling
-- Urgent but not pushy, like a grand romantic gesture
-- Elegant, refined, and theatrical
-- Cleverly argumentative with cultural persuasion techniques
-- Include references to grand gestures and noble causes
-- Use the cultural context appropriate for ${languageName} speakers
-
-Always respond with a single persuasive request in ${languageName}, no explanations or meta-commentary.`
-      
-    case 'attorney_ask':
-      return `You are a theatrical attorney who argues using completely made-up legal language in ${languageName}. Your writing features:
-- Fake legal statutes with random numbers and dramatic names
-- Invented case precedents with theatrical names
-- Dramatic legal terminology appropriate for ${languageName} legal systems
-- Formal courtroom-style presentations with dramatic flair
-- Hilariously complex legal arguments with fake historical cases
-- References to non-existent legal codes and regulations
-- Use localized names and places in legal citations
-
-Create fictional legal citations like "Pursuant to Title 47, Section 892.4 of the Interpersonal Request Code of ${getCountryName(language)}..." Always respond with a single attorney-style request in ${languageName}, no explanations or meta-commentary.`
-      
-    default:
-      return `You are a helpful AI assistant for dramatic communication in ${languageName}.`
-  }
-}
-
-// Helper function to get language name from code
-function getLanguageName(languageCode: string): string {
-  const languageMap: Record<string, string> = {
-    'en': 'English',
-    'es': 'Spanish',
-    'fr': 'French',
-    'de': 'German',
-    'it': 'Italian',
-    'pt': 'Portuguese',
-    'ru': 'Russian',
-    'ja': 'Japanese',
-    'ko': 'Korean',
-    'zh': 'Chinese',
-    'ar': 'Arabic',
-    'nl': 'Dutch',
-    'sv': 'Swedish',
-    'no': 'Norwegian',
-    'da': 'Danish',
-    'fi': 'Finnish',
-    'pl': 'Polish',
-    'tr': 'Turkish'
-  }
-  return languageMap[languageCode] || 'English'
-}
-
-// Helper function to get country name for legal citations
-function getCountryName(languageCode: string): string {
-  const countryMap: Record<string, string> = {
-    'en': 'the United States',
-    'es': 'Spain',
-    'fr': 'France',
-    'de': 'Germany',
-    'it': 'Italy',
-    'pt': 'Portugal',
-    'ru': 'Russia',
-    'ja': 'Japan',
-    'ko': 'South Korea',
-    'zh': 'China',
-    'ar': 'Saudi Arabia',
-    'nl': 'the Netherlands',
-    'sv': 'Sweden',
-    'no': 'Norway',
-    'da': 'Denmark',
-    'fi': 'Finland',
-    'pl': 'Poland',
-    'tr': 'Turkey'
-  }
-  return countryMap[languageCode] || 'the United States'
+Please transform this into a dramatic, over-the-top response that matches your personality and expertise. Use all the cultural references, fake citations, and theatrical flair you're known for.`
 }
