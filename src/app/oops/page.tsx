@@ -1,89 +1,45 @@
 'use client'
 
-import { useState } from 'react'
-import { Zap, Copy, Share2, RefreshCw, Star, Loader } from 'lucide-react'
+import React from 'react'
+import { Zap, ArrowRight, Coffee, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTranslation } from '@/lib/i18n'
-import { GenerateMessageRequest, GenerateMessageResponse } from '@/lib/types'
+import { useGeneration } from '@/hooks/useGeneration'
+import { OutputCard } from '@/components/shared/OutputCard'
+import { DonationModal } from '@/components/shared/DonationModal'
+import Link from 'next/link'
 
 export default function OopsPage() {
-  const { t } = useTranslation()
-  const [originalText, setOriginalText] = useState('')
-  const [generatedText, setGeneratedText] = useState('')
-  const [isGenerating, setIsGenerating] = useState(false)
-  const [isCopied, setIsCopied] = useState(false)
-  const [isShared, setIsShared] = useState(false)
-  const [userRating, setUserRating] = useState<number | null>(null)
+  const { t, currentLanguage } = useTranslation()
+  
+  const {
+    originalText,
+    setOriginalText,
+    generatedText,
+    isGenerating,
+    isCopied,
+    isShared,
+    userRating,
+    setUserRating,
+    generationCount,
+    showDonationModal,
+    handleGenerate,
+    handleCopy,
+    handleShare,
+    handleRegenerate,
+    handleTryAgain,
+    handleDonationModalClose,
+  } = useGeneration({ 
+    mode: 'oops'
+  })
 
-  const handleGenerate = async () => {
-    if (!originalText.trim()) return
-
-    setIsGenerating(true)
-    try {
-      const request: GenerateMessageRequest = {
-        mode: 'oops',
-        originalText: originalText.trim(),
-        language: 'en', // Will be dynamic based on language selector
-        sessionId: localStorage.getItem('oops-ask-session') || '',
-      }
-
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(request),
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const data: GenerateMessageResponse = await response.json()
-      setGeneratedText(data.generatedText)
-    } catch (error) {
-      console.error('Generation failed:', error)
-      setGeneratedText(t('common.error'))
-    } finally {
-      setIsGenerating(false)
-    }
-  }
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(generatedText)
-      setIsCopied(true)
-      setTimeout(() => setIsCopied(false), 2000)
-    } catch (error) {
-      console.error('Copy failed:', error)
-    }
-  }
-
-  const handleShare = async () => {
-    try {
-      const shareData = {
-        title: 'Oops! - Dramatic Apology',
-        text: `${originalText}\n\n${generatedText}`,
-        url: window.location.href,
-      }
-      
-      if (navigator.share) {
-        await navigator.share(shareData)
-      } else {
-        await navigator.clipboard.writeText(`${originalText}\n\n${generatedText}`)
-        setIsShared(true)
-        setTimeout(() => setIsShared(false), 2000)
-      }
-    } catch (error) {
-      console.error('Share failed:', error)
-    }
-  }
-
-  const handleTryAgain = () => {
-    setGeneratedText('')
-    setOriginalText('')
-    setUserRating(null)
-  }
+  const examples = [
+    "I forgot to call you back",
+    "I accidentally deleted your important file",
+    "I was late to our dinner date",
+    "I broke your favorite mug",
+    "I forgot your birthday"
+  ]
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-950 dark:to-pink-950">
@@ -98,6 +54,13 @@ export default function OopsPage() {
             <p className="text-lg text-muted-foreground mb-6">
               {t('oops.description')}
             </p>
+            
+            {/* Language indicator */}
+            <div className="inline-flex items-center space-x-2 bg-red-100 dark:bg-red-900 rounded-full px-4 py-2 mb-6">
+              <span className="text-sm font-medium text-red-700 dark:text-red-300">
+                {currentLanguage.flag} {currentLanguage.nativeName}
+              </span>
+            </div>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-8">
@@ -113,7 +76,7 @@ export default function OopsPage() {
                   value={originalText}
                   onChange={(e) => setOriginalText(e.target.value)}
                   placeholder={t('oops.input_placeholder')}
-                  className="w-full min-h-[200px] p-4 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  className="w-full min-h-[200px] p-4 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300"
                   disabled={isGenerating}
                 />
                 
@@ -121,11 +84,11 @@ export default function OopsPage() {
                   <Button 
                     onClick={handleGenerate}
                     disabled={!originalText.trim() || isGenerating}
-                    className="w-full bg-gradient-to-r from-red-500 to-pink-600 text-white hover:shadow-lg transition-all duration-300"
+                    className="w-full bg-gradient-to-r from-red-500 to-pink-600 text-white hover:shadow-lg transition-all duration-300 hover:scale-105"
                   >
                     {isGenerating ? (
                       <>
-                        <Loader className="mr-2 h-4 w-4 animate-spin" />
+                        <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                         {t('common.loading')}
                       </>
                     ) : (
@@ -138,14 +101,34 @@ export default function OopsPage() {
                 </div>
               </div>
 
+              {/* Example Apologies */}
+              <div className="bg-card rounded-lg p-6 border shadow-sm">
+                <h3 className="text-lg font-semibold mb-4">💡 Example Apologies</h3>
+                <div className="space-y-3">
+                  {examples.map((example, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setOriginalText(example)}
+                      className="w-full text-left p-3 border rounded-lg hover:bg-red-50 dark:hover:bg-red-950 transition-colors duration-200 text-sm"
+                      disabled={isGenerating}
+                    >
+                      &ldquo;{example}&rdquo;
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Generation Stats */}
               {generatedText && (
                 <div className="bg-card rounded-lg p-6 border shadow-sm">
-                  <h3 className="text-lg font-semibold mb-4">Generation Stats</h3>
+                  <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <Sparkles className="mr-2 h-5 w-5 text-yellow-500" />
+                    Generation Stats
+                  </h3>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <span className="text-muted-foreground">Language:</span>
-                      <span className="ml-2 font-medium">English</span>
+                      <span className="ml-2 font-medium">{currentLanguage.nativeName}</span>
                     </div>
                     <div>
                       <span className="text-muted-foreground">Mode:</span>
@@ -155,75 +138,46 @@ export default function OopsPage() {
                       <span className="text-muted-foreground">Style:</span>
                       <span className="ml-2 font-medium">Dramatic</span>
                     </div>
+                    <div>
+                      <span className="text-muted-foreground">Count:</span>
+                      <span className="ml-2 font-medium">{generationCount}</span>
+                    </div>
                   </div>
                 </div>
               )}
+
+              {/* Switch Mode */}
+              <div className="bg-card rounded-lg p-6 border shadow-sm">
+                <h3 className="text-lg font-semibold mb-4">Switch Mode</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Need to make a request instead? Try Ask mode!
+                </p>
+                <Button asChild variant="outline" className="w-full">
+                  <Link href="/ask" className="flex items-center justify-center">
+                    <span className="mr-2">💌</span>
+                    Switch to Ask Mode
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
             </div>
 
             {/* Output Section */}
             <div className="space-y-6">
-              {generatedText ? (
-                <div className="bg-card rounded-lg p-6 border shadow-sm">
-                  <h2 className="text-xl font-semibold mb-4">Dramatic Apology</h2>
-                  
-                  <div className="bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-950 dark:to-pink-950 rounded-lg p-6 mb-6 min-h-[200px]">
-                    <p className="text-lg leading-relaxed font-medium">
-                      {generatedText}
-                    </p>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    <Button
-                      onClick={handleCopy}
-                      variant={isCopied ? 'default' : 'outline'}
-                      className={isCopied ? 'bg-green-500 hover:bg-green-600' : ''}
-                    >
-                      <Copy className="mr-2 h-4 w-4" />
-                      {isCopied ? 'Copied!' : t('common.copy')}
-                    </Button>
-                    
-                    <Button onClick={handleShare} variant="outline">
-                      <Share2 className="mr-2 h-4 w-4" />
-                      {isShared ? 'Shared!' : t('common.share')}
-                    </Button>
-                    
-                    <Button onClick={handleTryAgain} variant="outline">
-                      <RefreshCw className="mr-2 h-4 w-4" />
-                      {t('common.try_again')}
-                    </Button>
-                  </div>
-
-                  {/* Rating */}
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm font-medium">Rate this apology:</span>
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        onClick={() => setUserRating(star)}
-                        className={`${userRating && star <= userRating 
-                          ? 'text-yellow-400' 
-                          : 'text-gray-300 hover:text-yellow-400'
-                        } transition-colors`}
-                      >
-                        <Star className="h-5 w-5" />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="bg-card rounded-lg p-6 border shadow-sm">
-                  <div className="text-center py-12">
-                    <div className="text-4xl mb-4 opacity-50">🎭</div>
-                    <h3 className="text-lg font-medium text-muted-foreground mb-2">
-                      Your dramatic apology awaits
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      Describe what you did wrong and let our AI transform it into a theatrical masterpiece.
-                    </p>
-                  </div>
-                </div>
-              )}
+              <OutputCard
+                generatedText={generatedText}
+                originalText={originalText}
+                mode="oops"
+                isGenerating={isGenerating}
+                isCopied={isCopied}
+                isShared={isShared}
+                userRating={userRating}
+                onCopy={handleCopy}
+                onShare={handleShare}
+                onRegenerate={handleRegenerate}
+                onTryAgain={handleTryAgain}
+                onRatingChange={setUserRating}
+              />
 
               {/* Tips */}
               <div className="bg-card rounded-lg p-6 border shadow-sm">
@@ -236,10 +190,43 @@ export default function OopsPage() {
                   <li>• Be genuine and heartfelt</li>
                 </ul>
               </div>
+
+              {/* Buy Me a Coffee */}
+              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950 dark:to-orange-950 rounded-lg p-6 border border-yellow-200 dark:border-yellow-800">
+                <div className="text-center">
+                  <Coffee className="h-8 w-8 text-yellow-600 mx-auto mb-3" />
+                  <h3 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-2">
+                    Enjoying Oops & Ask?
+                  </h3>
+                  <p className="text-sm text-yellow-700 dark:text-yellow-300 mb-4">
+                    Support us with a coffee to keep the drama alive! ☕
+                  </p>
+                  <Button
+                    asChild
+                    className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white"
+                  >
+                    <a 
+                      href={process.env.NEXT_PUBLIC_BUYMEACOFFEE_URL || '#'} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                    >
+                      <Coffee className="mr-2 h-4 w-4" />
+                      Buy Me a Coffee
+                    </a>
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Donation Modal */}
+      <DonationModal
+        isOpen={showDonationModal}
+        onClose={handleDonationModalClose}
+        generationCount={generationCount}
+      />
     </div>
   )
 }
