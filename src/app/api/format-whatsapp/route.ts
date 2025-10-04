@@ -29,11 +29,18 @@ Generated text: "${generatedText}"
 Format it as:
 1. The original text
 2. A phrase meaning "In other words:" in ${language}
-3. The generated text (preserve any formatting like *bold*)
+3. The generated text (preserve ALL formatting including line breaks, paragraphs, *bold*, etc.)
 4. A phrase meaning "Want to answer in the same witty manner?" in ${language}
 5. The link: https://oopsnandask.vercel.app?lang=${language}
 
-Make sure all text is in ${language} and properly formatted for WhatsApp. Use line breaks appropriately.`
+IMPORTANT FORMATTING RULES:
+- Preserve ALL line breaks and paragraph breaks from the generated text
+- Keep *bold* formatting for WhatsApp
+- Use proper paragraph spacing
+- Make it visually appealing with good spacing
+- Ensure the message flows naturally
+
+Make sure all text is in ${language} and properly formatted for WhatsApp.`
 
     // Call OpenAI API
     const response = await fetch('https://api.openai.com/v1/chat/completions', {

@@ -131,12 +131,13 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
 
     // Fallback to simple formatting if API fails
     const formattedGeneratedText = generatedText
+      .replace(/\n\n/g, '\n\n') // Preserve paragraph breaks
       .replace(/\n/g, '\n') // Preserve line breaks
       .replace(/\*\*(.*?)\*\*/g, '*$1*') // Convert **bold** to *bold* for WhatsApp
       .replace(/\*(.*?)\*/g, '*$1*') // Ensure single asterisks work
       .trim()
     
-    return `${originalText}\n\n${formattedGeneratedText}\n\nWant to answer in the same witty manner?\nhttps://oopsnandask.vercel.app?lang=${currentLanguage.code}`
+    return `${originalText}\n\nIn other words:\n\n${formattedGeneratedText}\n\nWant to answer in the same witty manner?\nhttps://oopsnandask.vercel.app?lang=${currentLanguage.code}`
   }
 
   const handleWhatsAppShare = async () => {

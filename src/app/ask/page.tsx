@@ -9,7 +9,7 @@ import { DonationModal } from '@/components/shared/DonationModal'
 import Link from 'next/link'
 
 export default function AskPage() {
-  const { t } = useTranslation()
+  const { t, isLoading: isTranslating } = useTranslation()
   const [attorneyMode, setAttorneyMode] = useState(false)
   const [currentExampleIndex, setCurrentExampleIndex] = useState(0)
   
@@ -76,6 +76,7 @@ export default function AskPage() {
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               {t('ask.title')}
+              {isTranslating && <span className="ml-2 text-sm text-gray-500">(Loading translations...)</span>}
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
               {t('ask.description')}
@@ -138,7 +139,7 @@ export default function AskPage() {
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                     {t('ui.generated_response')}
                   </h3>
-                  <div className="text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
+                  <div className="text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words overflow-wrap-anywhere max-w-full">
                     {generatedText}
                   </div>
                   <div className="flex gap-2 mt-4">

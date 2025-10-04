@@ -407,6 +407,12 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
     return result
   }, [translations, language, instanceId])
 
+  // Force re-render when translations change
+  const [, forceUpdate] = useState({})
+  useEffect(() => {
+    forceUpdate({})
+  }, [translations])
+
   const value: TranslationContextType = {
     language,
     setLanguage,
