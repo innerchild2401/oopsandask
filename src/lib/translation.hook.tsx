@@ -295,7 +295,8 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
   const getContextForKey = (key: TranslationKey): string => {
     // UI elements that should be professional
     if (key.startsWith('nav.') || key.startsWith('common.') || key.startsWith('modal.') || 
-        key.startsWith('footer.') || key.startsWith('language.')) {
+        key.startsWith('footer.') || key.startsWith('language.') || key.startsWith('home.') ||
+        key === 'oops.title' || key === 'oops.description' || key === 'ask.title' || key === 'ask.description') {
       return 'ui'
     }
     // Generated content that should be dramatic

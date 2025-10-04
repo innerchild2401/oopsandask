@@ -125,9 +125,10 @@ RESPOND ONLY WITH THE TRANSLATED TEXT, NO EXPLANATIONS OR META-COMMENTARY.`
   }
 
   private static getLanguageName(languageCode: string): string {
-    const languageNames: Record<string, string> = {
+    // Common language mappings for better GPT prompts
+    const commonNames: Record<string, string> = {
       'en': 'English',
-      'es': 'Spanish',
+      'es': 'Spanish', 
       'fr': 'French',
       'de': 'German',
       'it': 'Italian',
@@ -143,9 +144,56 @@ RESPOND ONLY WITH THE TRANSLATED TEXT, NO EXPLANATIONS OR META-COMMENTARY.`
       'da': 'Danish',
       'fi': 'Finnish',
       'pl': 'Polish',
-      'tr': 'Turkish'
+      'tr': 'Turkish',
+      'ro': 'Romanian',
+      'hi': 'Hindi',
+      'th': 'Thai',
+      'vi': 'Vietnamese',
+      'uk': 'Ukrainian',
+      'cs': 'Czech',
+      'hu': 'Hungarian',
+      'bg': 'Bulgarian',
+      'hr': 'Croatian',
+      'sk': 'Slovak',
+      'sl': 'Slovenian',
+      'et': 'Estonian',
+      'lv': 'Latvian',
+      'lt': 'Lithuanian',
+      'el': 'Greek',
+      'he': 'Hebrew',
+      'fa': 'Persian',
+      'ur': 'Urdu',
+      'bn': 'Bengali',
+      'ta': 'Tamil',
+      'te': 'Telugu',
+      'ml': 'Malayalam',
+      'kn': 'Kannada',
+      'gu': 'Gujarati',
+      'pa': 'Punjabi',
+      'or': 'Odia',
+      'as': 'Assamese',
+      'ne': 'Nepali',
+      'si': 'Sinhala',
+      'my': 'Burmese',
+      'km': 'Khmer',
+      'lo': 'Lao',
+      'ka': 'Georgian',
+      'am': 'Amharic',
+      'sw': 'Swahili',
+      'zu': 'Zulu',
+      'af': 'Afrikaans',
+      'is': 'Icelandic',
+      'mt': 'Maltese',
+      'cy': 'Welsh',
+      'ga': 'Irish',
+      'eu': 'Basque',
+      'ca': 'Catalan',
+      'gl': 'Galician'
     }
-    return languageNames[languageCode] || 'English'
+    
+    // Return the common name if available, otherwise return the capitalized language code
+    // GPT-4o-mini can handle any language code, so this fallback works for any language
+    return commonNames[languageCode] || languageCode.charAt(0).toUpperCase() + languageCode.slice(1)
   }
 
   // Batch translate multiple keys
