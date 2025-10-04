@@ -28,6 +28,8 @@ export default function AskPage() {
     setUserRating,
     generationCount,
     showDonationModal,
+    isDetecting,
+    isLoading,
     handleGenerate,
     handleCopy,
     handleShare,
@@ -185,7 +187,7 @@ export default function AskPage() {
             <div className="text-center">
               <Button 
                 onClick={handleGenerate}
-                disabled={!originalText.trim() || isGenerating}
+                disabled={!originalText.trim() || isGenerating || isDetecting || isLoading}
                 size="xl"
                 variant="gradient"
                 className={`w-full text-white hover:shadow-xl transition-all duration-300 hover:scale-105 ${
@@ -198,6 +200,11 @@ export default function AskPage() {
                   <>
                     <div className="mr-3 h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
                     {t('common.loading')}
+                  </>
+                ) : (isDetecting || isLoading) ? (
+                  <>
+                    <div className="mr-3 h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    Detecting language...
                   </>
                 ) : (
                   <>

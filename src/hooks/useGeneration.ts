@@ -10,7 +10,7 @@ interface UseGenerationOptions {
 }
 
 export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptions) {
-  const { currentLanguage } = useTranslation()
+  const { currentLanguage, isDetecting, isLoading } = useTranslation()
   const [originalText, setOriginalText] = useState('')
   const [recipientName, setRecipientName] = useState('')
   const [recipientRelationship, setRecipientRelationship] = useState('')
@@ -32,13 +32,22 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
 
   const handleGenerate = async () => {
     if (!originalText.trim()) return
+    
+    // Don't generate if language detection is still in progress
+    if (isDetecting || isLoading) {
+      console.log('⏳ Language detection in progress, waiting...', { isDetecting, isLoading })
+      return
+    }
 
     setIsGenerating(true)
     try {
       console.log('🌍 Language context:', {
         currentLanguage: currentLanguage,
         languageCode: currentLanguage.code,
-        originalText: originalText.trim()
+        originalText: originalText.trim(),
+        userAgent: navigator.userAgent,
+        browserLanguage: navigator.language,
+        languages: navigator.languages
       })
       
       const request: GenerateMessageRequest = {
@@ -50,6 +59,8 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
         sessionId: localStorage.getItem('oops-ask-session') || '',
       }
 
+      console.log('📤 Sending request to API:', request)
+      
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: {
@@ -63,6 +74,7 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
       }
 
       const data: GenerateMessageResponse = await response.json()
+      console.log('📥 Received response from API:', data)
       setGeneratedText(data.generatedText)
       
       // Update generation count
@@ -154,6 +166,8 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
     setUserRating,
     generationCount,
     showDonationModal,
+    isDetecting,
+    isLoading,
     
     // Actions
     handleGenerate,

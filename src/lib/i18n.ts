@@ -43,5 +43,10 @@ export function useTranslation() {
       flag: AVAILABLE_LANGUAGES.find(lang => lang.code === newTranslation.language)?.flag || '🇺🇸'
     },
     availableLanguages: AVAILABLE_LANGUAGES,
+    isDetecting: newTranslation.isDetecting,
+    isLoading: newTranslation.isLoading,
+    detectedLanguage: newTranslation.detectedLanguage,
+    showLanguageModal: newTranslation.showLanguageModal,
+    setShowLanguageModal: newTranslation.setShowLanguageModal,
   }
 }

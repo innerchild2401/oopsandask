@@ -50,7 +50,8 @@ export async function POST(request: NextRequest) {
       language: body.language,
       originalText: body.originalText.substring(0, 50) + '...',
       sessionId: sessionId.substring(0, 8) + '...',
-      promptLength: prompt.length
+      promptLength: prompt.length,
+      systemPrompt: getPromptTemplate(body.mode, body.language || 'en').substring(0, 100) + '...'
     })
 
     // Call OpenAI API
@@ -92,6 +93,12 @@ export async function POST(request: NextRequest) {
 
     const aiData = await aiResponse.json()
     let generatedText = aiData.choices[0]?.message?.content?.trim()
+
+    console.log('🤖 GPT-4o mini raw response:', {
+      rawContent: aiData.choices[0]?.message?.content,
+      generatedText: generatedText,
+      usage: aiData.usage
+    })
 
     if (!generatedText) {
       return NextResponse.json(
