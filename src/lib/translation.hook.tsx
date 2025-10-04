@@ -210,6 +210,7 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
 
       // First try to load from cache
       const cachedTranslations = await TranslationSupabase.getLanguageTranslations(lang)
+      console.log(`Cached translations for ${lang}:`, Object.keys(cachedTranslations).length, 'keys')
       
       if (Object.keys(cachedTranslations).length > 0) {
         console.log(`Using cached translations for ${lang}`)
@@ -263,6 +264,8 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
       }
 
       const data = await response.json()
+      console.log(`Generated translations for ${lang}:`, Object.keys(data.translations).length, 'keys')
+      console.log('Sample translations:', Object.entries(data.translations).slice(0, 3))
       setTranslations(data.translations)
     } catch (error) {
       console.error('Failed to generate translations:', error)
@@ -315,8 +318,18 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
 
   // Get translation with fallback
   const t = useCallback((key: TranslationKey, fallback?: string): string => {
-    return translations[key] || fallback || ENGLISH_TRANSLATIONS[key] || key
-  }, [translations])
+    const result = translations[key] || fallback || ENGLISH_TRANSLATIONS[key] || key
+    // Debug logging for Romanian
+    if (language === 'ro' && key.startsWith('nav.')) {
+      console.log(`Translation for ${key}:`, { 
+        fromCache: translations[key], 
+        fallback, 
+        english: ENGLISH_TRANSLATIONS[key], 
+        result 
+      })
+    }
+    return result
+  }, [translations, language])
 
   const value: TranslationContextType = {
     language,
@@ -342,5 +355,41 @@ export function useTranslation() {
   if (context === undefined) {
     throw new Error('useTranslation must be used within a TranslationProvider')
   }
-  return context
+  return {
+    ...context,
+    currentLanguage: {
+      code: context.language,
+      name: LanguageDetectionService.getLanguageDisplayName(context.language),
+      nativeName: LanguageDetectionService.getLanguageDisplayName(context.language),
+      flag: LanguageDetectionService.getLanguageFlag(context.language)
+    },
+    availableLanguages: [ // Dynamically generate available languages based on common ones + detected
+      { code: 'en', name: 'English', nativeName: 'English', flag: '🇺🇸' },
+      { code: 'es', name: 'Spanish', nativeName: 'Español', flag: '🇪🇸' },
+      { code: 'fr', name: 'French', nativeName: 'Français', flag: '🇫🇷' },
+      { code: 'de', name: 'German', nativeName: 'Deutsch', flag: '🇩🇪' },
+      { code: 'it', name: 'Italian', nativeName: 'Italiano', flag: '🇮🇹' },
+      { code: 'pt', name: 'Portuguese', nativeName: 'Português', flag: '🇵🇹' },
+      { code: 'ru', name: 'Russian', nativeName: 'Русский', flag: '🇷🇺' },
+      { code: 'ja', name: 'Japanese', nativeName: '日本語', flag: '🇯🇵' },
+      { code: 'ko', name: 'Korean', nativeName: '한국어', flag: '🇰🇷' },
+      { code: 'zh', name: 'Chinese', nativeName: '中文', flag: '🇨🇳' },
+      { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🇸🇦' },
+      { code: 'nl', name: 'Dutch', nativeName: 'Nederlands', flag: '🇳🇱' },
+      { code: 'sv', name: 'Swedish', nativeName: 'Svenska', flag: '🇸🇪' },
+      { code: 'no', name: 'Norwegian', nativeName: 'Norsk', flag: '🇳🇴' },
+      { code: 'da', name: 'Danish', nativeName: 'Dansk', flag: '🇩🇰' },
+      { code: 'fi', name: 'Finnish', nativeName: 'Suomi', flag: '🇫🇮' },
+      { code: 'pl', name: 'Polish', nativeName: 'Polski', flag: '🇵🇱' },
+      { code: 'tr', name: 'Turkish', nativeName: 'Türkçe', flag: '🇹🇷' },
+      { code: 'ro', name: 'Romanian', nativeName: 'Română', flag: '🇷🇴' },
+      // Add detected language if not in the list
+      ...(context.detectedLanguage && !['en', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'ja', 'ko', 'zh', 'ar', 'nl', 'sv', 'no', 'da', 'fi', 'pl', 'tr', 'ro'].includes(context.detectedLanguage) ? [{
+        code: context.detectedLanguage,
+        name: LanguageDetectionService.getLanguageDisplayName(context.detectedLanguage),
+        nativeName: LanguageDetectionService.getLanguageDisplayName(context.detectedLanguage),
+        flag: LanguageDetectionService.getLanguageFlag(context.detectedLanguage)
+      }] : [])
+    ]
+  }
 }
