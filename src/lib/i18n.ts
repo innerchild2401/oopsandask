@@ -26,6 +26,7 @@ export const AVAILABLE_LANGUAGES: LanguageOption[] = [
   { code: 'fi', name: 'Finnish', nativeName: 'Suomi', flag: '🇫🇮' },
   { code: 'pl', name: 'Polish', nativeName: 'Polski', flag: '🇵🇱' },
   { code: 'tr', name: 'Turkish', nativeName: 'Türkçe', flag: '🇹🇷' },
+  { code: 'ro', name: 'Romanian', nativeName: 'Română', flag: '🇷🇴' },
 ]
 
 // Legacy hook that redirects to new translation system

@@ -9,31 +9,12 @@ export class LanguageDetectionService {
   static detectBrowserLanguage(): string {
     if (typeof window === 'undefined') return 'en'
 
-    const supportedLanguages = [
-      'en', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'ja', 'ko', 'zh', 
-      'ar', 'nl', 'sv', 'no', 'da', 'fi', 'pl', 'tr'
-    ]
-
-    // Get browser language
+    // Get browser language - GPT can handle any language
     const browserLang = navigator.language || (navigator as { userLanguage?: string }).userLanguage || 'en'
     const primaryLang = browserLang.split('-')[0].toLowerCase()
 
-    // Check if primary language is supported
-    if (supportedLanguages.includes(primaryLang)) {
-      return primaryLang
-    }
-
-    // Check navigator.languages array
-    if (navigator.languages) {
-      for (const lang of navigator.languages) {
-        const langCode = lang.split('-')[0].toLowerCase()
-        if (supportedLanguages.includes(langCode)) {
-          return langCode
-        }
-      }
-    }
-
-    return 'en' // Fallback to English
+    // Return the detected language - GPT will handle it
+    return primaryLang
   }
 
   // Detect language from IP geolocation (using a free service)
@@ -52,8 +33,10 @@ export class LanguageDetectionService {
 
       const data = await response.json()
       const countryCode = data.country_code?.toLowerCase()
+      
+      console.log('IP detection data:', { countryCode, country: data.country_name })
 
-      // Map country codes to language codes
+      // Map country codes to language codes - basic mapping, GPT will handle cultural adaptation
       const countryToLanguage: Record<string, string> = {
         'us': 'en', 'gb': 'en', 'au': 'en', 'ca': 'en', 'nz': 'en', 'ie': 'en',
         'es': 'es', 'mx': 'es', 'ar': 'es', 'co': 'es', 'pe': 'es', 've': 'es',
@@ -72,9 +55,11 @@ export class LanguageDetectionService {
         'dk': 'da',
         'fi': 'fi',
         'pl': 'pl',
-        'tr': 'tr'
+        'tr': 'tr',
+        'ro': 'ro'
       }
 
+      // Return detected language or fallback to English
       return countryToLanguage[countryCode] || 'en'
     } catch {
       console.warn('IP language detection failed')
@@ -134,7 +119,8 @@ export class LanguageDetectionService {
       'da': 'Dansk',
       'fi': 'Suomi',
       'pl': 'Polski',
-      'tr': 'Türkçe'
+      'tr': 'Türkçe',
+      'ro': 'Română'
     }
     return languageNames[languageCode] || 'English'
   }
@@ -159,7 +145,8 @@ export class LanguageDetectionService {
       'da': '🇩🇰',
       'fi': '🇫🇮',
       'pl': '🇵🇱',
-      'tr': '🇹🇷'
+      'tr': '🇹🇷',
+      'ro': '🇷🇴'
     }
     return flags[languageCode] || '🇺🇸'
   }
