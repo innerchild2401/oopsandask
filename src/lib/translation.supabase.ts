@@ -111,17 +111,26 @@ export class TranslationSupabase {
   // Get language ID from language code, create if doesn't exist
   static async getLanguageId(languageCode: string): Promise<string> {
     try {
+      console.log(`Looking up language ID for code: ${languageCode}`)
+      
       // First try to find existing language
-      const { data: existing } = await supabase
+      const { data: existing, error: lookupError } = await supabase
         .from('languages')
         .select('id')
         .eq('code', languageCode)
         .single()
       
+      if (lookupError) {
+        console.log(`Language lookup error for ${languageCode}:`, lookupError)
+      }
+      
       if (existing?.id) {
+        console.log(`Found existing language ID for ${languageCode}: ${existing.id}`)
         return existing.id
       }
 
+      console.log(`Creating new language entry for ${languageCode}`)
+      
       // If not found, create a new language entry
       const { data: newLang, error: createError } = await supabase
         .from('languages')
@@ -129,7 +138,7 @@ export class TranslationSupabase {
           code: languageCode,
           name: this.getLanguageName(languageCode),
           native_name: this.getLanguageName(languageCode),
-          flag: this.getLanguageFlag(languageCode),
+          country_codes: [], // Add required field
           is_active: true
         })
         .select('id')
@@ -137,13 +146,52 @@ export class TranslationSupabase {
 
       if (createError) {
         console.warn('Failed to create language:', createError)
-        return 'en' // Fallback to English
+        return await this.getEnglishLanguageId() // Fallback to English
       }
 
-      return newLang?.id || 'en'
+      console.log(`Created new language ID for ${languageCode}: ${newLang?.id}`)
+      return newLang?.id || await this.getEnglishLanguageId()
     } catch (error) {
       console.warn('Language ID lookup failed:', error)
-      return 'en'
+      return await this.getEnglishLanguageId()
+    }
+  }
+
+  // Helper to get English language ID as fallback
+  private static async getEnglishLanguageId(): Promise<string> {
+    try {
+      const { data } = await supabase
+        .from('languages')
+        .select('id')
+        .eq('code', 'en')
+        .single()
+      
+      if (data?.id) {
+        return data.id
+      }
+      
+      // If English doesn't exist, create it
+      const { data: newEn, error } = await supabase
+        .from('languages')
+        .insert({
+          code: 'en',
+          name: 'English',
+          native_name: 'English',
+          country_codes: ['US', 'GB', 'AU', 'CA', 'NZ', 'IE'],
+          is_active: true
+        })
+        .select('id')
+        .single()
+      
+      if (error) {
+        console.error('Failed to create English language:', error)
+        return '00000000-0000-0000-0000-000000000000' // Fallback UUID
+      }
+      
+      return newEn?.id || '00000000-0000-0000-0000-000000000000'
+    } catch (error) {
+      console.error('Failed to get English language ID:', error)
+      return '00000000-0000-0000-0000-000000000000'
     }
   }
 
@@ -168,12 +216,14 @@ export class TranslationSupabase {
   // Save language preference for session
   static async saveLanguagePreference(
     sessionId: string, 
-    language: string
+    languageCode: string
   ): Promise<boolean> {
     try {
+      const languageId = await this.getLanguageId(languageCode)
+      
       const { error } = await supabase
         .from('user_sessions')
-        .update({ preferred_language_id: language })
+        .update({ preferred_language_id: languageId })
         .eq('session_token', sessionId)
 
       if (error) {

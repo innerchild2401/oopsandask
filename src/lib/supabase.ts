@@ -58,10 +58,22 @@ export const supabaseHelpers = {
 
   // Get localized strings for a language
   async getLocalizedStrings(languageCode: string): Promise<Record<string, string>> {
+    // First get the language ID
+    const { data: languageData } = await supabase
+      .from('languages')
+      .select('id')
+      .eq('code', languageCode)
+      .single()
+
+    if (!languageData?.id) {
+      console.warn(`Language not found: ${languageCode}`)
+      return {}
+    }
+
     const { data, error } = await supabase
       .from('localized_strings')
       .select('key, value')
-      .eq('language_id', languageCode)
+      .eq('language_id', languageData.id)
 
     if (error) throw error
 

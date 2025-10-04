@@ -198,16 +198,46 @@ async function checkCachedResponse(cacheKey: string, language: string) {
 async function getLanguageId(languageCode: string): Promise<string> {
   try {
     const { supabase } = await import('@/lib/supabase')
-    const { data } = await supabase
+    
+    // First try to find existing language
+    const { data: existing } = await supabase
       .from('languages')
       .select('id')
       .eq('code', languageCode)
       .single()
     
-    return data?.id || 'en' // Fallback to English
+    if (existing?.id) {
+      return existing.id
+    }
+
+    // If not found, create a new language entry
+    const { data: newLang, error: createError } = await supabase
+      .from('languages')
+      .insert({
+        code: languageCode,
+        name: languageCode.charAt(0).toUpperCase() + languageCode.slice(1),
+        native_name: languageCode.charAt(0).toUpperCase() + languageCode.slice(1),
+        country_codes: [],
+        is_active: true
+      })
+      .select('id')
+      .single()
+
+    if (createError) {
+      console.warn('Failed to create language:', createError)
+      // Try to get English as fallback
+      const { data: enData } = await supabase
+        .from('languages')
+        .select('id')
+        .eq('code', 'en')
+        .single()
+      return enData?.id || '00000000-0000-0000-0000-000000000000'
+    }
+
+    return newLang?.id || '00000000-0000-0000-0000-000000000000'
   } catch (error) {
     console.warn('Language ID lookup failed:', error)
-    return 'en'
+    return '00000000-0000-0000-0000-000000000000'
   }
 }
 
