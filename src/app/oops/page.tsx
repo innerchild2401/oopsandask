@@ -84,7 +84,7 @@ export default function OopsPage() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Who are you apologizing to? (Optional)
+                    {t('common.who_are_you_apologizing_to')}
                   </label>
                   <input
                     type="text"
@@ -97,15 +97,15 @@ export default function OopsPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Relationship (Optional)
+                    {t('common.recipient_relationship')} (Optional)
                   </label>
                   <select
                     value={recipientRelationship}
                     onChange={(e) => setRecipientRelationship(e.target.value)}
-                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300 text-gray-900 dark:text-gray-100"
                     disabled={isGenerating}
                   >
-                    <option value="">Select relationship...</option>
+                    <option value="">{t('common.relationship_placeholder')}</option>
                     <option value="friend">Friend</option>
                     <option value="family">Family Member</option>
                     <option value="partner">Partner/Spouse</option>
@@ -120,7 +120,7 @@ export default function OopsPage() {
               {/* Main Text Input */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  What happened? *
+                  {t('common.what_happened')} *
                 </label>
                 <textarea
                   value={originalText}

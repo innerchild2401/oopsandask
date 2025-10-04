@@ -50,6 +50,13 @@ const culturalReferences: Record<string, CulturalReferences> = {
     culturalLocation: "la Corte Reale del Pentimento",
     dramaticStyle: "melodramma italiano"
   },
+  ro: {
+    etiquetteManual: "Manualul Complet de Grație Socială Românească (1847)",
+    legalCode: "Codul Relațiilor Interpersonale din 1892",
+    historicalFigure: "Domnul Reginald Apologeticul",
+    culturalLocation: "Curtea Regală a Contriciunii",
+    dramaticStyle: "dramă românească"
+  },
   pt: {
     etiquetteManual: "O Guia Completo das Graças Sociais Lisboetas (1847)",
     legalCode: "O Código das Relações Interpessoais de 1892",
@@ -150,27 +157,8 @@ function getCulturalReferences(language: string): CulturalReferences {
 
 // Get language name for display
 function getLanguageName(language: string): string {
-  const languageNames: Record<string, string> = {
-    en: 'English',
-    es: 'Spanish',
-    fr: 'French',
-    de: 'German',
-    it: 'Italian',
-    pt: 'Portuguese',
-    ru: 'Russian',
-    ja: 'Japanese',
-    ko: 'Korean',
-    zh: 'Chinese',
-    ar: 'Arabic',
-    nl: 'Dutch',
-    sv: 'Swedish',
-    no: 'Norwegian',
-    da: 'Danish',
-    fi: 'Finnish',
-    pl: 'Polish',
-    tr: 'Turkish'
-  }
-  return languageNames[language] || 'English'
+  // Let GPT handle any language - just return the language code for prompting
+  return language
 }
 
 export function getPromptTemplate(type: PromptType, language: string = 'en'): string {
@@ -179,17 +167,17 @@ export function getPromptTemplate(type: PromptType, language: string = 'en'): st
   
   switch (type) {
     case 'oops':
-      return getOopsPrompt(culture, languageName)
+      return getOopsPrompt(culture, languageName, language)
     case 'ask':
-      return getAskPrompt(culture, languageName)
+      return getAskPrompt(culture, languageName, language)
     case 'ask_attorney':
-      return getAttorneyPrompt(culture, languageName)
+      return getAttorneyPrompt(culture, languageName, language)
     default:
-      return getOopsPrompt(culture, languageName)
+      return getOopsPrompt(culture, languageName, language)
   }
 }
 
-function getOopsPrompt(culture: CulturalReferences, languageName: string): string {
+function getOopsPrompt(culture: CulturalReferences, languageName: string, language: string): string {
   return `You are Baron von Regret, Knight of the Sorry Order, a theatrical master of apologies who has spent centuries perfecting the art of dramatic contrition. You are the author of "${culture.etiquetteManual}" and a distinguished member of ${culture.culturalLocation}.
 
 Your apologies are legendary throughout the realm, known for their:
@@ -209,10 +197,10 @@ When crafting apologies, you must:
 
 Your tone should be hilariously over-the-top while still maintaining a sense of genuine remorse. Think of yourself as a cross between a Shakespearean actor and a medieval court jester who specializes in social disasters.
 
-Always respond in ${languageName} with the dramatic flair of someone who has just discovered they've accidentally insulted the Queen at a royal banquet.`
+CRITICAL: You must respond entirely in ${language} language. Do not use any English words or phrases. Write your entire response in ${language} with the dramatic flair of someone who has just discovered they've accidentally insulted the Queen at a royal banquet.`
 }
 
-function getAskPrompt(culture: CulturalReferences, languageName: string): string {
+function getAskPrompt(culture: CulturalReferences, languageName: string, language: string): string {
   return `You are Madame Desirescu, Countess of Requests, a masterful persuader who has spent her life perfecting the art of elegant requests. You are the author of "${culture.etiquetteManual}" and a distinguished member of ${culture.culturalLocation}.
 
 Your requests are legendary throughout the realm, known for their:
@@ -232,10 +220,10 @@ When crafting requests, you must:
 
 Your tone should be passionately persuasive while maintaining elegance and grace. Think of yourself as a cross between a romantic novelist and a diplomatic envoy who specializes in impossible requests.
 
-Always respond in ${languageName} with the dramatic flair of someone who is about to embark on a noble quest to save the kingdom.`
+CRITICAL: You must respond entirely in ${language} language. Do not use any English words or phrases. Write your entire response in ${language} with the dramatic flair of someone who is about to embark on a noble quest to save the kingdom.`
 }
 
-function getAttorneyPrompt(culture: CulturalReferences, languageName: string): string {
+function getAttorneyPrompt(culture: CulturalReferences, languageName: string, language: string): string {
   return `You are Dr. Legalachev, Esq., Attorney of Eternal Excuses, a theatrical legal master who has spent centuries perfecting the art of absurd legal arguments. You are the author of "${culture.legalCode}" and a distinguished member of ${culture.culturalLocation}.
 
 Your legal arguments are legendary throughout the realm, known for their:
@@ -255,5 +243,5 @@ When crafting legal arguments, you must:
 
 Your tone should be hilariously over-the-top while maintaining the gravitas of a courtroom drama. Think of yourself as a cross between a Shakespearean actor and a lawyer who specializes in completely fabricated legal arguments.
 
-Always respond in ${languageName} with the dramatic flair of someone who is about to present the most important case in the history of the legal system.`
+CRITICAL: You must respond entirely in ${language} language. Do not use any English words or phrases. Write your entire response in ${language} with the dramatic flair of someone who is about to present the most important case in the history of the legal system.`
 }

@@ -116,47 +116,103 @@ export default function AskPage() {
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-8">
-            {/* Input Section */}
-            <div className="space-y-6">
-              <div className="bg-card rounded-lg p-6 border shadow-sm">
-                <h2 className="text-xl font-semibold mb-4 flex items-center">
-                  <Heart className="mr-2 h-5 w-5 text-blue-500" />
-                  {t('ask.input_placeholder')}
-                </h2>
-                
+          {/* Main Input Section - Prominent and Clear */}
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-xl border border-blue-200 dark:border-blue-800 mb-8">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold mb-4 text-blue-600 flex items-center justify-center">
+                <Heart className="mr-3 h-8 w-8" />
+                {t('common.original_text')}
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                Tell us what you want to ask for, and we&apos;ll make it persuasive!
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              {/* Recipient Information */}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('common.who_are_you_asking')}
+                  </label>
+                  <input
+                    type="text"
+                    value={recipientName}
+                    onChange={(e) => setRecipientName(e.target.value)}
+                    placeholder="e.g., Sarah, Mom, Boss"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                    disabled={isGenerating}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('common.recipient_relationship')} (Optional)
+                  </label>
+                  <select
+                    value={recipientRelationship}
+                    onChange={(e) => setRecipientRelationship(e.target.value)}
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-gray-900 dark:text-gray-100"
+                    disabled={isGenerating}
+                  >
+                    <option value="">{t('common.relationship_placeholder')}</option>
+                    <option value="friend">Friend</option>
+                    <option value="family">Family Member</option>
+                    <option value="partner">Partner/Spouse</option>
+                    <option value="colleague">Colleague</option>
+                    <option value="boss">Boss/Supervisor</option>
+                    <option value="acquaintance">Acquaintance</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Main Text Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {t('common.what_do_you_want')} *
+                </label>
                 <textarea
                   value={originalText}
                   onChange={(e) => setOriginalText(e.target.value)}
                   placeholder={t('ask.input_placeholder')}
-                  className="w-full min-h-[200px] p-4 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                  className="w-full min-h-[200px] p-4 border border-gray-300 dark:border-gray-600 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                   disabled={isGenerating}
                 />
-                
-                <div className="mt-4">
-                  <Button 
-                    onClick={handleGenerate}
-                    disabled={!originalText.trim() || isGenerating}
-                    className={`w-full text-white hover:shadow-lg transition-all duration-300 hover:scale-105 ${
-                      attorneyMode 
-                        ? 'bg-gradient-to-r from-purple-500 to-indigo-600' 
-                        : 'bg-gradient-to-r from-blue-500 to-purple-600'
-                    }`}
-                  >
-                    {isGenerating ? (
-                      <>
-                        <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                        {t('common.loading')}
-                      </>
-                    ) : (
-                      <>
-                        {t('ask.generate_button')}
-                        <Heart className="ml-2 h-4 w-4" />
-                      </>
-                    )}
-                  </Button>
-                </div>
               </div>
+            </div>
+            
+            {/* Generate Button */}
+            <div className="text-center">
+              <Button 
+                onClick={handleGenerate}
+                disabled={!originalText.trim() || isGenerating}
+                size="xl"
+                variant="gradient"
+                className={`w-full text-white hover:shadow-xl transition-all duration-300 hover:scale-105 ${
+                  attorneyMode 
+                    ? 'bg-gradient-to-r from-purple-500 to-indigo-600' 
+                    : 'bg-gradient-to-r from-blue-500 to-purple-600'
+                }`}
+              >
+                {isGenerating ? (
+                  <>
+                    <div className="mr-3 h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    {t('common.loading')}
+                  </>
+                ) : (
+                  <>
+                    {t('ask.generate_button')}
+                    <Heart className="ml-3 h-5 w-5" />
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+
+          {/* Two Column Layout for Output and Examples */}
+          <div className="grid lg:grid-cols-2 gap-8">
+            {/* Left Column - Output */}
+            <div className="space-y-6">
 
                      {/* Example Requests */}
                      <div className="bg-card rounded-lg p-6 border shadow-sm">

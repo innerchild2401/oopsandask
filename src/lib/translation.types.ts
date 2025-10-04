@@ -76,6 +76,14 @@ export type TranslationKey =
   | 'common.mode_oops'
   | 'common.mode_ask'
   | 'common.mode_attorney'
+  | 'common.recipient_name'
+  | 'common.recipient_relationship'
+  | 'common.who_are_you_apologizing_to'
+  | 'common.who_are_you_asking'
+  | 'common.relationship_placeholder'
+  | 'common.what_happened'
+  | 'common.what_do_you_want'
+  | 'common.regenerate'
   
   // Oops page
   | 'oops.title'

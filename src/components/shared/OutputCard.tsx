@@ -143,15 +143,17 @@ export function OutputCard({
           onClick={onRegenerate} 
           variant="outline"
           disabled={isGenerating}
+          className="bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700"
         >
           <RefreshCw className={`mr-2 h-4 w-4 ${isGenerating ? 'animate-spin' : ''}`} />
-          Regenerate
+          {t('common.regenerate')}
         </Button>
         
         <Button 
           onClick={onTryAgain} 
           variant="outline"
           disabled={isGenerating}
+          className="bg-gray-50 hover:bg-gray-100 border-gray-200 text-gray-700"
         >
           <RefreshCw className="mr-2 h-4 w-4" />
           {t('common.try_again')}
