@@ -237,9 +237,8 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
       )
 
       // Save to cache
-      const languageId = await TranslationSupabase.getLanguageId(lang)
       for (const [key, value] of Object.entries(generatedTranslations)) {
-        await TranslationSupabase.saveTranslation(key, languageId, value)
+        await TranslationSupabase.saveTranslation(key, lang, value)
       }
 
       setTranslations(generatedTranslations)
@@ -273,8 +272,7 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
     // Save to Supabase if we have a session
     const sessionId = localStorage.getItem('oops-ask-session')
     if (sessionId) {
-      const languageId = await TranslationSupabase.getLanguageId(newLanguage)
-      await TranslationSupabase.saveLanguagePreference(sessionId, languageId)
+      await TranslationSupabase.saveLanguagePreference(sessionId, newLanguage)
     }
     
     await loadTranslations(newLanguage)
