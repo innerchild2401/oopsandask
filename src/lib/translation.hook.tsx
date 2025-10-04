@@ -237,6 +237,12 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
       return
     }
 
+    // Prevent multiple simultaneous calls for the same language
+    if (isLoading) {
+      console.log(`Already loading translations for ${lang}, skipping duplicate call`)
+      return
+    }
+
     try {
       // Get all English translations that need to be translated
       const translationKeys = Object.keys(ENGLISH_TRANSLATIONS) as TranslationKey[]
@@ -248,6 +254,7 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
       }))
 
       // Call server-side API to generate translations
+      console.log(`Calling /api/translate for ${lang} with ${translationsToGenerate.length} keys`)
       const response = await fetch('/api/translate', {
         method: 'POST',
         headers: {
@@ -259,14 +266,19 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
         })
       })
 
+      console.log(`API response status: ${response.status}`)
       if (!response.ok) {
+        const errorText = await response.text()
+        console.error('API error response:', errorText)
         throw new Error('Failed to generate translations')
       }
 
       const data = await response.json()
       console.log(`Generated translations for ${lang}:`, Object.keys(data.translations).length, 'keys')
       console.log('Sample translations:', Object.entries(data.translations).slice(0, 3))
+      console.log('Setting translations in state...')
       setTranslations(data.translations)
+      console.log('Translations set in state')
     } catch (error) {
       console.error('Failed to generate translations:', error)
       setTranslations(ENGLISH_TRANSLATIONS)
