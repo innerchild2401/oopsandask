@@ -112,6 +112,9 @@ export interface GenerateMessageRequest {
   userId?: string
   sessionId?: string
   language?: string
+  replyMode?: boolean
+  replyContext?: string
+  replyVoice?: 'dramatic' | 'legal'
 }
 
 export interface GenerateMessageResponse {

@@ -116,6 +116,18 @@ export type TranslationKey =
   | 'ui.generate_apology'
   | 'ui.back_to_home'
   | 'ui.choose_mode_to_start'
+  // Reply mode translations
+  | 'reply.title'
+  | 'reply.description'
+  | 'reply.replying_to'
+  | 'reply.choose_voice'
+  | 'reply.dramatic_voice'
+  | 'reply.dramatic_description'
+  | 'reply.legal_voice'
+  | 'reply.legal_description'
+  | 'reply.your_response'
+  | 'reply.type_your_response'
+  | 'reply.generate_response'
   
   // Oops page
   | 'oops.title'

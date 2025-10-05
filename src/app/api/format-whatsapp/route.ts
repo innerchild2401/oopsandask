@@ -35,8 +35,8 @@ Create a natural, flowing WhatsApp message with this structure:
 - Start with the original text
 - Add a natural phrase meaning "In other words:" in ${language}
 - Include the generated text (preserve ALL formatting including line breaks, paragraphs, *bold*, etc.)
-- End with a friendly phrase meaning "Want to answer in the same witty manner?" in ${language}
-- Add the link: ${baseUrl}?lang=${language}
+- End with a playful phrase meaning "Oooh, the little devil! Reply to him in this same manner using the link below." in ${language}
+- Add the link: ${baseUrl}/reply?lang=${language}&context=${encodeURIComponent(generatedText)}&message=${encodeURIComponent(originalText)}&voice=dramatic
 
 CRITICAL FORMATTING RULES:
 - NO numbered lists or bullet points - make it flow naturally like a conversation

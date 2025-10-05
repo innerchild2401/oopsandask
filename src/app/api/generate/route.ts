@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     // No caching for generated outputs - always generate fresh content
 
     // Prepare AI prompt based on mode and language
-    const prompt = generatePrompt(body.mode, body.originalText, body.recipientName, body.recipientRelationship, body.language)
+    const prompt = generatePrompt(body.mode, body.originalText, body.recipientName, body.recipientRelationship, body.language, body.replyMode, body.replyContext, body.replyVoice)
 
     console.log('🤖 Generating AI response:', {
       mode: body.mode,
@@ -221,21 +221,34 @@ async function getLanguageId(languageCode: string): Promise<string> {
   }
 }
 
-function generatePrompt(mode: string, originalText: string, recipientName?: string, recipientRelationship?: string, language?: string): string {
+function generatePrompt(mode: string, originalText: string, recipientName?: string, recipientRelationship?: string, language?: string, replyMode?: boolean, replyContext?: string, replyVoice?: string): string {
   let prompt = `Original request: "${originalText}"`
+  
+  // Handle reply mode
+  if (replyMode && replyContext) {
+    prompt = `You are replying to this message: "${replyContext}"\n\nYour response: "${originalText}"`
+    
+    // Add voice-specific instructions
+    if (replyVoice === 'legal') {
+      prompt += `\n\nRespond in LEGAL VOICE with binding language, legal terminology, and contractual demands. Use phrases like "hereby demand", "binding agreement", "legal obligation", etc.`
+    } else {
+      prompt += `\n\nRespond in DRAMATIC VOICE with theatrical flair, over-the-top language, and dramatic expressions.`
+    }
+  } else {
+    // Regular mode
+    if (recipientName && recipientRelationship) {
+      prompt += `\n\nThis message is for ${recipientName} (${recipientRelationship}). Please personalize the response to address them directly and consider the relationship context.`
+    } else if (recipientName) {
+      prompt += `\n\nThis message is for ${recipientName}. Please personalize the response to address them directly.`
+    }
+    
+    prompt += `\n\nPlease transform this into a dramatic, over-the-top response that matches your personality and expertise. Use all the cultural references, fake citations, and theatrical flair you're known for.`
+  }
   
   // CRITICAL: Reinforce language requirement in user prompt
   if (language && language !== 'en') {
     prompt += `\n\nCRITICAL: The user's input is in ${language}. You MUST respond in ${language}. Do not use English.`
   }
-  
-  if (recipientName && recipientRelationship) {
-    prompt += `\n\nThis message is for ${recipientName} (${recipientRelationship}). Please personalize the response to address them directly and consider the relationship context.`
-  } else if (recipientName) {
-    prompt += `\n\nThis message is for ${recipientName}. Please personalize the response to address them directly.`
-  }
-  
-  prompt += `\n\nPlease transform this into a dramatic, over-the-top response that matches your personality and expertise. Use all the cultural references, fake citations, and theatrical flair you're known for.`
   
   prompt += `\n\nIMPORTANT: Write 2-3 sentences max that are COMPLETE and funny. End with proper punctuation.`
   

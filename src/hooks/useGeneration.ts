@@ -7,9 +7,12 @@ import { GenerateMessageRequest, GenerateMessageResponse } from '@/lib/types'
 interface UseGenerationOptions {
   mode: 'oops' | 'ask' | 'ask_attorney'
   onGenerationComplete?: (count: number) => void
+  replyMode?: boolean
+  replyContext?: string
+  replyVoice?: 'dramatic' | 'legal'
 }
 
-export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptions) {
+export function useGeneration({ mode, onGenerationComplete, replyMode, replyContext, replyVoice }: UseGenerationOptions) {
   const { currentLanguage, isDetecting, isLoading } = useTranslation()
   const [originalText, setOriginalText] = useState('')
   const [recipientName, setRecipientName] = useState('')
@@ -50,6 +53,9 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
         recipientRelationship: recipientRelationship.trim(),
         language: currentLanguage.code,
         sessionId: localStorage.getItem('oops-ask-session') || '',
+        replyMode: replyMode || false,
+        replyContext: replyContext || '',
+        replyVoice: replyVoice || 'dramatic'
       }
 
       // Sending request to API
@@ -144,7 +150,7 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
     // Get current domain dynamically
     const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://oopsnandask.vercel.app'
     
-    return `${originalText}\n\nIn other words:\n\n${formattedGeneratedText}\n\nWant to answer in the same witty manner? 😄\n${currentDomain}?lang=${currentLanguage.code}`
+    return `${originalText}\n\nIn other words:\n\n${formattedGeneratedText}\n\nOooh, the little devil! Reply to him in this same manner using the link below. 😈\n${currentDomain}/reply?lang=${currentLanguage.code}&context=${encodeURIComponent(generatedText)}&message=${encodeURIComponent(originalText)}&voice=dramatic`
   }
 
   const handleWhatsAppShare = async () => {
@@ -227,6 +233,7 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
     setUserRating,
     generationCount,
     showDonationModal,
+    setShowDonationModal,
     isDetecting,
     isLoading,
     
