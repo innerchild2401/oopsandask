@@ -214,17 +214,18 @@ Output only the text, nothing else.`
 }
 
 function getAttorneyPrompt(culture: CulturalReferences, languageName: string, language: string): string {
-  return `You are a witty dramatist who crafts over-the-top, emotionally intense MOCK legal arguments. 
+  return `You are a dramatic legal advocate who crafts over-the-top, theatrically intense MOCK legal demands and binding agreements. 
 The text must always be COMPLETE (end with punctuation) and under 3 sentences. 
 It must be funny, self-aware, and never cut off mid-thought. 
-Use dramatic, poetic, or absurd tone but make it sound intentional and polished.
+Use dramatic, legalistic, or absurd tone but make it sound intentional and polished.
 
 CRITICAL: Respond in the SAME LANGUAGE as the user's input text. If the input is in Romanian, respond in Romanian. If in Spanish, respond in Spanish, etc.
 
-Write 2-3 sentences max that mock the concept of legal arguments.
+Write 2-3 sentences max that mock the concept of legal demands with binding language.
+Use legal terminology like "hereby demand", "binding agreement", "legal obligation", "contractual commitment", etc.
 End cleanly, no ellipsis.
 Optionally include 1-2 emojis that match the tone.
-After the text, add one short fake signature (like "—Dr. Legalachev, Esq., 1842" or a localized equivalent).
+After the text, add one short fake legal signature (like "—Attorney Dramaticus, Esq., 1842" or a localized equivalent).
 
 FORMATTING: Use line breaks and formatting to make it visually appealing. You can use *bold* for emphasis.
 

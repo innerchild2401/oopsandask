@@ -17,7 +17,7 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
   const [generatedText, setGeneratedText] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
-  const [isShared] = useState(false)
+  const [isShared, setIsShared] = useState(false)
   const [userRating, setUserRating] = useState<number | null>(null)
   const [generationCount, setGenerationCount] = useState(0)
   const [showDonationModal, setShowDonationModal] = useState(false)
@@ -165,16 +165,33 @@ export function useGeneration({ mode, onGenerationComplete }: UseGenerationOptio
         url: urlWithLanguage,
       }
       
+      // Use native share if available (Android/iOS Safari)
       if (navigator.share) {
         await navigator.share(shareData)
-      } else {
-        // Fallback to WhatsApp
-        handleWhatsAppShare()
+        setIsShared(true)
+        setTimeout(() => setIsShared(false), 2000)
+        return
       }
+      
+      // Fallback for desktop: copy to clipboard
+      await navigator.clipboard.writeText(`${formattedMessage}\n\n${urlWithLanguage}`)
+      setIsShared(true)
+      setTimeout(() => setIsShared(false), 2000)
+      
     } catch (error) {
       console.error('Share failed:', error)
-      // Fallback to WhatsApp
-      handleWhatsAppShare()
+      // Final fallback: copy to clipboard
+      try {
+        const formattedMessage = await formatWhatsAppMessage()
+        const urlWithLanguage = `${window.location.origin}${window.location.pathname}?lang=${currentLanguage.code}`
+        await navigator.clipboard.writeText(`${formattedMessage}\n\n${urlWithLanguage}`)
+        setIsShared(true)
+        setTimeout(() => setIsShared(false), 2000)
+      } catch (clipboardError) {
+        console.error('Clipboard fallback failed:', clipboardError)
+        // Show user-friendly error
+        alert('Share not available. Please copy the text manually.')
+      }
     }
   }
 

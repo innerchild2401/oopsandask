@@ -139,7 +139,7 @@ export default function AskPage() {
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                     {t('ui.generated_response')}
                   </h3>
-                  <div className="text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words overflow-wrap-anywhere max-w-full">
+                  <div className="text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words overflow-wrap-anywhere max-w-full w-full overflow-hidden">
                     {generatedText}
                   </div>
                   <div className="flex gap-2 mt-4">
