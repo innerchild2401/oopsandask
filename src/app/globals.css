@@ -131,6 +131,19 @@
     hyphens: auto;
   }
   
+  /* Specific fix for generated text containers */
+  .generated-text-container {
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    overflow-x: auto;
+    min-height: auto;
+    height: auto;
+    padding: 0.5rem;
+    line-height: 1.6;
+  }
+  
   /* Typography Scale */
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold tracking-tight;

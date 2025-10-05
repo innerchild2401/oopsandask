@@ -110,11 +110,11 @@ export default function OopsPage() {
 
               {/* Generated Text Display */}
               {generatedText && (
-                <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-6 border border-red-200 dark:border-red-800 max-w-full overflow-hidden">
+                <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-6 border border-red-200 dark:border-red-800 max-w-full">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                     {t('ui.generated_apology')}
                   </h3>
-                  <div className="text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words overflow-wrap-anywhere max-w-full w-full overflow-hidden">
+                  <div className="generated-text-container text-gray-800 dark:text-gray-200">
                     {generatedText}
                   </div>
                   <div className="flex gap-2 mt-4">

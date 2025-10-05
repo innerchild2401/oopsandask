@@ -135,11 +135,11 @@ export default function AskPage() {
 
               {/* Generated Text Display */}
               {generatedText && (
-                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800 max-w-full overflow-hidden">
+                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800 max-w-full">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                     {t('ui.generated_response')}
                   </h3>
-                  <div className="text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words overflow-wrap-anywhere max-w-full w-full overflow-hidden">
+                  <div className="generated-text-container text-gray-800 dark:text-gray-200">
                     {generatedText}
                   </div>
                   <div className="flex gap-2 mt-4">
