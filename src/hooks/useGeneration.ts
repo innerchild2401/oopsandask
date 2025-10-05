@@ -105,31 +105,8 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
     }
   }
 
-  const formatWhatsAppMessage = async () => {
-    try {
-      // Ask GPT to format the WhatsApp message in the correct language
-      const response = await fetch('/api/format-whatsapp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          originalText,
-          generatedText,
-          language: currentLanguage.code,
-          recipientName
-        }),
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        return data.formattedMessage
-      }
-    } catch (error) {
-      console.error('Failed to format WhatsApp message:', error)
-    }
-
-    // Fallback to simple formatting if API fails
+  const formatShareMessage = () => {
+    // Clean and format the generated text for all platforms
     const formattedGeneratedText = generatedText
       .replace(/[\u200B-\u200D\uFEFF]/g, '') // Remove zero-width characters
       .replace(/\u00A0/g, ' ') // Replace non-breaking spaces with regular spaces
@@ -141,29 +118,23 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
       .replace(/\u201D/g, '"') // Replace right double quotation mark
       .replace(/\r\n/g, '\n') // Normalize line endings
       .replace(/\r/g, '\n') // Normalize line endings
-      .replace(/\n\n/g, '\n\n') // Preserve paragraph breaks
-      .replace(/\n/g, '\n') // Preserve line breaks
-      .replace(/\*\*(.*?)\*\*/g, '*$1*') // Convert **bold** to *bold* for WhatsApp
-      .replace(/\*(.*?)\*/g, '*$1*') // Ensure single asterisks work
       .replace(/\n{3,}/g, '\n\n') // Limit consecutive line breaks to 2
       .trim()
     
     // Get current domain dynamically
     const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://oopsnandask.vercel.app'
     
-    return `${originalText}\n\nIn other words:\n\n${formattedGeneratedText}\n\nOooh, the little devil! Reply to him in this same manner: Reply in Same Style 😈\n${currentDomain}/reply?lang=${currentLanguage.code}&context=${encodeURIComponent(generatedText)}&message=${encodeURIComponent(originalText)}&voice=dramatic&recipient=${encodeURIComponent(recipientName || 'them')}`
+    // Create clean, well-formatted message for all platforms
+    const replyUrl = `${currentDomain}/reply?lang=${currentLanguage.code}&context=${encodeURIComponent(generatedText)}&message=${encodeURIComponent(originalText)}&voice=dramatic&recipient=${encodeURIComponent(recipientName || 'them')}`
+    
+    // Format with proper paragraphs and structure
+    return `${originalText}\n\nIn other words:\n\n${formattedGeneratedText}\n\nOooh, the little devil! Reply to him in this same manner: Reply in Same Style 😈\n\n${replyUrl}`
   }
 
-  const handleWhatsAppShare = async () => {
-    const message = await formatWhatsAppMessage()
-    const encodedMessage = encodeURIComponent(message)
-    const whatsappUrl = `https://wa.me/?text=${encodedMessage}`
-    window.open(whatsappUrl, '_blank')
-  }
 
   const handleShare = async () => {
     try {
-      const formattedMessage = await formatWhatsAppMessage()
+      const formattedMessage = formatShareMessage() // Synchronous call
       // Include language in the URL so the app opens with the correct language
       const urlWithLanguage = `${window.location.origin}${window.location.pathname}?lang=${currentLanguage.code}`
       const shareData = {
@@ -189,7 +160,7 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
       console.error('Share failed:', error)
       // Final fallback: copy to clipboard
       try {
-        const formattedMessage = await formatWhatsAppMessage()
+        const formattedMessage = formatShareMessage() // Synchronous call
         const urlWithLanguage = `${window.location.origin}${window.location.pathname}?lang=${currentLanguage.code}`
         await navigator.clipboard.writeText(`${formattedMessage}\n\n${urlWithLanguage}`)
         setIsShared(true)
@@ -242,7 +213,6 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
     handleGenerate,
     handleCopy,
     handleShare,
-    handleWhatsAppShare,
     handleRegenerate,
     handleTryAgain,
     handleDonationModalClose,

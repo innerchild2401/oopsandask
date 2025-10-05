@@ -76,8 +76,8 @@ function ReplyPageContent() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
+      <div className="container mx-auto px-4 py-8 max-w-full overflow-hidden">
+        <div className="max-w-4xl mx-auto max-w-full overflow-hidden">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-4">
