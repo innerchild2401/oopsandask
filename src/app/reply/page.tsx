@@ -38,10 +38,8 @@ function ReplyPageContent() {
           setOriginalMessage(data.originalText)
           setReplyVoice(data.replyVoice || 'dramatic')
           
-          // Auto-fill recipient name for reply
-          if (data.recipientName) {
-            setRecipientName(data.recipientName)
-          }
+          // DON'T auto-fill recipient name - let the replier input the original sender's name
+          // The replier should input the name of the person they're replying TO
         })
         .catch(error => {
           console.error('Error fetching conversation:', error)
@@ -239,13 +237,13 @@ function ReplyPageContent() {
                   <div className="grid grid-cols-1 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        {t('common.recipient_name')} ({t('common.optional')})
+                        {t('ui.reply_recipient_name_label')} ({t('common.optional')})
                       </label>
                       <input
                         type="text"
                         value={recipientName}
                         onChange={(e) => setRecipientName(e.target.value)}
-                        placeholder={t('ui.recipient_name_placeholder')}
+                        placeholder={t('ui.reply_recipient_name_placeholder')}
                         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                         disabled={isGenerating || isDetecting || isLoading}
                       />

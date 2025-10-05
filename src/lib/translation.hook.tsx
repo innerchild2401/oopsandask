@@ -80,6 +80,8 @@ const ENGLISH_TRANSLATIONS: Record<TranslationKey, string> = {
     'ui.type_your_request': 'Type your request here...',
     'ui.describe_what_went_wrong': 'Describe what went wrong...',
     'ui.recipient_name_placeholder': 'e.g., Sarah, Mom, John',
+    'ui.reply_recipient_name_placeholder': 'Name of the person you are replying to',
+    'ui.reply_recipient_name_label': 'Who are you replying to?',
     'ui.select_relationship': 'Select relationship...',
     'ui.generate_response': 'Generate Response',
     'ui.generate_apology': 'Generate Apology',

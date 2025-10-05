@@ -111,6 +111,8 @@ export type TranslationKey =
   | 'ui.type_your_request'
   | 'ui.describe_what_went_wrong'
   | 'ui.recipient_name_placeholder'
+  | 'ui.reply_recipient_name_placeholder'
+  | 'ui.reply_recipient_name_label'
   | 'ui.select_relationship'
   | 'ui.generate_response'
   | 'ui.generate_apology'
