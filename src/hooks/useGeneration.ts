@@ -105,7 +105,7 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
     }
   }
 
-  const formatShareMessage = () => {
+  const formatShareMessage = async () => {
     // Clean and format the generated text for all platforms
     const formattedGeneratedText = generatedText
       .replace(/[\u200B-\u200D\uFEFF]/g, '') // Remove zero-width characters
@@ -121,21 +121,51 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
       .replace(/\n{3,}/g, '\n\n') // Limit consecutive line breaks to 2
       .trim()
     
-    // Get current domain dynamically
+    try {
+      // Store conversation in database and get UUID
+      const response = await fetch('/api/conversations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          originalText,
+          generatedText,
+          mode,
+          recipientName,
+          recipientRelationship,
+          language: currentLanguage.code,
+          replyVoice: 'dramatic'
+        }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        const conversationId = data.conversationId
+        
+        // Get current domain dynamically
+        const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://oopsnandask.vercel.app'
+        
+        // Create short, clean link with UUID
+        const replyUrl = `${currentDomain}/reply?id=${conversationId}`
+        
+        return `${originalText}\n\nIn other words:\n\n${formattedGeneratedText}\n\nOooh, the little devil! Reply to him in this same manner: Reply in Same Style 😈\n\n${replyUrl}`
+      }
+    } catch (error) {
+      console.error('Failed to store conversation:', error)
+    }
+
+    // Fallback to old method if database fails
     const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://oopsnandask.vercel.app'
-    
-    // Create clean, well-formatted message for all platforms
     const replyUrl = `${currentDomain}/reply?lang=${currentLanguage.code}&context=${encodeURIComponent(generatedText)}&message=${encodeURIComponent(originalText)}&voice=dramatic&recipient=${encodeURIComponent(recipientName || 'them')}`
     
-    // Create message with embedded link - clean format without app header
-    // For platforms that support it, create a clickable link
     return `${originalText}\n\nIn other words:\n\n${formattedGeneratedText}\n\nOooh, the little devil! Reply to him in this same manner: Reply in Same Style 😈\n\n${replyUrl}`
   }
 
 
   const handleShare = async () => {
     try {
-      const formattedMessage = formatShareMessage() // Synchronous call
+      const formattedMessage = await formatShareMessage() // Async call
       // Include language in the URL so the app opens with the correct language
       const urlWithLanguage = `${window.location.origin}${window.location.pathname}?lang=${currentLanguage.code}`
       const shareData = {
@@ -160,7 +190,7 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
       console.error('Share failed:', error)
       // Final fallback: copy to clipboard
       try {
-        const formattedMessage = formatShareMessage() // Synchronous call
+        const formattedMessage = await formatShareMessage() // Async call
         await navigator.clipboard.writeText(formattedMessage)
         setIsShared(true)
         setTimeout(() => setIsShared(false), 2000)

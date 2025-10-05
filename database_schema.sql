@@ -287,3 +287,35 @@ COMMENT ON COLUMN user_sessions.device_fingerprint IS 'Browser fingerprint for a
 COMMENT ON COLUMN generated_messages.mode IS 'Message type: oops, ask, or attorney_ask';
 COMMENT ON COLUMN donations.amount_cents IS 'Donation amount in cents for currency precision';
 COMMENT ON COLUMN usage_limits.reset_date IS 'Date when limits reset for this session';
+
+-- Conversations table for UUID-based message sharing
+CREATE TABLE conversations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    original_text TEXT NOT NULL,
+    generated_text TEXT NOT NULL,
+    mode VARCHAR(20) NOT NULL CHECK (mode IN ('oops', 'ask', 'ask_attorney')),
+    recipient_name VARCHAR(100),
+    recipient_relationship VARCHAR(50),
+    language VARCHAR(10) NOT NULL,
+    reply_voice VARCHAR(20) DEFAULT 'dramatic' CHECK (reply_voice IN ('dramatic', 'legal')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    expires_at TIMESTAMP WITH TIME ZONE DEFAULT (NOW() + INTERVAL '30 days'),
+    is_active BOOLEAN DEFAULT TRUE
+);
+
+-- Index for fast lookups
+CREATE INDEX idx_conversations_id ON conversations(id);
+CREATE INDEX idx_conversations_expires_at ON conversations(expires_at);
+
+-- Comments
+COMMENT ON TABLE conversations IS 'Stores conversation data for UUID-based sharing';
+COMMENT ON COLUMN conversations.id IS 'UUID for sharing - short, clean links';
+COMMENT ON COLUMN conversations.original_text IS 'User input text';
+COMMENT ON COLUMN conversations.generated_text IS 'AI generated response';
+COMMENT ON COLUMN conversations.mode IS 'Message type: oops, ask, or ask_attorney';
+COMMENT ON COLUMN conversations.recipient_name IS 'Name of the person the message is for';
+COMMENT ON COLUMN conversations.recipient_relationship IS 'Relationship to recipient';
+COMMENT ON COLUMN conversations.language IS 'Language code for the conversation';
+COMMENT ON COLUMN conversations.reply_voice IS 'Voice for replies: dramatic or legal';
+COMMENT ON COLUMN conversations.expires_at IS 'Auto-cleanup after 30 days';
+COMMENT ON COLUMN conversations.is_active IS 'Soft delete flag';

@@ -18,18 +18,45 @@ function ReplyPageContent() {
   
   // Get context from URL parameters
   useEffect(() => {
+    const conversationId = searchParams.get('id')
     const context = searchParams.get('context')
     const message = searchParams.get('message')
     const voice = searchParams.get('voice') as 'dramatic' | 'legal'
     const originalRecipient = searchParams.get('recipient')
     
-    if (context) setReplyContext(context)
-    if (message) setOriginalMessage(message)
-    if (voice) setReplyVoice(voice)
-    
-    // Auto-fill recipient name for reply (the person who sent the original message)
-    if (originalRecipient) {
-      setRecipientName(originalRecipient)
+    // New UUID-based system
+    if (conversationId) {
+      fetch(`/api/conversations?id=${conversationId}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            console.error('Failed to fetch conversation:', data.error)
+            return
+          }
+          
+          setReplyContext(data.generatedText)
+          setOriginalMessage(data.originalText)
+          setReplyVoice(data.replyVoice || 'dramatic')
+          
+          // Auto-fill recipient name for reply
+          if (data.recipientName) {
+            setRecipientName(data.recipientName)
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching conversation:', error)
+        })
+    } 
+    // Fallback to old URL parameter system
+    else {
+      if (context) setReplyContext(context)
+      if (message) setOriginalMessage(message)
+      if (voice) setReplyVoice(voice)
+      
+      // Auto-fill recipient name for reply (the person who sent the original message)
+      if (originalRecipient) {
+        setRecipientName(originalRecipient)
+      }
     }
   }, [searchParams])
   
