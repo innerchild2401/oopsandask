@@ -4,6 +4,11 @@ export async function POST(request: NextRequest) {
   try {
     const { originalText, generatedText, language } = await request.json()
     
+    // Get the current domain dynamically
+    const protocol = request.headers.get('x-forwarded-proto') || 'https'
+    const host = request.headers.get('host') || 'oopsnandask.vercel.app'
+    const baseUrl = `${protocol}://${host}`
+    
     if (!originalText || !generatedText || !language) {
       return NextResponse.json(
         { error: 'Missing required parameters' },
@@ -31,7 +36,7 @@ Create a natural, flowing WhatsApp message with this structure:
 - Add a natural phrase meaning "In other words:" in ${language}
 - Include the generated text (preserve ALL formatting including line breaks, paragraphs, *bold*, etc.)
 - End with a friendly phrase meaning "Want to answer in the same witty manner?" in ${language}
-- Add the link: https://oopsnandask.vercel.app?lang=${language}
+- Add the link: ${baseUrl}?lang=${language}
 
 CRITICAL FORMATTING RULES:
 - NO numbered lists or bullet points - make it flow naturally like a conversation
