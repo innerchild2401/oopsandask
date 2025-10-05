@@ -113,6 +113,8 @@ export type TranslationKey =
   | 'ui.recipient_name_placeholder'
   | 'ui.reply_recipient_name_placeholder'
   | 'ui.reply_recipient_name_label'
+  | 'share.in_other_words'
+  | 'share.reply_prompt'
   | 'ui.select_relationship'
   | 'ui.generate_response'
   | 'ui.generate_apology'

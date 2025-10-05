@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from '@/lib/i18n'
 import { GenerateMessageRequest, GenerateMessageResponse } from '@/lib/types'
+import { TranslationKey } from '@/lib/translation.types'
 
 interface UseGenerationOptions {
   mode: 'oops' | 'ask' | 'ask_attorney'
@@ -13,7 +14,7 @@ interface UseGenerationOptions {
 }
 
 export function useGeneration({ mode, onGenerationComplete, replyMode, replyContext, replyVoice }: UseGenerationOptions) {
-  const { currentLanguage, isDetecting, isLoading } = useTranslation()
+  const { t, currentLanguage, isDetecting, isLoading } = useTranslation()
   const [originalText, setOriginalText] = useState('')
   const [recipientName, setRecipientName] = useState('')
   const [recipientRelationship, setRecipientRelationship] = useState('')
@@ -105,7 +106,7 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
     }
   }
 
-  const formatShareMessage = async () => {
+  const formatShareMessage = async (t: (key: TranslationKey, fallback?: string) => string) => {
     // Clean and format the generated text for all platforms
     const formattedGeneratedText = generatedText
       .replace(/[\u200B-\u200D\uFEFF]/g, '') // Remove zero-width characters
@@ -149,7 +150,7 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
         // Create short, clean link with UUID
         const replyUrl = `${currentDomain}/reply?id=${conversationId}`
         
-        return `${originalText}\n\nIn other words:\n\n${formattedGeneratedText}\n\nOooh, the little devil! Reply to him in this same manner: Reply in Same Style 😈\n\n${replyUrl}`
+        return `${originalText}\n\n${t('share.in_other_words')}\n\n${formattedGeneratedText}\n\n${t('share.reply_prompt')}\n\n${replyUrl}`
       }
     } catch (error) {
       console.error('Failed to store conversation:', error)
@@ -159,18 +160,15 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
     const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://oopsnandask.vercel.app'
     const replyUrl = `${currentDomain}/reply?lang=${currentLanguage.code}&context=${encodeURIComponent(generatedText)}&message=${encodeURIComponent(originalText)}&voice=dramatic&recipient=${encodeURIComponent(recipientName || 'them')}`
     
-    return `${originalText}\n\nIn other words:\n\n${formattedGeneratedText}\n\nOooh, the little devil! Reply to him in this same manner: Reply in Same Style 😈\n\n${replyUrl}`
+    return `${originalText}\n\n${t('share.in_other_words')}\n\n${formattedGeneratedText}\n\n${t('share.reply_prompt')}\n\n${replyUrl}`
   }
 
 
   const handleShare = async () => {
     try {
-      const formattedMessage = await formatShareMessage() // Async call
-      // Include language in the URL so the app opens with the correct language
-      const urlWithLanguage = `${window.location.origin}${window.location.pathname}?lang=${currentLanguage.code}`
+      const formattedMessage = await formatShareMessage(t) // Async call
       const shareData = {
         text: formattedMessage,
-        url: urlWithLanguage,
       }
       
       // Use native share if available (Android/iOS Safari)
@@ -190,7 +188,7 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
       console.error('Share failed:', error)
       // Final fallback: copy to clipboard
       try {
-        const formattedMessage = await formatShareMessage() // Async call
+        const formattedMessage = await formatShareMessage(t) // Async call
         await navigator.clipboard.writeText(formattedMessage)
         setIsShared(true)
         setTimeout(() => setIsShared(false), 2000)
