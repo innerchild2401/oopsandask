@@ -127,7 +127,8 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
     // Create clean, well-formatted message for all platforms
     const replyUrl = `${currentDomain}/reply?lang=${currentLanguage.code}&context=${encodeURIComponent(generatedText)}&message=${encodeURIComponent(originalText)}&voice=dramatic&recipient=${encodeURIComponent(recipientName || 'them')}`
     
-    // Format with proper paragraphs and structure
+    // Create message with embedded link - clean format without app header
+    // For platforms that support it, create a clickable link
     return `${originalText}\n\nIn other words:\n\n${formattedGeneratedText}\n\nOooh, the little devil! Reply to him in this same manner: Reply in Same Style 😈\n\n${replyUrl}`
   }
 
@@ -138,7 +139,6 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
       // Include language in the URL so the app opens with the correct language
       const urlWithLanguage = `${window.location.origin}${window.location.pathname}?lang=${currentLanguage.code}`
       const shareData = {
-        title: `${mode === 'oops' ? 'Oops!' : 'Ask For'} - AI Generated`,
         text: formattedMessage,
         url: urlWithLanguage,
       }
@@ -152,7 +152,7 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
       }
       
       // Fallback for desktop: copy to clipboard
-      await navigator.clipboard.writeText(`${formattedMessage}\n\n${urlWithLanguage}`)
+      await navigator.clipboard.writeText(formattedMessage)
       setIsShared(true)
       setTimeout(() => setIsShared(false), 2000)
       
@@ -161,8 +161,7 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
       // Final fallback: copy to clipboard
       try {
         const formattedMessage = formatShareMessage() // Synchronous call
-        const urlWithLanguage = `${window.location.origin}${window.location.pathname}?lang=${currentLanguage.code}`
-        await navigator.clipboard.writeText(`${formattedMessage}\n\n${urlWithLanguage}`)
+        await navigator.clipboard.writeText(formattedMessage)
         setIsShared(true)
         setTimeout(() => setIsShared(false), 2000)
       } catch (clipboardError) {
