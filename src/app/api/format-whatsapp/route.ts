@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   try {
-    const { originalText, generatedText, language } = await request.json()
+    const { originalText, generatedText, language, recipientName } = await request.json()
     
     // Get the current domain dynamically
     const protocol = request.headers.get('x-forwarded-proto') || 'https'
@@ -35,8 +35,8 @@ Create a natural, flowing WhatsApp message with this structure:
 - Start with the original text
 - Add a natural phrase meaning "In other words:" in ${language}
 - Include the generated text (preserve ALL formatting including line breaks, paragraphs, *bold*, etc.)
-- End with a playful phrase meaning "Oooh, the little devil! Reply to him in this same manner using the link below." in ${language}
-- Add the link: ${baseUrl}/reply?lang=${language}&context=${encodeURIComponent(generatedText)}&message=${encodeURIComponent(originalText)}&voice=dramatic
+- End with a playful phrase meaning "Oooh, the little devil! Reply to him in this same manner:" in ${language}
+- Add clickable text that says "Reply in Same Style" (in ${language}) that links to: ${baseUrl}/reply?lang=${language}&context=${encodeURIComponent(generatedText)}&message=${encodeURIComponent(originalText)}&voice=dramatic&recipient=${encodeURIComponent(recipientName || 'them')}
 
 CRITICAL FORMATTING RULES:
 - NO numbered lists or bullet points - make it flow naturally like a conversation

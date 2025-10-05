@@ -116,7 +116,8 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
         body: JSON.stringify({
           originalText,
           generatedText,
-          language: currentLanguage.code
+          language: currentLanguage.code,
+          recipientName
         }),
       })
 
@@ -150,7 +151,7 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
     // Get current domain dynamically
     const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://oopsnandask.vercel.app'
     
-    return `${originalText}\n\nIn other words:\n\n${formattedGeneratedText}\n\nOooh, the little devil! Reply to him in this same manner using the link below. 😈\n${currentDomain}/reply?lang=${currentLanguage.code}&context=${encodeURIComponent(generatedText)}&message=${encodeURIComponent(originalText)}&voice=dramatic`
+    return `${originalText}\n\nIn other words:\n\n${formattedGeneratedText}\n\nOooh, the little devil! Reply to him in this same manner: Reply in Same Style 😈\n${currentDomain}/reply?lang=${currentLanguage.code}&context=${encodeURIComponent(generatedText)}&message=${encodeURIComponent(originalText)}&voice=dramatic&recipient=${encodeURIComponent(recipientName || 'them')}`
   }
 
   const handleWhatsAppShare = async () => {

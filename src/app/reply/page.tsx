@@ -21,10 +21,16 @@ function ReplyPageContent() {
     const context = searchParams.get('context')
     const message = searchParams.get('message')
     const voice = searchParams.get('voice') as 'dramatic' | 'legal'
+    const originalRecipient = searchParams.get('recipient')
     
     if (context) setReplyContext(context)
     if (message) setOriginalMessage(message)
     if (voice) setReplyVoice(voice)
+    
+    // Auto-fill recipient name for reply (the person who sent the original message)
+    if (originalRecipient) {
+      setRecipientName(originalRecipient)
+    }
   }, [searchParams])
   
   const {
@@ -143,7 +149,7 @@ function ReplyPageContent() {
             <div className="space-y-6">
               {/* Generated Text Display */}
               {generatedText && (
-                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
+                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800 max-w-full overflow-hidden">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                     {t('ui.generated_response')}
                   </h3>
