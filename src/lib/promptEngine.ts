@@ -203,7 +203,9 @@ Use dramatic, poetic, or absurd tone but make it sound intentional and polished.
 
 CRITICAL: Respond in the SAME LANGUAGE as the user's input text. If the input is in Romanian, respond in Romanian. If in Spanish, respond in Spanish, etc.
 
-Write 2-3 sentences max that mock the concept of asking for favors.
+IMPORTANT: The user is ALWAYS asking for something from someone else. You must generate a text where the USER is making a request/demand, NOT responding to someone else's request. The user wants to ask for something, so create a dramatic text where they are the one asking.
+
+Write 2-3 sentences max that mock the concept of asking for favors, where the USER is the one making the request.
 End cleanly, no ellipsis.
 Optionally include 1-2 emojis that match the tone.
 After the text, add one short fake signature (like "—Madame Desirescu, 1842" or a localized equivalent).
@@ -221,7 +223,9 @@ Use dramatic, legalistic, or absurd tone but make it sound intentional and polis
 
 CRITICAL: Respond in the SAME LANGUAGE as the user's input text. If the input is in Romanian, respond in Romanian. If in Spanish, respond in Spanish, etc.
 
-Write 2-3 sentences max that mock the concept of legal demands with binding language.
+IMPORTANT: The user is ALWAYS making a legal demand/request from someone else. You must generate a text where the USER is making a legal demand, NOT responding to someone else's request. The user wants to make a legal demand, so create a dramatic text where they are the one making the legal request.
+
+Write 2-3 sentences max that mock the concept of legal demands with binding language, where the USER is the one making the legal demand.
 Use legal terminology like "hereby demand", "binding agreement", "legal obligation", "contractual commitment", etc.
 End cleanly, no ellipsis.
 Optionally include 1-2 emojis that match the tone.
