@@ -83,6 +83,7 @@ const ENGLISH_TRANSLATIONS: Record<TranslationKey, string> = {
     'ui.reply_recipient_name_placeholder': 'Name of the person you are replying to',
     'ui.reply_recipient_name_label': 'Who are you replying to?',
     'share.in_other_words': 'In other words:',
+    'share.which_means': 'Which means:',
     'share.reply_prompt': 'Oooh, the little devil! Reply to him in this same manner: Reply in Same Style 😈',
     'ui.select_relationship': 'Select relationship...',
     'ui.generate_response': 'Generate Response',

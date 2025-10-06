@@ -60,7 +60,7 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
       }
 
       // Sending request to API
-      
+
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: {
@@ -98,9 +98,8 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
 
   const handleCopy = async () => {
     try {
-      // Apply bold formatting to copied text
-      const formattedText = `**${generatedText}**`
-      await navigator.clipboard.writeText(formattedText)
+      // Copy just the generated text without bold formatting
+      await navigator.clipboard.writeText(generatedText)
       setIsCopied(true)
       setTimeout(() => setIsCopied(false), 2000)
     } catch (error) {
@@ -152,7 +151,7 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
         // Create short, clean link with UUID
         const replyUrl = `${currentDomain}/reply?id=${conversationId}`
         
-        return `${originalText}\n\n${t('share.in_other_words')}\n\n**${formattedGeneratedText}**\n\n${t('share.reply_prompt')}\n\n${replyUrl}`
+        return `${formattedGeneratedText}\n\n${t('share.which_means')} **${originalText}**\n\n\n${t('share.reply_prompt')}\n\n${replyUrl}`
       }
     } catch (error) {
       console.error('Failed to store conversation:', error)
@@ -162,7 +161,7 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
     const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://oopsnandask.vercel.app'
     const replyUrl = `${currentDomain}/reply?lang=${currentLanguage.code}&context=${encodeURIComponent(generatedText)}&message=${encodeURIComponent(originalText)}&voice=dramatic&recipient=${encodeURIComponent(recipientName || 'them')}`
     
-    return `${originalText}\n\n${t('share.in_other_words')}\n\n**${formattedGeneratedText}**\n\n${t('share.reply_prompt')}\n\n${replyUrl}`
+    return `${formattedGeneratedText}\n\n${t('share.which_means')} **${originalText}**\n\n\n${t('share.reply_prompt')}\n\n${replyUrl}`
   }
 
 

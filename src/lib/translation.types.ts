@@ -114,6 +114,7 @@ export type TranslationKey =
   | 'ui.reply_recipient_name_placeholder'
   | 'ui.reply_recipient_name_label'
   | 'share.in_other_words'
+  | 'share.which_means'
   | 'share.reply_prompt'
   | 'ui.select_relationship'
   | 'ui.generate_response'
