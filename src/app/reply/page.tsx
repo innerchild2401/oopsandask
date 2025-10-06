@@ -102,7 +102,7 @@ function ReplyPageContent() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <div className="container mx-auto px-4 py-8 max-w-full overflow-hidden">
-        <div className="max-w-4xl mx-auto max-w-full overflow-hidden">
+        <div className="max-w-full overflow-hidden">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-4">
@@ -168,53 +168,50 @@ function ReplyPageContent() {
             </div>
           </div>
 
-          {/* Main Content Area */}
-          <div className="grid lg:grid-cols-2 gap-8">
-            {/* Left: Generated Response */}
-            <div className="space-y-6">
-              {/* Generated Text Display */}
-              {generatedText && (
-                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800 max-w-full">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    {t('ui.generated_response')}
-                  </h3>
-                  <div className="generated-text-container text-gray-800 dark:text-gray-200">
-                    {generatedText}
-                  </div>
-                  <div className="flex gap-2 mt-4">
-                    <Button
-                      onClick={handleCopy}
-                      variant="outline"
-                      size="sm"
-                      className="flex-1"
-                    >
-                      <Copy className="w-4 h-4 mr-2" />
-                      {t('ui.copy')}
-                    </Button>
-                    <Button
-                      onClick={handleShare}
-                      variant="outline"
-                      size="sm"
-                      className="flex-1"
-                    >
-                      <MessageCircle className="w-4 h-4 mr-2" />
-                      {t('ui.share')}
-                    </Button>
-                    <Button
-                      onClick={handleRegenerate}
-                      variant="outline"
-                      size="sm"
-                      className="flex-1"
-                    >
-                      <RefreshCw className="w-4 h-4 mr-2" />
-                      {t('ui.regenerate')}
-                    </Button>
-                  </div>
+          {/* Main Content Area - Single Column Mobile-First */}
+          <div className="space-y-8">
+            {/* Generated Text Display */}
+            {generatedText && (
+              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800 max-w-full">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                  {t('ui.generated_response')}
+                </h3>
+                <div className="generated-text-container text-gray-800 dark:text-gray-200">
+                  {generatedText}
                 </div>
-              )}
-            </div>
+                <div className="flex gap-2 mt-4">
+                  <Button
+                    onClick={handleCopy}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    {t('ui.copy')}
+                  </Button>
+                  <Button
+                    onClick={handleShare}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                  >
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    {t('ui.share')}
+                  </Button>
+                  <Button
+                    onClick={handleRegenerate}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                  >
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    {t('ui.regenerate')}
+                  </Button>
+                </div>
+              </div>
+            )}
 
-            {/* Right: Input Form */}
+            {/* Input Form */}
             <div className="space-y-6">
               <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
