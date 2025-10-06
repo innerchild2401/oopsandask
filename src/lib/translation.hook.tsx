@@ -73,6 +73,7 @@ const ENGLISH_TRANSLATIONS: Record<TranslationKey, string> = {
     'ui.generated_response': 'Generated Response',
     'ui.generated_apology': 'Generated Apology',
     'ui.copy': 'Copy',
+    'ui.copied': 'Copied!',
     'ui.share': 'Share',
     'ui.regenerate': 'Regenerate',
     'ui.what_do_you_want_to_ask': 'What do you want to ask for?',

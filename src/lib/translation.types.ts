@@ -104,6 +104,7 @@ export type TranslationKey =
   | 'ui.generated_response'
   | 'ui.generated_apology'
   | 'ui.copy'
+  | 'ui.copied'
   | 'ui.share'
   | 'ui.regenerate'
   | 'ui.what_do_you_want_to_ask'

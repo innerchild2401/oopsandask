@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Copy, RefreshCw, MessageCircle, Scale, ArrowLeft } from 'lucide-react'
+import { Copy, RefreshCw, MessageCircle, Scale, ArrowLeft, Share } from 'lucide-react'
 import { useTranslation } from '@/lib/i18n'
 import { useGeneration } from '@/hooks/useGeneration'
 import { DonationModal } from '@/components/shared/DonationModal'
@@ -176,36 +176,45 @@ function ReplyPageContent() {
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   {t('ui.generated_response')}
                 </h3>
-                <div className="generated-text-container text-gray-800 dark:text-gray-200">
-                  {generatedText}
+                
+                {/* Generated Text with Floating Action Buttons */}
+                <div className="relative">
+                  <div className="generated-text-container text-gray-800 dark:text-gray-200">
+                    {generatedText}
+                  </div>
+                  
+                  {/* Floating Action Buttons */}
+                  <div className="absolute top-2 left-2 flex space-x-1">
+                    <Button
+                      onClick={handleCopy}
+                      variant="outline"
+                      size="sm"
+                      className="h-8 w-8 p-0 bg-white/90 hover:bg-white border-gray-300 text-gray-600 shadow-sm"
+                      title={isCopied ? t('ui.copied') : t('ui.copy')}
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      onClick={handleRegenerate}
+                      variant="outline"
+                      size="sm"
+                      className="h-8 w-8 p-0 bg-white/90 hover:bg-white border-gray-300 text-gray-600 shadow-sm"
+                      title={t('ui.regenerate')}
+                      disabled={isGenerating}
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex gap-2 mt-4">
-                  <Button
-                    onClick={handleCopy}
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
-                  >
-                    <Copy className="w-4 h-4 mr-2" />
-                    {t('ui.copy')}
-                  </Button>
+                
+                {/* Share Button Below */}
+                <div className="mt-4">
                   <Button
                     onClick={handleShare}
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
+                    className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold py-3"
                   >
-                    <MessageCircle className="w-4 h-4 mr-2" />
+                    <Share className="mr-2 h-4 w-4" />
                     {t('ui.share')}
-                  </Button>
-                  <Button
-                    onClick={handleRegenerate}
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
-                  >
-                    <RefreshCw className="w-4 h-4 mr-2" />
-                    {t('ui.regenerate')}
                   </Button>
                 </div>
               </div>
