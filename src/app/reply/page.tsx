@@ -10,7 +10,7 @@ import { DonationModal } from '@/components/shared/DonationModal'
 import Link from 'next/link'
 
 function ReplyPageContent() {
-  const { t } = useTranslation()
+  const { t, currentLanguage } = useTranslation()
   const searchParams = useSearchParams()
   const [replyVoice, setReplyVoice] = useState<'dramatic' | 'legal'>('dramatic')
   const [replyContext, setReplyContext] = useState('')
@@ -311,6 +311,7 @@ function ReplyPageContent() {
           isOpen={showDonationModal}
           onClose={() => setShowDonationModal(false)}
           generationCount={generationCount}
+          language={currentLanguage.code}
         />
       )}
     </div>

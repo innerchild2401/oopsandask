@@ -34,6 +34,21 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
     }
   }, [])
 
+  // Check if donation modal should be shown (30-day cooldown)
+  const shouldShowDonationModal = (count: number) => {
+    // Check if user donated recently (30 days)
+    const donationTimestamp = localStorage.getItem('oops-ask-donation-timestamp')
+    if (donationTimestamp) {
+      const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000)
+      if (parseInt(donationTimestamp) > thirtyDaysAgo) {
+        return false // Still in cooldown period
+      }
+    }
+    
+    // Show modal every 5 generations
+    return count >= 5 && count % 5 === 0
+  }
+
   const handleGenerate = async () => {
     if (!originalText.trim()) return
     
@@ -82,8 +97,8 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
       setGenerationCount(newCount)
       localStorage.setItem('oops-ask-generation-count', newCount.toString())
       
-      // Trigger donation modal after 5 generations
-      if (newCount >= 5 && newCount % 5 === 0) {
+      // Trigger donation modal with 30-day cooldown
+      if (shouldShowDonationModal(newCount)) {
         setShowDonationModal(true)
       }
       

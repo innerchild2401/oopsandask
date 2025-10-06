@@ -9,7 +9,7 @@ import { DonationModal } from '@/components/shared/DonationModal'
 import Link from 'next/link'
 
 export default function OopsPage() {
-  const { t, isLoading: isTranslating } = useTranslation()
+  const { t, currentLanguage, isLoading: isTranslating } = useTranslation()
   const [currentExampleIndex, setCurrentExampleIndex] = useState(0)
   
   const {
@@ -248,6 +248,7 @@ export default function OopsPage() {
         isOpen={showDonationModal}
         onClose={handleDonationModalClose}
         generationCount={generationCount}
+        language={currentLanguage.code}
       />
     </div>
   )

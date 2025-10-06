@@ -162,8 +162,8 @@ const ENGLISH_TRANSLATIONS: Record<TranslationKey, string> = {
   'modal.donation_feature_3': 'Unlock even more dramatic features!',
   'modal.donation_feature_4': 'Support the development team',
   'modal.donation_buy_coffee': 'Buy Me a Coffee!',
-  'modal.donation_maybe_later': 'Maybe Later',
-  'modal.donation_footer': 'Every cup helps us keep the drama alive!',
+    'modal.donation_maybe_later': 'Maybe Later',
+    'modal.donation_footer': 'Every cup helps us keep the drama alive!',
   
   // Output card
   'output.dramatic_apology': 'Dramatic Apology',

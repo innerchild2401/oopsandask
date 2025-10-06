@@ -9,7 +9,7 @@ import { DonationModal } from '@/components/shared/DonationModal'
 import Link from 'next/link'
 
 export default function AskPage() {
-  const { t, isLoading: isTranslating } = useTranslation()
+  const { t, currentLanguage, isLoading: isTranslating } = useTranslation()
   const [attorneyMode, setAttorneyMode] = useState(false)
   const [currentExampleIndex, setCurrentExampleIndex] = useState(0)
   
@@ -273,6 +273,7 @@ export default function AskPage() {
         isOpen={showDonationModal}
         onClose={handleDonationModalClose}
         generationCount={generationCount}
+        language={currentLanguage.code}
       />
     </div>
   )
