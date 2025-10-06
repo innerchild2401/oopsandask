@@ -92,6 +92,26 @@ const ENGLISH_TRANSLATIONS: Record<TranslationKey, string> = {
     'ui.back_to_home': 'Back to Home',
     'ui.choose_mode_to_start': 'Choose a mode to get started',
     
+    // Tutorial text
+    'tutorial.main_welcome_title': 'Welcome! 👋',
+    'tutorial.main_welcome_description': 'Create dramatic messages for life\'s awkward moments. Let\'s get started!',
+    'tutorial.main_modes_title': 'Choose Your Mode 🎭',
+    'tutorial.main_modes_description': 'Tap "Ask" for requests or "Oops" for apologies. Each has its own dramatic style!',
+    'tutorial.main_input_title': 'Tell Us What You Need ✍️',
+    'tutorial.main_input_description': 'Type your message, add a name, and select relationship. AI will make it dramatic!',
+    'tutorial.main_output_title': 'Your Dramatic Message ✨',
+    'tutorial.main_output_description': 'Here\'s your generated message! Copy it or regenerate for a different style.',
+    'tutorial.main_share_title': 'Share Your Message 📤',
+    'tutorial.main_share_description': 'Tap share to open your phone\'s sharing options. Send via any app you prefer!',
+    'tutorial.reply_welcome_title': 'Reply Mode 💬',
+    'tutorial.reply_welcome_description': 'You\'re replying to a dramatic message! Choose your voice and craft your response.',
+    'tutorial.reply_interface_title': 'Reply Interface 🎯',
+    'tutorial.reply_interface_description': 'Select dramatic or legal voice, then type your reply. AI will match the style!',
+    'tutorial.reply_output_title': 'Your Reply 🎪',
+    'tutorial.reply_output_description': 'Here\'s your dramatic reply! Copy it or regenerate for a different approach.',
+    'tutorial.reply_navigation_title': 'Back to Home 🏠',
+    'tutorial.reply_navigation_description': 'When done, tap "Back to Home" to create new messages for other friends!',
+    
     // Reply mode translations
     'reply.title': 'Reply in Same Style',
     'reply.description': 'Choose your voice and craft a dramatic response',

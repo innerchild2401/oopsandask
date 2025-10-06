@@ -122,6 +122,27 @@ export type TranslationKey =
   | 'ui.generate_apology'
   | 'ui.back_to_home'
   | 'ui.choose_mode_to_start'
+  
+  // Tutorial text
+  | 'tutorial.main_welcome_title'
+  | 'tutorial.main_welcome_description'
+  | 'tutorial.main_modes_title'
+  | 'tutorial.main_modes_description'
+  | 'tutorial.main_input_title'
+  | 'tutorial.main_input_description'
+  | 'tutorial.main_output_title'
+  | 'tutorial.main_output_description'
+  | 'tutorial.main_share_title'
+  | 'tutorial.main_share_description'
+  | 'tutorial.reply_welcome_title'
+  | 'tutorial.reply_welcome_description'
+  | 'tutorial.reply_interface_title'
+  | 'tutorial.reply_interface_description'
+  | 'tutorial.reply_output_title'
+  | 'tutorial.reply_output_description'
+  | 'tutorial.reply_navigation_title'
+  | 'tutorial.reply_navigation_description'
+  
   // Reply mode translations
   | 'reply.title'
   | 'reply.description'

@@ -10,7 +10,7 @@ import { useTranslation } from '@/lib/i18n'
 
 export function TutorialOverlay() {
   const { isActive, currentStep, tutorialType, nextStep, prevStep, skipTutorial, closeTutorial } = useTutorial()
-  const { currentLanguage } = useTranslation()
+  const { currentLanguage, t } = useTranslation()
   const [config, setConfig] = useState<TutorialConfig | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -18,16 +18,16 @@ export function TutorialOverlay() {
     if (isActive && tutorialType) {
       loadTutorialConfig()
     }
-  }, [isActive, tutorialType])
+  }, [isActive, tutorialType, t])
 
-  const loadTutorialConfig = async () => {
+  const loadTutorialConfig = () => {
     if (!tutorialType) return
 
     setIsLoading(true)
     try {
       const tutorialConfig = tutorialType === 'main' 
-        ? await TutorialService.getMainTutorial(currentLanguage.code)
-        : await TutorialService.getReplyTutorial(currentLanguage.code)
+        ? TutorialService.getMainTutorial(t)
+        : TutorialService.getReplyTutorial(t)
       
       setConfig(tutorialConfig)
     } catch (error) {

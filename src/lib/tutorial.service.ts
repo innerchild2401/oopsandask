@@ -1,25 +1,53 @@
 import { TutorialConfig, TutorialStep } from './tutorial.types'
+import { TranslationKey } from './translation.types'
 
 export class TutorialService {
-  private static async generateTutorialText(step: string, language: string): Promise<{ title: string; description: string }> {
-    try {
-      const response = await fetch('/api/tutorial-text', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          step,
-          language,
-        }),
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        return data
+  private static getTutorialText(step: string, t: (key: TranslationKey, fallback?: string) => string): { title: string; description: string } {
+    const stepMap: Record<string, { titleKey: TranslationKey; descriptionKey: TranslationKey }> = {
+      'main-welcome': {
+        titleKey: 'tutorial.main_welcome_title',
+        descriptionKey: 'tutorial.main_welcome_description'
+      },
+      'main-modes': {
+        titleKey: 'tutorial.main_modes_title',
+        descriptionKey: 'tutorial.main_modes_description'
+      },
+      'main-input': {
+        titleKey: 'tutorial.main_input_title',
+        descriptionKey: 'tutorial.main_input_description'
+      },
+      'main-output': {
+        titleKey: 'tutorial.main_output_title',
+        descriptionKey: 'tutorial.main_output_description'
+      },
+      'main-share': {
+        titleKey: 'tutorial.main_share_title',
+        descriptionKey: 'tutorial.main_share_description'
+      },
+      'reply-welcome': {
+        titleKey: 'tutorial.reply_welcome_title',
+        descriptionKey: 'tutorial.reply_welcome_description'
+      },
+      'reply-interface': {
+        titleKey: 'tutorial.reply_interface_title',
+        descriptionKey: 'tutorial.reply_interface_description'
+      },
+      'reply-output': {
+        titleKey: 'tutorial.reply_output_title',
+        descriptionKey: 'tutorial.reply_output_description'
+      },
+      'reply-navigation': {
+        titleKey: 'tutorial.reply_navigation_title',
+        descriptionKey: 'tutorial.reply_navigation_description'
       }
-    } catch (error) {
-      console.error('Failed to generate tutorial text:', error)
+    }
+
+    const stepConfig = stepMap[step]
+    if (stepConfig) {
+      return {
+        title: t(stepConfig.titleKey),
+        description: t(stepConfig.descriptionKey)
+      }
     }
 
     // Fallback to English
@@ -69,11 +97,11 @@ export class TutorialService {
     return fallbacks[step] || { title: 'Tutorial Step', description: 'Follow the instructions to continue.' }
   }
 
-  static async getMainTutorial(language: string = 'en'): Promise<TutorialConfig> {
+  static getMainTutorial(t: (key: TranslationKey, fallback?: string) => string): TutorialConfig {
     const steps: TutorialStep[] = []
 
     // Step 1: Welcome
-    const welcomeText = await this.generateTutorialText('main-welcome', language)
+    const welcomeText = this.getTutorialText('main-welcome', t)
     steps.push({
       id: 'welcome',
       title: welcomeText.title,
@@ -83,7 +111,7 @@ export class TutorialService {
     })
 
     // Step 2: Mode Selection
-    const modesText = await this.generateTutorialText('main-modes', language)
+    const modesText = this.getTutorialText('main-modes', t)
     steps.push({
       id: 'modes',
       title: modesText.title,
@@ -94,7 +122,7 @@ export class TutorialService {
     })
 
     // Step 3: Input Interface
-    const inputText = await this.generateTutorialText('main-input', language)
+    const inputText = this.getTutorialText('main-input', t)
     steps.push({
       id: 'input',
       title: inputText.title,
@@ -105,7 +133,7 @@ export class TutorialService {
     })
 
     // Step 4: Generated Output
-    const outputText = await this.generateTutorialText('main-output', language)
+    const outputText = this.getTutorialText('main-output', t)
     steps.push({
       id: 'output',
       title: outputText.title,
@@ -116,7 +144,7 @@ export class TutorialService {
     })
 
     // Step 5: Share Button
-    const shareText = await this.generateTutorialText('main-share', language)
+    const shareText = this.getTutorialText('main-share', t)
     steps.push({
       id: 'share',
       title: shareText.title,
@@ -135,11 +163,11 @@ export class TutorialService {
     }
   }
 
-  static async getReplyTutorial(language: string = 'en'): Promise<TutorialConfig> {
+  static getReplyTutorial(t: (key: TranslationKey, fallback?: string) => string): TutorialConfig {
     const steps: TutorialStep[] = []
 
     // Step 1: Welcome to Reply Mode
-    const welcomeText = await this.generateTutorialText('reply-welcome', language)
+    const welcomeText = this.getTutorialText('reply-welcome', t)
     steps.push({
       id: 'welcome',
       title: welcomeText.title,
@@ -149,7 +177,7 @@ export class TutorialService {
     })
 
     // Step 2: Reply Interface
-    const interfaceText = await this.generateTutorialText('reply-interface', language)
+    const interfaceText = this.getTutorialText('reply-interface', t)
     steps.push({
       id: 'interface',
       title: interfaceText.title,
@@ -160,7 +188,7 @@ export class TutorialService {
     })
 
     // Step 3: Generated Reply
-    const outputText = await this.generateTutorialText('reply-output', language)
+    const outputText = this.getTutorialText('reply-output', t)
     steps.push({
       id: 'output',
       title: outputText.title,
@@ -171,7 +199,7 @@ export class TutorialService {
     })
 
     // Step 4: Navigation
-    const navText = await this.generateTutorialText('reply-navigation', language)
+    const navText = this.getTutorialText('reply-navigation', t)
     steps.push({
       id: 'navigation',
       title: navText.title,

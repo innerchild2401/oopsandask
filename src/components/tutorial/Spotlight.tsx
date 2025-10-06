@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState, useCallback } from 'react'
+import './TutorialHighlight.css'
 
 interface SpotlightProps {
   targetElement?: string
@@ -16,6 +17,7 @@ interface SpotlightProps {
 export function Spotlight({ targetElement, highlight, isActive }: SpotlightProps) {
   const [position, setPosition] = useState<{ x: number; y: number; width: number; height: number } | null>(null)
   const [isScrolling, setIsScrolling] = useState(false)
+  const [highlightedElement, setHighlightedElement] = useState<Element | null>(null)
 
   const scrollToElement = useCallback((element: Element) => {
     setIsScrolling(true)
@@ -34,6 +36,7 @@ export function Spotlight({ targetElement, highlight, isActive }: SpotlightProps
   const updatePosition = useCallback(() => {
     if (!isActive) {
       setPosition(null)
+      setHighlightedElement(null)
       return
     }
 
@@ -45,6 +48,10 @@ export function Spotlight({ targetElement, highlight, isActive }: SpotlightProps
     if (targetElement) {
       const element = document.querySelector(targetElement)
       if (element) {
+        // Add highlight class to the element
+        element.classList.add('tutorial-highlight')
+        setHighlightedElement(element)
+        
         // Scroll to element first
         scrollToElement(element)
         
@@ -76,6 +83,15 @@ export function Spotlight({ targetElement, highlight, isActive }: SpotlightProps
     }
   }, [targetElement, highlight, isActive, scrollToElement])
 
+  // Clean up highlight class when component unmounts or becomes inactive
+  useEffect(() => {
+    return () => {
+      if (highlightedElement) {
+        highlightedElement.classList.remove('tutorial-highlight')
+      }
+    }
+  }, [highlightedElement])
+
   useEffect(() => {
     updatePosition()
     
@@ -97,38 +113,59 @@ export function Spotlight({ targetElement, highlight, isActive }: SpotlightProps
   return (
     <div className="fixed inset-0 z-40 pointer-events-none">
       {/* Semi-transparent dark overlay */}
-      <div className="absolute inset-0 bg-black/40" />
+      <div className="absolute inset-0 bg-black/30" />
       
-      {/* Spotlight cutout with better visibility */}
+      {/* Playful spotlight cutout with hand-drawn effect */}
       <div
-        className="absolute bg-transparent border-4 border-white rounded-xl shadow-2xl"
-        style={{
-          left: Math.max(0, position.x - 12),
-          top: Math.max(0, position.y - 12),
-          width: Math.min(position.width + 24, window.innerWidth - 24),
-          height: Math.min(position.height + 24, window.innerHeight - 24),
-        }}
-      />
-      
-      {/* Pulsing ring for attention */}
-      <div
-        className="absolute border-2 border-blue-400 rounded-xl animate-ping"
-        style={{
-          left: Math.max(0, position.x - 16),
-          top: Math.max(0, position.y - 16),
-          width: Math.min(position.width + 32, window.innerWidth - 32),
-          height: Math.min(position.height + 32, window.innerHeight - 32),
-        }}
-      />
-      
-      {/* Additional attention ring */}
-      <div
-        className="absolute border border-yellow-400 rounded-xl animate-pulse"
+        className="absolute bg-transparent rounded-full"
         style={{
           left: Math.max(0, position.x - 20),
           top: Math.max(0, position.y - 20),
           width: Math.min(position.width + 40, window.innerWidth - 40),
           height: Math.min(position.height + 40, window.innerHeight - 40),
+          background: 'radial-gradient(ellipse, transparent 0%, transparent 60%, rgba(0,0,0,0.1) 100%)',
+          border: '4px solid #FF6B35',
+          boxShadow: '0 0 20px rgba(255, 107, 53, 0.5), inset 0 0 20px rgba(255, 107, 53, 0.2)',
+          animation: 'tutorial-pulse 2s infinite, tutorial-glow 2s infinite'
+        }}
+      />
+      
+      {/* Animated arrow pointing to element */}
+      <div
+        className="tutorial-arrow"
+        style={{
+          left: position.x + position.width / 2 - 15,
+          top: Math.max(0, position.y - 30),
+        }}
+      />
+      
+      {/* Sparkle effects around the highlighted element */}
+      <div
+        className="tutorial-sparkle"
+        style={{
+          left: position.x + position.width * 0.2,
+          top: position.y + position.height * 0.1,
+        }}
+      />
+      <div
+        className="tutorial-sparkle"
+        style={{
+          left: position.x + position.width * 0.8,
+          top: position.y + position.height * 0.2,
+        }}
+      />
+      <div
+        className="tutorial-sparkle"
+        style={{
+          left: position.x + position.width * 0.1,
+          top: position.y + position.height * 0.7,
+        }}
+      />
+      <div
+        className="tutorial-sparkle"
+        style={{
+          left: position.x + position.width * 0.75,
+          top: position.y + position.height * 0.8,
         }}
       />
     </div>
