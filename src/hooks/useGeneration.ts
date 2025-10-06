@@ -150,7 +150,7 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
         // Create short, clean link with UUID
         const replyUrl = `${currentDomain}/reply?id=${conversationId}`
         
-        return `${originalText}\n\n${t('share.in_other_words')}\n\n${formattedGeneratedText}\n\n${t('share.reply_prompt')}\n\n${replyUrl}`
+        return `${originalText}\n\n${t('share.in_other_words')}\n\n**${formattedGeneratedText}**\n\n${t('share.reply_prompt')}\n\n${replyUrl}`
       }
     } catch (error) {
       console.error('Failed to store conversation:', error)
@@ -160,7 +160,7 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
     const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://oopsnandask.vercel.app'
     const replyUrl = `${currentDomain}/reply?lang=${currentLanguage.code}&context=${encodeURIComponent(generatedText)}&message=${encodeURIComponent(originalText)}&voice=dramatic&recipient=${encodeURIComponent(recipientName || 'them')}`
     
-    return `${originalText}\n\n${t('share.in_other_words')}\n\n${formattedGeneratedText}\n\n${t('share.reply_prompt')}\n\n${replyUrl}`
+    return `${originalText}\n\n${t('share.in_other_words')}\n\n**${formattedGeneratedText}**\n\n${t('share.reply_prompt')}\n\n${replyUrl}`
   }
 
 

@@ -42,8 +42,8 @@ export async function POST(request: NextRequest) {
 
     // No caching for generated outputs - always generate fresh content
 
-    // Prepare AI prompt based on mode and language
-    const prompt = generatePrompt(body.mode, body.originalText, body.recipientName, body.recipientRelationship, body.language, body.replyMode, body.replyContext, body.replyVoice)
+    // Prepare AI prompt based on mode and language using the proper prompt engine
+    const prompt = await generateProperPrompt(body.mode, body.originalText, body.recipientName, body.recipientRelationship, body.language, body.replyMode, body.replyContext, body.replyVoice)
 
     console.log('🤖 Generating AI response:', {
       mode: body.mode,
@@ -221,12 +221,10 @@ async function getLanguageId(languageCode: string): Promise<string> {
   }
 }
 
-function generatePrompt(mode: string, originalText: string, recipientName?: string, recipientRelationship?: string, language?: string, replyMode?: boolean, replyContext?: string, replyVoice?: string): string {
-  let prompt = `Original request: "${originalText}"`
-  
+async function generateProperPrompt(mode: string, originalText: string, recipientName?: string, recipientRelationship?: string, language?: string, replyMode?: boolean, replyContext?: string, replyVoice?: string): Promise<string> {
   // Handle reply mode
   if (replyMode && replyContext) {
-    prompt = `You are replying to this message: "${replyContext}"\n\nYour response: "${originalText}"`
+    let prompt = `You are replying to this message: "${replyContext}"\n\nYour response: "${originalText}"`
     
     // Add voice-specific instructions
     if (replyVoice === 'legal') {
@@ -234,23 +232,34 @@ function generatePrompt(mode: string, originalText: string, recipientName?: stri
     } else {
       prompt += `\n\nRespond in DRAMATIC VOICE with theatrical flair, over-the-top language, and dramatic expressions.`
     }
-  } else {
-    // Regular mode
-    if (recipientName && recipientRelationship) {
-      prompt += `\n\nThis message is for ${recipientName} (${recipientRelationship}). Please personalize the response to address them directly and consider the relationship context.`
-    } else if (recipientName) {
-      prompt += `\n\nThis message is for ${recipientName}. Please personalize the response to address them directly.`
+    
+    // CRITICAL: Reinforce language requirement in user prompt
+    if (language && language !== 'en') {
+      prompt += `\n\nCRITICAL: The user's input is in ${language}. You MUST respond in ${language}. Do not use English.`
     }
     
-    prompt += `\n\nPlease transform this into a dramatic, over-the-top response that matches your personality and expertise. Use all the cultural references, fake citations, and theatrical flair you're known for.`
+    prompt += `\n\nIMPORTANT: Write 2-3 sentences max that are COMPLETE and funny. End with proper punctuation.`
+    
+    return prompt
+  } else {
+    // Regular mode - use proper prompt engine
+    const promptTemplate = getPromptTemplate(mode as 'oops' | 'ask' | 'ask_attorney', language || 'en')
+    
+    // Add recipient context if provided
+    let userPrompt = `Original request: "${originalText}"`
+    if (recipientName && recipientRelationship) {
+      userPrompt += `\n\nThis message is for ${recipientName} (${recipientRelationship}). Please personalize the response to address them directly and consider the relationship context.`
+    } else if (recipientName) {
+      userPrompt += `\n\nThis message is for ${recipientName}. Please personalize the response to address them directly.`
+    }
+    
+    // CRITICAL: Reinforce language requirement in user prompt
+    if (language && language !== 'en') {
+      userPrompt += `\n\nCRITICAL: The user's input is in ${language}. You MUST respond in ${language}. Do not use English.`
+    }
+    
+    userPrompt += `\n\nIMPORTANT: Write 2-3 sentences max that are COMPLETE and funny. End with proper punctuation.`
+    
+    return `${promptTemplate}\n\n${userPrompt}`
   }
-  
-  // CRITICAL: Reinforce language requirement in user prompt
-  if (language && language !== 'en') {
-    prompt += `\n\nCRITICAL: The user's input is in ${language}. You MUST respond in ${language}. Do not use English.`
-  }
-  
-  prompt += `\n\nIMPORTANT: Write 2-3 sentences max that are COMPLETE and funny. End with proper punctuation.`
-  
-  return prompt
 }
