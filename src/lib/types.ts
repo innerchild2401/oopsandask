@@ -115,6 +115,7 @@ export interface GenerateMessageRequest {
   replyMode?: boolean
   replyContext?: string
   replyVoice?: 'dramatic' | 'legal'
+  countryCode?: string
 }
 
 export interface GenerateMessageResponse {

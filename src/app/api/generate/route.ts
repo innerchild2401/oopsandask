@@ -116,12 +116,16 @@ export async function POST(request: NextRequest) {
 
     // Calculate token usage
     const tokensUsed = aiData.usage?.total_tokens || 0
+    const costEstimate = (tokensUsed / 1000) * 0.00015 // GPT-4o mini pricing
 
     console.log('✅ AI generation successful:', {
       tokensUsed,
       processingTime: `${processingTime}ms`,
       textLength: generatedText.length
     })
+
+    // Track analytics (don't await to avoid slowing down response)
+    trackAnalytics(body, tokensUsed, costEstimate, processingTime).catch(console.error)
 
     // Get language ID for database
     const languageId = await getLanguageId(body.language || 'en')
@@ -261,5 +265,46 @@ async function generateProperPrompt(mode: string, originalText: string, recipien
     userPrompt += `\n\nIMPORTANT: Write 2-3 sentences max that are COMPLETE and funny. End with proper punctuation.`
     
     return `${promptTemplate}\n\n${userPrompt}`
+  }
+}
+
+// Track analytics data
+async function trackAnalytics(
+  body: GenerateMessageRequest, 
+  tokensUsed: number, 
+  costEstimate: number, 
+  processingTime: number
+) {
+  try {
+    // Get country code from request headers or use 'unknown'
+    const countryCode = body.countryCode || 'unknown'
+    
+    // Track generation
+    await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/analytics/track-generation`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        mode: body.mode,
+        language_code: body.language || 'en',
+        country_code: countryCode,
+        tokens_used: tokensUsed,
+        cost_estimate: costEstimate
+      })
+    })
+
+    // Track API call
+    await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/analytics/track-api-call`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        endpoint: '/api/generate',
+        tokens_used: tokensUsed,
+        cost_estimate: costEstimate,
+        response_time_ms: processingTime
+      })
+    })
+  } catch (error) {
+    console.error('Failed to track analytics:', error)
+    // Don't throw - analytics failure shouldn't break the main flow
   }
 }

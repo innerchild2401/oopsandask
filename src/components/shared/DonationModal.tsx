@@ -57,12 +57,23 @@ export function DonationModal({ isOpen, onClose, generationCount, language = 'en
 
   if (!isOpen) return null
 
-  const handleDonate = () => {
+  const handleDonate = async () => {
     const buyMeACoffeeUrl = process.env.NEXT_PUBLIC_BUYMEACOFFEE_URL
     if (buyMeACoffeeUrl) {
       window.open(buyMeACoffeeUrl, '_blank')
       // Store donation timestamp for 30-day cooldown
       localStorage.setItem('oops-ask-donation-timestamp', Date.now().toString())
+      
+      // Track donation analytics (don't await to avoid blocking)
+      fetch('/api/analytics/track-donation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: 5.00, // Default Buy Me a Coffee amount
+          currency: 'USD',
+          payment_method: 'buy_me_a_coffee'
+        })
+      }).catch(console.error)
     }
     onClose()
   }
