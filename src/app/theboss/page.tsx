@@ -1,19 +1,24 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { 
   Users, 
+  Globe, 
+  MessageSquare, 
   Zap, 
   DollarSign, 
+  TrendingUp,
+  BarChart3,
+  PieChart,
   Activity,
-  LogOut,
-  RefreshCw,
-  Eye,
-  EyeOff
+  Coffee
 } from 'lucide-react'
 
-interface DashboardData {
+interface AnalyticsData {
   total_users: number
   users_by_country: Array<{ country: string; count: number }>
   total_generations: number
@@ -28,77 +33,39 @@ interface DashboardData {
 
 export default function TheBossPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [showPassword, setShowPassword] = useState(false)
-  const [credentials, setCredentials] = useState({ email: '', password: '' })
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
-  const [isRefreshing, setIsRefreshing] = useState(false)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
-  
-
-  useEffect(() => {
-    checkAuth()
-  }, [])
-
-  const checkAuth = async () => {
-    try {
-      // Simple localStorage-based auth for theboss
-      const isBossLoggedIn = localStorage.getItem('theboss-logged-in') === 'true'
-      if (isBossLoggedIn) {
-        setIsAuthenticated(true)
-        loadDashboardData()
-      } else {
-        setIsAuthenticated(false)
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error)
-      setIsAuthenticated(false)
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (username === 'afilip.mme@gmail.com' && password === 'shoricica01') {
+      setIsAuthenticated(true)
+      await fetchAnalytics()
+    } else {
+      setError('Invalid credentials')
+    }
+  }
+
+  const fetchAnalytics = async () => {
+    setIsLoading(true)
     setError('')
     
-    if (credentials.email !== 'afilip.mme@gmail.com' || credentials.password !== 'shoricica01') {
-      setError('Invalid credentials')
-      return
-    }
-
     try {
-      // Simple localStorage-based auth
-      localStorage.setItem('theboss-logged-in', 'true')
-      setIsAuthenticated(true)
-      loadDashboardData()
-    } catch (error) {
-      console.error('Login error:', error)
-      setError('Login failed')
-    }
-  }
-
-  const handleLogout = async () => {
-    localStorage.removeItem('theboss-logged-in')
-    setIsAuthenticated(false)
-    setDashboardData(null)
-  }
-
-  const loadDashboardData = async () => {
-    setIsRefreshing(true)
-    try {
-      const { data, error } = await supabase
-        .from('analytics_dashboard')
-        .select('*')
-        .single()
-
-      if (error) throw error
-      setDashboardData(data)
-    } catch (error) {
-      console.error('Failed to load dashboard data:', error)
-      setError('Failed to load dashboard data')
+      const response = await fetch('/api/analytics/dashboard')
+      if (response.ok) {
+        const data = await response.json()
+        setAnalytics(data)
+      } else {
+        setError('Failed to fetch analytics data')
+      }
+    } catch (err) {
+      setError('Error fetching analytics data')
     } finally {
-      setIsRefreshing(false)
+      setIsLoading(false)
     }
   }
 
@@ -113,296 +80,258 @@ export default function TheBossPage() {
     }).format(amount)
   }
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-600" />
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    )
-  }
-
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
-          <div className="text-center">
-            <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-              The Boss Dashboard
-            </h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Enter your credentials to access the analytics
-            </p>
-          </div>
-          
-          <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-            <div className="space-y-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold text-center">The Boss Dashboard</CardTitle>
+            <p className="text-gray-600 dark:text-gray-400 text-center">Admin Access Required</p>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                  Email
-                </label>
-                <input
-                  id="email"
-                  name="email"
+                <Label htmlFor="username">Email</Label>
+                <Input
+                  id="username"
                   type="email"
-                  required
-                  value={credentials.email}
-                  onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
-                  className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   placeholder="Enter your email"
+                  required
                 />
               </div>
-              
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                  Password
-                </label>
-                <div className="mt-1 relative">
-                  <input
-                    id="password"
-                    name="password"
-                    type={showPassword ? 'text' : 'password'}
-                    required
-                    value={credentials.password}
-                    onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-                    className="appearance-none relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                    placeholder="Enter your password"
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4 text-gray-400" />
-                    ) : (
-                      <Eye className="h-4 w-4 text-gray-400" />
-                    )}
-                  </button>
-                </div>
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  required
+                />
               </div>
-            </div>
-
-            {error && (
-              <div className="text-red-600 text-sm text-center">{error}</div>
-            )}
-
-            <div>
-              <button
-                type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Sign In
-              </button>
-            </div>
-          </form>
-        </div>
+              {error && (
+                <p className="text-red-500 text-sm">{error}</p>
+              )}
+              <Button type="submit" className="w-full">
+                Login
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">The Boss Dashboard</h1>
-              <p className="text-gray-600">Analytics and insights for Oops & Ask For</p>
-            </div>
-            <div className="flex space-x-4">
-              <button
-                onClick={loadDashboardData}
-                disabled={isRefreshing}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-              >
-                <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-                Refresh
-              </button>
-              <button
-                onClick={handleLogout}
-                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </button>
-            </div>
-          </div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            The Boss Dashboard
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Analytics and insights for Oops & Ask For
+          </p>
         </div>
-      </div>
 
-      {/* Dashboard Content */}
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        {/* Refresh Button */}
+        <div className="mb-6">
+          <Button 
+            onClick={fetchAnalytics} 
+            disabled={isLoading}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            <Activity className="w-4 h-4 mr-2" />
+            {isLoading ? 'Refreshing...' : 'Refresh Data'}
+          </Button>
+        </div>
+
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
-            <p className="text-red-800">{error}</p>
+          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+            <p className="text-red-600 dark:text-red-400">{error}</p>
           </div>
         )}
 
-        {dashboardData ? (
-          <div className="space-y-6">
-            {/* Key Metrics */}
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="bg-white overflow-hidden shadow rounded-lg">
-                <div className="p-5">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <Users className="h-6 w-6 text-blue-600" />
-                    </div>
-                    <div className="ml-5 w-0 flex-1">
-                      <dl>
-                        <dt className="text-sm font-medium text-gray-500 truncate">Total Users</dt>
-                        <dd className="text-lg font-medium text-gray-900">{formatNumber(dashboardData.total_users)}</dd>
-                      </dl>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        {analytics && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Total Users */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{formatNumber(analytics.total_users)}</div>
+                <p className="text-xs text-muted-foreground">
+                  Unique users registered
+                </p>
+              </CardContent>
+            </Card>
 
-              <div className="bg-white overflow-hidden shadow rounded-lg">
-                <div className="p-5">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <Zap className="h-6 w-6 text-green-600" />
-                    </div>
-                    <div className="ml-5 w-0 flex-1">
-                      <dl>
-                        <dt className="text-sm font-medium text-gray-500 truncate">Total Generations</dt>
-                        <dd className="text-lg font-medium text-gray-900">{formatNumber(dashboardData.total_generations)}</dd>
-                      </dl>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {/* Total Generations */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Generations</CardTitle>
+                <MessageSquare className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{formatNumber(analytics.total_generations)}</div>
+                <p className="text-xs text-muted-foreground">
+                  Messages generated
+                </p>
+              </CardContent>
+            </Card>
 
-              <div className="bg-white overflow-hidden shadow rounded-lg">
-                <div className="p-5">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <Activity className="h-6 w-6 text-purple-600" />
-                    </div>
-                    <div className="ml-5 w-0 flex-1">
-                      <dl>
-                        <dt className="text-sm font-medium text-gray-500 truncate">API Calls</dt>
-                        <dd className="text-lg font-medium text-gray-900">{formatNumber(dashboardData.total_api_calls)}</dd>
-                      </dl>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {/* Total API Calls */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">API Calls</CardTitle>
+                <Zap className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{formatNumber(analytics.total_api_calls)}</div>
+                <p className="text-xs text-muted-foreground">
+                  OpenAI API calls made
+                </p>
+              </CardContent>
+            </Card>
 
-              <div className="bg-white overflow-hidden shadow rounded-lg">
-                <div className="p-5">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <DollarSign className="h-6 w-6 text-yellow-600" />
-                    </div>
-                    <div className="ml-5 w-0 flex-1">
-                      <dl>
-                        <dt className="text-sm font-medium text-gray-500 truncate">Total Cost</dt>
-                        <dd className="text-lg font-medium text-gray-900">{formatCurrency(dashboardData.total_cost)}</dd>
-                      </dl>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Total Tokens */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Tokens Used</CardTitle>
+                <BarChart3 className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{formatNumber(analytics.total_tokens)}</div>
+                <p className="text-xs text-muted-foreground">
+                  Total tokens consumed
+                </p>
+              </CardContent>
+            </Card>
 
-            {/* Detailed Analytics */}
-            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-              {/* Users by Country */}
-              <div className="bg-white shadow rounded-lg">
-                <div className="px-4 py-5 sm:p-6">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">Users by Country</h3>
-                  <div className="space-y-3">
-                    {dashboardData.users_by_country?.map((item, index) => (
-                      <div key={index} className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-gray-900">{item.country || 'Unknown'}</span>
-                        <span className="text-sm text-gray-500">{formatNumber(item.count)}</span>
-                      </div>
-                    )) || <p className="text-gray-500">No data available</p>}
-                  </div>
-                </div>
-              </div>
+            {/* Total Cost */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Cost</CardTitle>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{formatCurrency(analytics.total_cost)}</div>
+                <p className="text-xs text-muted-foreground">
+                  Estimated OpenAI costs
+                </p>
+              </CardContent>
+            </Card>
 
-              {/* Generations by Mode */}
-              <div className="bg-white shadow rounded-lg">
-                <div className="px-4 py-5 sm:p-6">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">Generations by Mode</h3>
-                  <div className="space-y-3">
-                    {dashboardData.generations_by_mode?.map((item, index) => (
-                      <div key={index} className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-gray-900 capitalize">{item.mode.replace('_', ' ')}</span>
-                        <span className="text-sm text-gray-500">{formatNumber(item.count)}</span>
-                      </div>
-                    )) || <p className="text-gray-500">No data available</p>}
-                  </div>
-                </div>
-              </div>
+            {/* Total Donors */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Donors</CardTitle>
+                <Coffee className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{formatNumber(analytics.total_donors)}</div>
+                <p className="text-xs text-muted-foreground">
+                  Users who donated
+                </p>
+              </CardContent>
+            </Card>
 
-              {/* Generations by Country */}
-              <div className="bg-white shadow rounded-lg">
-                <div className="px-4 py-5 sm:p-6">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">Generations by Country</h3>
-                  <div className="space-y-3">
-                    {dashboardData.generations_by_country?.map((item, index) => (
-                      <div key={index} className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-gray-900">{item.country || 'Unknown'}</span>
-                        <span className="text-sm text-gray-500">{formatNumber(item.count)}</span>
-                      </div>
-                    )) || <p className="text-gray-500">No data available</p>}
-                  </div>
-                </div>
-              </div>
-
-              {/* Donations */}
-              <div className="bg-white shadow rounded-lg">
-                <div className="px-4 py-5 sm:p-6">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">Donations</h3>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-900">Total Donors</span>
-                      <span className="text-sm text-gray-500">{formatNumber(dashboardData.total_donors)}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-900">Total Amount</span>
-                      <span className="text-sm text-gray-500">{formatCurrency(dashboardData.total_donations)}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* API Usage Details */}
-            <div className="bg-white shadow rounded-lg">
-              <div className="px-4 py-5 sm:p-6">
-                <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">API Usage Details</h3>
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Total Tokens</dt>
-                    <dd className="mt-1 text-2xl font-semibold text-gray-900">{formatNumber(dashboardData.total_tokens)}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Total API Calls</dt>
-                    <dd className="mt-1 text-2xl font-semibold text-gray-900">{formatNumber(dashboardData.total_api_calls)}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Total Cost</dt>
-                    <dd className="mt-1 text-2xl font-semibold text-gray-900">{formatCurrency(dashboardData.total_cost)}</dd>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <RefreshCw className="h-12 w-12 animate-spin mx-auto mb-4 text-gray-400" />
-            <p className="text-gray-500">Loading dashboard data...</p>
+            {/* Total Donations */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Donations</CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{formatCurrency(analytics.total_donations)}</div>
+                <p className="text-xs text-muted-foreground">
+                  Total donation amount
+                </p>
+              </CardContent>
+            </Card>
           </div>
         )}
+
+        {/* Detailed Analytics */}
+        {analytics && (
+          <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Users by Country */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Globe className="w-5 h-5 mr-2" />
+                  Users by Country
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {analytics.users_by_country?.map((item, index) => (
+                    <div key={index} className="flex justify-between items-center">
+                      <span className="text-sm font-medium">{item.country || 'Unknown'}</span>
+                      <span className="text-sm text-muted-foreground">{formatNumber(item.count)}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Generations by Mode */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <PieChart className="w-5 h-5 mr-2" />
+                  Generations by Mode
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {analytics.generations_by_mode?.map((item, index) => (
+                    <div key={index} className="flex justify-between items-center">
+                      <span className="text-sm font-medium capitalize">{item.mode}</span>
+                      <span className="text-sm text-muted-foreground">{formatNumber(item.count)}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Generations by Country */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Globe className="w-5 h-5 mr-2" />
+                  Generations by Country
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {analytics.generations_by_country?.map((item, index) => (
+                    <div key={index} className="flex justify-between items-center">
+                      <span className="text-sm font-medium">{item.country || 'Unknown'}</span>
+                      <span className="text-sm text-muted-foreground">{formatNumber(item.count)}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Logout Button */}
+        <div className="mt-8 text-center">
+          <Button 
+            onClick={() => setIsAuthenticated(false)}
+            variant="outline"
+          >
+            Logout
+          </Button>
+        </div>
       </div>
     </div>
   )

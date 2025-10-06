@@ -1,33 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
 export async function POST(request: NextRequest) {
   try {
-    const { 
-      endpoint, 
-      tokens_used = 0, 
-      cost_estimate = 0, 
-      response_time_ms = 0 
-    } = await request.json()
+    const body = await request.json()
+    const { endpoint, tokens_used, cost_estimate, response_time_ms } = body
 
-    // Track the API call
+    // Generate a simple user_id and session_id for tracking
+    const user_id = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    const session_id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+
+    // Call the track_api_call function
     const { error } = await supabase.rpc('track_api_call', {
       p_endpoint: endpoint,
-      p_user_id: 'anonymous',
-      p_session_id: 'anonymous',
-      p_tokens_used: tokens_used,
-      p_cost_estimate: cost_estimate,
-      p_response_time_ms: response_time_ms
+      p_user_id: user_id,
+      p_session_id: session_id,
+      p_tokens_used: tokens_used || 0,
+      p_cost_estimate: cost_estimate || 0,
+      p_response_time_ms: response_time_ms || 0
     })
 
     if (error) {
-      console.error('Failed to track API call:', error)
+      console.error('Error tracking API call:', error)
       return NextResponse.json({ error: 'Failed to track API call' }, { status: 500 })
     }
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true }, { status: 200 })
   } catch (error) {
-    console.error('Track API call error:', error)
+    console.error('Error in track-api-call API:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

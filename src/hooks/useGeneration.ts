@@ -49,14 +49,48 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
     return count >= 5 && count % 5 === 0
   }
 
+  // Simple country detection using browser language
+  const getCountryCode = () => {
+    try {
+      // Try to get country from browser language
+      const lang = navigator.language || 'en-US'
+      const parts = lang.split('-')
+      if (parts.length > 1) {
+        return parts[1].toLowerCase()
+      }
+      
+      // Fallback to timezone
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+      const countryMap: { [key: string]: string } = {
+        'America/New_York': 'us',
+        'America/Los_Angeles': 'us',
+        'Europe/London': 'gb',
+        'Europe/Paris': 'fr',
+        'Europe/Berlin': 'de',
+        'Europe/Rome': 'it',
+        'Europe/Madrid': 'es',
+        'Asia/Tokyo': 'jp',
+        'Asia/Shanghai': 'cn',
+        'Asia/Seoul': 'kr',
+        'Australia/Sydney': 'au',
+        'America/Sao_Paulo': 'br',
+        'Europe/Bucharest': 'ro'
+      }
+      
+      return countryMap[timezone] || 'unknown'
+    } catch {
+      return 'unknown'
+    }
+  }
+
   const handleGenerate = async () => {
     if (!originalText.trim()) return
     
-    // Don't generate if language detection is still in progress
-    if (isDetecting || isLoading) {
-      console.log('⏳ Language detection in progress, waiting...', { isDetecting, isLoading })
-      return
-    }
+    // Don't generate if language detection is still in progress (temporarily disabled for testing)
+    // if (isDetecting || isLoading) {
+    //   console.log('⏳ Language detection in progress, waiting...', { isDetecting, isLoading })
+    //   return
+    // }
 
     setIsGenerating(true)
     try {
@@ -71,7 +105,8 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
         sessionId: localStorage.getItem('oops-ask-session') || '',
         replyMode: replyMode || false,
         replyContext: replyContext || '',
-        replyVoice: replyVoice || 'dramatic'
+        replyVoice: replyVoice || 'dramatic',
+        countryCode: getCountryCode()
       }
 
       // Sending request to API

@@ -202,7 +202,7 @@ export default function AskPage() {
                       onChange={(e) => setOriginalText(e.target.value)}
                       placeholder={t('ui.type_your_request')}
                       className="w-full h-32 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                      disabled={isGenerating || isDetecting || isLoading}
+                      disabled={isGenerating}
                     />
                   </div>
 
@@ -218,7 +218,7 @@ export default function AskPage() {
                         onChange={(e) => setRecipientName(e.target.value)}
                         placeholder={t('ui.recipient_name_placeholder')}
                         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                        disabled={isGenerating || isDetecting || isLoading}
+                        disabled={isGenerating}
                       />
                     </div>
                     <div>
@@ -229,7 +229,7 @@ export default function AskPage() {
                         value={recipientRelationship}
                         onChange={(e) => setRecipientRelationship(e.target.value)}
                         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                        disabled={isGenerating || isDetecting || isLoading}
+                        disabled={isGenerating}
                       >
                         <option value="">{t('ui.select_relationship')}</option>
                         {relationships.map((rel) => (
@@ -244,7 +244,7 @@ export default function AskPage() {
                   {/* Generate Button */}
                   <Button
                     onClick={handleGenerate}
-                    disabled={!originalText.trim() || isGenerating || isDetecting || isLoading}
+                    disabled={!originalText.trim() || isGenerating}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                     size="lg"
                   >

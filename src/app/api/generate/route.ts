@@ -280,7 +280,10 @@ async function trackAnalytics(
     const countryCode = body.countryCode || 'unknown'
     
     // Track generation
-    await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/analytics/track-generation`, {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'
+    console.log('📊 Tracking analytics:', { baseUrl, mode: body.mode, countryCode })
+    
+    await fetch(`${baseUrl}/api/analytics/track-generation`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -290,10 +293,18 @@ async function trackAnalytics(
         tokens_used: tokensUsed,
         cost_estimate: costEstimate
       })
+    }).then(res => {
+      if (!res.ok) {
+        console.error('Failed to track generation:', res.status, res.statusText)
+      } else {
+        console.log('✅ Generation tracked successfully')
+      }
+    }).catch(err => {
+      console.error('Error tracking generation:', err)
     })
 
     // Track API call
-    await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/analytics/track-api-call`, {
+    await fetch(`${baseUrl}/api/analytics/track-api-call`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -302,6 +313,14 @@ async function trackAnalytics(
         cost_estimate: costEstimate,
         response_time_ms: processingTime
       })
+    }).then(res => {
+      if (!res.ok) {
+        console.error('Failed to track API call:', res.status, res.statusText)
+      } else {
+        console.log('✅ API call tracked successfully')
+      }
+    }).catch(err => {
+      console.error('Error tracking API call:', err)
     })
   } catch (error) {
     console.error('Failed to track analytics:', error)

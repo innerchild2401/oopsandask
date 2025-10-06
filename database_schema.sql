@@ -319,3 +319,156 @@ COMMENT ON COLUMN conversations.language IS 'Language code for the conversation'
 COMMENT ON COLUMN conversations.reply_voice IS 'Voice for replies: dramatic or legal';
 COMMENT ON COLUMN conversations.expires_at IS 'Auto-cleanup after 30 days';
 COMMENT ON COLUMN conversations.is_active IS 'Soft delete flag';
+
+-- =================================================================
+-- ANALYTICS TABLES FOR ADMIN DASHBOARD
+-- =================================================================
+
+-- Analytics tables for theboss dashboard
+CREATE TABLE IF NOT EXISTS analytics_generations (
+  id SERIAL PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  session_id TEXT NOT NULL,
+  mode TEXT NOT NULL,
+  language_code TEXT NOT NULL,
+  country_code TEXT,
+  tokens_used INTEGER DEFAULT 0,
+  cost_estimate DECIMAL(10,6) DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS analytics_users (
+  user_id TEXT PRIMARY KEY,
+  session_id TEXT NOT NULL,
+  country_code TEXT,
+  total_generations INTEGER DEFAULT 1,
+  first_seen TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  last_seen TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS analytics_api_calls (
+  id SERIAL PRIMARY KEY,
+  endpoint TEXT NOT NULL,
+  user_id TEXT NOT NULL,
+  session_id TEXT NOT NULL,
+  tokens_used INTEGER DEFAULT 0,
+  cost_estimate DECIMAL(10,6) DEFAULT 0,
+  response_time_ms INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS analytics_donations (
+  id SERIAL PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  session_id TEXT NOT NULL,
+  amount DECIMAL(10,2) NOT NULL,
+  currency TEXT DEFAULT 'USD',
+  payment_method TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create a function to track generation
+CREATE OR REPLACE FUNCTION track_generation(
+  p_user_id TEXT,
+  p_session_id TEXT,
+  p_mode TEXT,
+  p_language_code TEXT,
+  p_country_code TEXT DEFAULT NULL,
+  p_tokens_used INTEGER DEFAULT 0,
+  p_cost_estimate DECIMAL DEFAULT 0
+) RETURNS VOID AS $$
+BEGIN
+  -- Insert generation record
+  INSERT INTO analytics_generations (
+    user_id, session_id, mode, language_code, country_code, 
+    tokens_used, cost_estimate
+  ) VALUES (
+    p_user_id, p_session_id, p_mode, p_language_code, p_country_code,
+    p_tokens_used, p_cost_estimate
+  );
+  
+  -- Update or insert user record using UPSERT logic
+  INSERT INTO analytics_users (
+    user_id, session_id, country_code, total_generations
+  ) VALUES (
+    p_user_id, p_session_id, p_country_code, 1
+  );
+  
+  -- If the insert failed due to unique constraint, update instead
+  EXCEPTION WHEN unique_violation THEN
+    UPDATE analytics_users 
+    SET 
+      last_seen = NOW(),
+      total_generations = total_generations + 1,
+      country_code = COALESCE(p_country_code, country_code)
+    WHERE user_id = p_user_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create a function to track API calls
+CREATE OR REPLACE FUNCTION track_api_call(
+  p_endpoint TEXT,
+  p_user_id TEXT,
+  p_session_id TEXT,
+  p_tokens_used INTEGER DEFAULT 0,
+  p_cost_estimate DECIMAL DEFAULT 0,
+  p_response_time_ms INTEGER DEFAULT 0
+) RETURNS VOID AS $$
+BEGIN
+  INSERT INTO analytics_api_calls (
+    endpoint, user_id, session_id, tokens_used, cost_estimate, response_time_ms
+  ) VALUES (
+    p_endpoint, p_user_id, p_session_id, p_tokens_used, p_cost_estimate, p_response_time_ms
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create a function to track donations
+CREATE OR REPLACE FUNCTION track_donation(
+  p_user_id TEXT,
+  p_session_id TEXT,
+  p_amount DECIMAL,
+  p_currency TEXT DEFAULT 'USD',
+  p_payment_method TEXT DEFAULT NULL
+) RETURNS VOID AS $$
+BEGIN
+  INSERT INTO analytics_donations (
+    user_id, session_id, amount, currency, payment_method
+  ) VALUES (
+    p_user_id, p_session_id, p_amount, p_currency, p_payment_method
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create analytics dashboard view
+CREATE OR REPLACE VIEW analytics_dashboard AS
+SELECT 
+  (SELECT COUNT(DISTINCT user_id) FROM analytics_users) as total_users,
+  (SELECT COUNT(*) FROM analytics_generations) as total_generations,
+  (SELECT COUNT(*) FROM analytics_api_calls) as total_api_calls,
+  (SELECT COALESCE(SUM(tokens_used), 0) FROM analytics_api_calls) as total_tokens,
+  (SELECT COALESCE(SUM(cost_estimate), 0) FROM analytics_api_calls) as total_cost,
+  (SELECT COUNT(DISTINCT user_id) FROM analytics_donations) as total_donors,
+  (SELECT COALESCE(SUM(amount), 0) FROM analytics_donations) as total_donations,
+  (SELECT COUNT(*) FROM analytics_generations WHERE created_at >= NOW() - INTERVAL '24 hours') as generations_today,
+  (SELECT COUNT(*) FROM analytics_generations WHERE created_at >= NOW() - INTERVAL '7 days') as generations_this_week,
+  (SELECT COUNT(*) FROM analytics_generations WHERE created_at >= NOW() - INTERVAL '30 days') as generations_this_month;
+
+-- Create theboss user for admin access
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'theboss') THEN
+    CREATE ROLE theboss;
+  END IF;
+END
+$$;
+
+-- Grant permissions for theboss user
+GRANT ALL ON analytics_generations TO theboss;
+GRANT ALL ON analytics_users TO theboss;
+GRANT ALL ON analytics_api_calls TO theboss;
+GRANT ALL ON analytics_donations TO theboss;
+GRANT EXECUTE ON FUNCTION track_generation TO theboss;
+GRANT EXECUTE ON FUNCTION track_api_call TO theboss;
+GRANT EXECUTE ON FUNCTION track_donation TO theboss;
+GRANT SELECT ON analytics_dashboard TO theboss;
