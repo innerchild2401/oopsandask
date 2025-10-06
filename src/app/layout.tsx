@@ -5,6 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { TranslationProvider } from "@/lib/translation.hook";
 import { LanguageModalWrapper } from "@/components/shared/LanguageModalWrapper";
+import { TutorialProvider } from "@/lib/tutorial.context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -49,12 +50,14 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
         <TranslationProvider>
-          <Header />
-          <main className="flex-1">
-            {children}
-          </main>
-          <Footer />
-          <LanguageModalWrapper />
+          <TutorialProvider>
+            <Header />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
+            <LanguageModalWrapper />
+          </TutorialProvider>
         </TranslationProvider>
       </body>
     </html>

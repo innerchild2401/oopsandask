@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button'
 import { useTranslation } from '@/lib/i18n'
 import { useGeneration } from '@/hooks/useGeneration'
 import { DonationModal } from '@/components/shared/DonationModal'
+import { TutorialTrigger } from '@/components/tutorial/TutorialTrigger'
+import { TutorialOverlay } from '@/components/tutorial/TutorialOverlay'
 import Link from 'next/link'
 
 export default function OopsPage() {
@@ -110,7 +112,7 @@ export default function OopsPage() {
 
             {/* Generated Text Display */}
             {generatedText && (
-              <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-6 border border-red-200 dark:border-red-800 max-w-full">
+              <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-6 border border-red-200 dark:border-red-800 max-w-full" data-tutorial="generated-text">
                 {/* Header with Action Buttons */}
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -151,6 +153,7 @@ export default function OopsPage() {
                   <Button
                     onClick={handleShare}
                     className="w-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-semibold py-3"
+                    data-tutorial="share-button"
                   >
                     <Share className="mr-2 h-4 w-4" />
                     {t('ui.share')}
@@ -160,7 +163,7 @@ export default function OopsPage() {
             )}
 
             {/* Input Form */}
-            <div className="space-y-6">
+            <div className="space-y-6" data-tutorial="input-form">
               <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   {t('ui.what_did_you_mess_up')}
@@ -261,6 +264,10 @@ export default function OopsPage() {
         generationCount={generationCount}
         language={currentLanguage.code}
       />
+
+      {/* Tutorial Components */}
+      <TutorialTrigger type="main" trigger="manual" />
+      <TutorialOverlay />
     </div>
   )
 }

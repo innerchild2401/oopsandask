@@ -7,6 +7,8 @@ import { Copy, RefreshCw, MessageCircle, Scale, ArrowLeft, Share } from 'lucide-
 import { useTranslation } from '@/lib/i18n'
 import { useGeneration } from '@/hooks/useGeneration'
 import { DonationModal } from '@/components/shared/DonationModal'
+import { TutorialTrigger } from '@/components/tutorial/TutorialTrigger'
+import { TutorialOverlay } from '@/components/tutorial/TutorialOverlay'
 import Link from 'next/link'
 
 function ReplyPageContent() {
@@ -106,7 +108,7 @@ function ReplyPageContent() {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-4">
-              <Link href="/" className="mr-4">
+              <Link href="/" className="mr-4" data-tutorial="back-home">
                 <Button variant="outline" size="sm">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   {t('ui.back_to_home')}
@@ -172,7 +174,7 @@ function ReplyPageContent() {
           <div className="space-y-8">
             {/* Generated Text Display */}
             {generatedText && (
-              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800 max-w-full">
+              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800 max-w-full" data-tutorial="generated-text">
                 {/* Header with Action Buttons */}
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -213,6 +215,7 @@ function ReplyPageContent() {
                   <Button
                     onClick={handleShare}
                     className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold py-3"
+                    data-tutorial="share-button"
                   >
                     <Share className="mr-2 h-4 w-4" />
                     {t('ui.share')}
@@ -222,7 +225,7 @@ function ReplyPageContent() {
             )}
 
             {/* Input Form */}
-            <div className="space-y-6">
+            <div className="space-y-6" data-tutorial="reply-form">
               <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   {t('reply.your_response')}
@@ -324,6 +327,10 @@ function ReplyPageContent() {
           language={currentLanguage.code}
         />
       )}
+
+      {/* Tutorial Components */}
+      <TutorialTrigger type="reply" trigger="auto" />
+      <TutorialOverlay />
     </div>
   )
 }
