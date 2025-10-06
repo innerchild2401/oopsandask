@@ -98,7 +98,9 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(generatedText)
+      // Apply bold formatting to copied text
+      const formattedText = `**${generatedText}**`
+      await navigator.clipboard.writeText(formattedText)
       setIsCopied(true)
       setTimeout(() => setIsCopied(false), 2000)
     } catch (error) {
