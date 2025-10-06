@@ -136,18 +136,14 @@ export default function AskPage() {
             {/* Generated Text Display */}
             {generatedText && (
               <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800 max-w-full">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                  {t('ui.generated_response')}
-                </h3>
-                
-                {/* Generated Text with Floating Action Buttons */}
-                <div className="relative">
-                  <div className="generated-text-container text-gray-800 dark:text-gray-200">
-                    {generatedText}
-                  </div>
+                {/* Header with Action Buttons */}
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    {t('ui.generated_response')}
+                  </h3>
                   
-                  {/* Floating Action Buttons */}
-                  <div className="absolute top-2 left-2 flex space-x-1">
+                  {/* Action Buttons */}
+                  <div className="flex space-x-2">
                     <Button
                       onClick={handleCopy}
                       variant="outline"
@@ -168,6 +164,11 @@ export default function AskPage() {
                       <RefreshCw className="h-4 w-4" />
                     </Button>
                   </div>
+                </div>
+                
+                {/* Generated Text */}
+                <div className="generated-text-container text-gray-800 dark:text-gray-200">
+                  {generatedText}
                 </div>
                 
                 {/* Share Button Below */}
