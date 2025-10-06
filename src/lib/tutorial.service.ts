@@ -29,40 +29,40 @@ export class TutorialService {
   private static getFallbackText(step: string): { title: string; description: string } {
     const fallbacks: Record<string, { title: string; description: string }> = {
       'main-welcome': {
-        title: 'Welcome to Oops & Ask!',
-        description: 'Create dramatic messages for life\'s awkward moments. Let\'s show you how it works!'
+        title: 'Welcome! 👋',
+        description: 'Create dramatic messages for life\'s awkward moments. Let\'s get started!'
       },
       'main-modes': {
-        title: 'Choose Your Mode',
-        description: 'Tap "Ask" for dramatic requests or "Oops" for over-the-top apologies. Each mode has its own style!'
+        title: 'Choose Your Mode 🎭',
+        description: 'Tap "Ask" for requests or "Oops" for apologies. Each has its own dramatic style!'
       },
       'main-input': {
-        title: 'Tell Us What You Need',
-        description: 'Type your message, add a recipient name, and select your relationship. The AI will make it dramatic!'
+        title: 'Tell Us What You Need ✍️',
+        description: 'Type your message, add a name, and select relationship. AI will make it dramatic!'
       },
       'main-output': {
-        title: 'Your Dramatic Message',
-        description: 'Here\'s your generated message! Use the copy button to copy it, or regenerate for a different style.'
+        title: 'Your Dramatic Message ✨',
+        description: 'Here\'s your generated message! Copy it or regenerate for a different style.'
       },
       'main-share': {
-        title: 'Share Your Message',
-        description: 'Tap share to open your phone\'s sharing options. Send via WhatsApp, SMS, or any app you prefer!'
+        title: 'Share Your Message 📤',
+        description: 'Tap share to open your phone\'s sharing options. Send via any app you prefer!'
       },
       'reply-welcome': {
-        title: 'Reply Mode',
+        title: 'Reply Mode 💬',
         description: 'You\'re replying to a dramatic message! Choose your voice and craft your response.'
       },
       'reply-interface': {
-        title: 'Reply Interface',
-        description: 'Select dramatic or legal voice, then type your reply. The AI will match the original style!'
+        title: 'Reply Interface 🎯',
+        description: 'Select dramatic or legal voice, then type your reply. AI will match the style!'
       },
       'reply-output': {
-        title: 'Your Reply',
+        title: 'Your Reply 🎪',
         description: 'Here\'s your dramatic reply! Copy it or regenerate for a different approach.'
       },
       'reply-navigation': {
-        title: 'Back to Home',
-        description: 'When done, tap "Back to Home" to create new messages for other friends and family!'
+        title: 'Back to Home 🏠',
+        description: 'When done, tap "Back to Home" to create new messages for other friends!'
       }
     }
 

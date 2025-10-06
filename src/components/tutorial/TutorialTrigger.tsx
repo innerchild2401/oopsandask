@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useTutorial } from '@/lib/tutorial.context'
 import { useTranslation } from '@/lib/i18n'
 
@@ -41,11 +41,37 @@ export function TutorialTrigger({ type, trigger = 'auto', delay = 1000 }: Tutori
     startTutorial(type)
   }
 
+  // Add touch gesture support
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null)
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0]
+    setTouchStart({ x: touch.clientX, y: touch.clientY })
+  }
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStart) return
+
+    const touch = e.changedTouches[0]
+    const deltaX = touch.clientX - touchStart.x
+    const deltaY = touch.clientY - touchStart.y
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
+
+    // If it's a tap (small movement), start tutorial
+    if (distance < 10) {
+      handleManualStart()
+    }
+
+    setTouchStart(null)
+  }
+
   if (trigger === 'manual') {
     return (
       <button
         onClick={handleManualStart}
-        className="fixed bottom-4 right-4 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg z-40 transition-colors"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        className="fixed bottom-4 right-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white p-3 rounded-full shadow-lg z-40 transition-colors touch-manipulation"
         title="Start Tutorial"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

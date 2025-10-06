@@ -6,9 +6,11 @@ import { Spotlight } from './Spotlight'
 import { useTutorial } from '@/lib/tutorial.context'
 import { TutorialService } from '@/lib/tutorial.service'
 import { TutorialConfig } from '@/lib/tutorial.types'
+import { useTranslation } from '@/lib/i18n'
 
 export function TutorialOverlay() {
   const { isActive, currentStep, tutorialType, nextStep, prevStep, skipTutorial, closeTutorial } = useTutorial()
+  const { currentLanguage } = useTranslation()
   const [config, setConfig] = useState<TutorialConfig | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -24,8 +26,8 @@ export function TutorialOverlay() {
     setIsLoading(true)
     try {
       const tutorialConfig = tutorialType === 'main' 
-        ? await TutorialService.getMainTutorial('en') // TODO: Get from language context
-        : await TutorialService.getReplyTutorial('en')
+        ? await TutorialService.getMainTutorial(currentLanguage.code)
+        : await TutorialService.getReplyTutorial(currentLanguage.code)
       
       setConfig(tutorialConfig)
     } catch (error) {
@@ -59,14 +61,14 @@ export function TutorialOverlay() {
 
   return (
     <>
-      {/* Spotlight Effect */}
+      {/* Spotlight Effect - Lower z-index so it doesn't block modal */}
       <Spotlight
         targetElement={currentStepData.targetElement}
         highlight={currentStepData.highlight}
         isActive={isActive}
       />
       
-      {/* Tutorial Step */}
+      {/* Tutorial Step - Higher z-index */}
       <TutorialStep
         step={currentStepData}
         currentStep={currentStep}
