@@ -13,6 +13,9 @@ export function TutorialOverlay() {
   const { currentLanguage, t } = useTranslation()
   const [config, setConfig] = useState<TutorialConfig | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  
+  // Tutorial feature flag - set to false to disable tutorial functionality
+  const TUTORIAL_ENABLED = process.env.NEXT_PUBLIC_TUTORIAL_ENABLED === 'true'
 
   useEffect(() => {
     if (isActive && tutorialType) {
@@ -35,6 +38,11 @@ export function TutorialOverlay() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  // Don't render anything if tutorial is disabled
+  if (!TUTORIAL_ENABLED) {
+    return null
   }
 
   if (!isActive || !config || isLoading) {

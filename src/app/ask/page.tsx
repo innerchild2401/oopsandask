@@ -6,8 +6,6 @@ import { Button } from '@/components/ui/button'
 import { useTranslation } from '@/lib/i18n'
 import { useGeneration } from '@/hooks/useGeneration'
 import { DonationModal } from '@/components/shared/DonationModal'
-import { TutorialTrigger } from '@/components/tutorial/TutorialTrigger'
-import { TutorialOverlay } from '@/components/tutorial/TutorialOverlay'
 import Link from 'next/link'
 
 export default function AskPage() {
@@ -291,8 +289,6 @@ export default function AskPage() {
       />
 
       {/* Tutorial Components */}
-      <TutorialTrigger type="main" trigger="manual" />
-      <TutorialOverlay />
     </div>
   )
 }

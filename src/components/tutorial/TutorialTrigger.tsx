@@ -13,8 +13,13 @@ interface TutorialTriggerProps {
 export function TutorialTrigger({ type, trigger = 'auto', delay = 1000 }: TutorialTriggerProps) {
   const { startTutorial } = useTutorial()
   const { currentLanguage } = useTranslation()
+  
+  // Tutorial feature flag - set to false to disable tutorial functionality
+  const TUTORIAL_ENABLED = process.env.NEXT_PUBLIC_TUTORIAL_ENABLED === 'true'
 
   useEffect(() => {
+    if (!TUTORIAL_ENABLED) return
+    
     if (trigger === 'auto') {
       // Check if tutorial was already completed
       const tutorialCompleted = localStorage.getItem('oops-ask-tutorial-completed')
@@ -35,9 +40,10 @@ export function TutorialTrigger({ type, trigger = 'auto', delay = 1000 }: Tutori
         return () => clearTimeout(timer)
       }
     }
-  }, [type, trigger, delay, startTutorial])
+  }, [type, trigger, delay, startTutorial, TUTORIAL_ENABLED])
 
   const handleManualStart = () => {
+    if (!TUTORIAL_ENABLED) return
     startTutorial(type)
   }
 
@@ -63,6 +69,11 @@ export function TutorialTrigger({ type, trigger = 'auto', delay = 1000 }: Tutori
     }
 
     setTouchStart(null)
+  }
+
+  // Don't render anything if tutorial is disabled
+  if (!TUTORIAL_ENABLED) {
+    return null
   }
 
   if (trigger === 'manual') {

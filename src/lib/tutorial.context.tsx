@@ -9,8 +9,13 @@ export function TutorialProvider({ children }: { children: React.ReactNode }) {
   const [isActive, setIsActive] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [tutorialType, setTutorialType] = useState<TutorialType | null>(null)
+  
+  // Tutorial feature flag - set to false to disable tutorial functionality
+  const TUTORIAL_ENABLED = process.env.NEXT_PUBLIC_TUTORIAL_ENABLED === 'true'
 
   const startTutorial = useCallback((type: TutorialType) => {
+    if (!TUTORIAL_ENABLED) return
+    
     setTutorialType(type)
     setCurrentStep(0)
     setIsActive(true)
@@ -18,7 +23,7 @@ export function TutorialProvider({ children }: { children: React.ReactNode }) {
     // Store tutorial state in localStorage
     localStorage.setItem('oops-ask-tutorial-active', 'true')
     localStorage.setItem('oops-ask-tutorial-type', type)
-  }, [])
+  }, [TUTORIAL_ENABLED])
 
   const nextStep = useCallback(() => {
     setCurrentStep(prev => prev + 1)
@@ -52,6 +57,8 @@ export function TutorialProvider({ children }: { children: React.ReactNode }) {
 
   // Check for tutorial state on mount
   useEffect(() => {
+    if (!TUTORIAL_ENABLED) return
+    
     const isTutorialActive = localStorage.getItem('oops-ask-tutorial-active') === 'true'
     const tutorialType = localStorage.getItem('oops-ask-tutorial-type') as TutorialType | null
     
@@ -59,7 +66,7 @@ export function TutorialProvider({ children }: { children: React.ReactNode }) {
       setIsActive(true)
       setTutorialType(tutorialType)
     }
-  }, [])
+  }, [TUTORIAL_ENABLED])
 
   const value: TutorialContextType = {
     isActive,

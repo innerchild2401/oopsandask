@@ -6,8 +6,6 @@ import { ArrowRight, Globe } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTranslation } from '@/lib/i18n'
 import { generateSessionToken } from '@/lib/utils'
-import { TutorialTrigger } from '@/components/tutorial/TutorialTrigger'
-import { TutorialOverlay } from '@/components/tutorial/TutorialOverlay'
 
 export default function HomePage() {
   const { t, currentLanguage } = useTranslation()
@@ -109,8 +107,6 @@ export default function HomePage() {
       </div>
 
       {/* Tutorial Components */}
-      <TutorialTrigger type="main" trigger="auto" />
-      <TutorialOverlay />
     </div>
   )
 }

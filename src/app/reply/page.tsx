@@ -7,8 +7,6 @@ import { Copy, RefreshCw, MessageCircle, Scale, ArrowLeft, Share } from 'lucide-
 import { useTranslation } from '@/lib/i18n'
 import { useGeneration } from '@/hooks/useGeneration'
 import { DonationModal } from '@/components/shared/DonationModal'
-import { TutorialTrigger } from '@/components/tutorial/TutorialTrigger'
-import { TutorialOverlay } from '@/components/tutorial/TutorialOverlay'
 import Link from 'next/link'
 
 function ReplyPageContent() {
@@ -329,8 +327,6 @@ function ReplyPageContent() {
       )}
 
       {/* Tutorial Components */}
-      <TutorialTrigger type="reply" trigger="auto" />
-      <TutorialOverlay />
     </div>
   )
 }
