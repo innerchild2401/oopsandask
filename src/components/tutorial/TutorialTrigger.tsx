@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { useTutorial } from '@/lib/tutorial.context'
 import { useTranslation } from '@/lib/translation.hook'
+import { safeLocalStorage } from '@/lib/safe-utils'
 
 interface TutorialTriggerProps {
   type: 'main' | 'reply'
@@ -22,15 +23,15 @@ export function TutorialTrigger({ type, trigger = 'auto', delay = 1000 }: Tutori
     
     if (trigger === 'auto') {
       // Check if tutorial was already completed
-      const tutorialCompleted = localStorage.getItem('oops-ask-tutorial-completed')
+      const tutorialCompleted = safeLocalStorage.getItem('oops-ask-tutorial-completed')
       if (tutorialCompleted) {
         return
       }
 
       // Check if this is the first visit
-      const firstVisit = !localStorage.getItem('oops-ask-first-visit')
+      const firstVisit = !safeLocalStorage.getItem('oops-ask-first-visit')
       if (firstVisit) {
-        localStorage.setItem('oops-ask-first-visit', 'true')
+        safeLocalStorage.setItem('oops-ask-first-visit', 'true')
         
         // Start tutorial after delay
         const timer = setTimeout(() => {

@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import { TutorialContextType, TutorialType } from './tutorial.types'
+import { safeLocalStorage } from './safe-utils'
 
 const TutorialContext = createContext<TutorialContextType | undefined>(undefined)
 
@@ -21,8 +22,8 @@ export function TutorialProvider({ children }: { children: React.ReactNode }) {
     setIsActive(true)
     
     // Store tutorial state in localStorage
-    localStorage.setItem('oops-ask-tutorial-active', 'true')
-    localStorage.setItem('oops-ask-tutorial-type', type)
+    safeLocalStorage.setItem('oops-ask-tutorial-active', 'true')
+    safeLocalStorage.setItem('oops-ask-tutorial-type', type)
   }, [TUTORIAL_ENABLED])
 
   const nextStep = useCallback(() => {
@@ -39,9 +40,9 @@ export function TutorialProvider({ children }: { children: React.ReactNode }) {
     setTutorialType(null)
     
     // Mark tutorial as completed
-    localStorage.setItem('oops-ask-tutorial-completed', 'true')
-    localStorage.removeItem('oops-ask-tutorial-active')
-    localStorage.removeItem('oops-ask-tutorial-type')
+    safeLocalStorage.setItem('oops-ask-tutorial-completed', 'true')
+    safeLocalStorage.removeItem('oops-ask-tutorial-active')
+    safeLocalStorage.removeItem('oops-ask-tutorial-type')
   }, [])
 
   const closeTutorial = useCallback(() => {
@@ -50,17 +51,17 @@ export function TutorialProvider({ children }: { children: React.ReactNode }) {
     setTutorialType(null)
     
     // Mark tutorial as completed
-    localStorage.setItem('oops-ask-tutorial-completed', 'true')
-    localStorage.removeItem('oops-ask-tutorial-active')
-    localStorage.removeItem('oops-ask-tutorial-type')
+    safeLocalStorage.setItem('oops-ask-tutorial-completed', 'true')
+    safeLocalStorage.removeItem('oops-ask-tutorial-active')
+    safeLocalStorage.removeItem('oops-ask-tutorial-type')
   }, [])
 
   // Check for tutorial state on mount
   useEffect(() => {
     if (!TUTORIAL_ENABLED) return
     
-    const isTutorialActive = localStorage.getItem('oops-ask-tutorial-active') === 'true'
-    const tutorialType = localStorage.getItem('oops-ask-tutorial-type') as TutorialType | null
+    const isTutorialActive = safeLocalStorage.getItem('oops-ask-tutorial-active') === 'true'
+    const tutorialType = safeLocalStorage.getItem('oops-ask-tutorial-type') as TutorialType | null
     
     if (isTutorialActive && tutorialType) {
       setIsActive(true)

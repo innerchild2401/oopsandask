@@ -8,6 +8,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import type { TranslationContext as TranslationContextType, TranslationKey } from './translation.types'
 import { TranslationSupabase } from './translation.supabase'
 import { LanguageDetectionService } from './translation.detection'
+import { safeLocalStorage, safeWindow, safeURLSearchParams, safeAsync } from './safe-utils'
 
 // English fallback translations
 const ENGLISH_TRANSLATIONS: Record<TranslationKey, string> = {
@@ -243,17 +244,18 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
   // Load language from localStorage on mount
   useEffect(() => {
     // Check if language is specified in URL (from shared links)
-    const urlParams = new URLSearchParams(window.location.search)
-    const urlLanguage = urlParams.get('lang')
+    const locationSearch = safeWindow.getLocationSearch()
+    const urlParams = safeURLSearchParams(locationSearch)
+    const urlLanguage = urlParams?.get('lang')
     
     if (urlLanguage) {
       console.log('Language from URL:', urlLanguage)
       setLanguageState(urlLanguage)
       loadTranslations(urlLanguage)
       // Save the language from URL to localStorage
-      localStorage.setItem('oops-ask-language', urlLanguage)
+      safeLocalStorage.setItem('oops-ask-language', urlLanguage)
     } else {
-      const savedLanguage = localStorage.getItem('oops-ask-language')
+      const savedLanguage = safeLocalStorage.getItem('oops-ask-language')
       if (savedLanguage) {
         setLanguageState(savedLanguage)
         loadTranslations(savedLanguage)
@@ -417,12 +419,16 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
   // Set language and load translations
   const setLanguage = useCallback(async (newLanguage: string, forceRegenerate = false) => {
     setLanguageState(newLanguage)
-    localStorage.setItem('oops-ask-language', newLanguage)
+    safeLocalStorage.setItem('oops-ask-language', newLanguage)
     
     // Save to Supabase if we have a session
-    const sessionId = localStorage.getItem('oops-ask-session')
+    const sessionId = safeLocalStorage.getItem('oops-ask-session')
     if (sessionId) {
-      await TranslationSupabase.saveLanguagePreference(sessionId, newLanguage)
+      await safeAsync(
+        () => TranslationSupabase.saveLanguagePreference(sessionId, newLanguage),
+        false,
+        'Failed to save language preference to Supabase'
+      )
     }
     
     await loadTranslations(newLanguage, forceRegenerate)

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { X, ChevronLeft, ChevronRight, SkipForward, ArrowDown } from 'lucide-react'
 import { TutorialStep as TutorialStepType } from '@/lib/tutorial.types'
 import { useTranslation } from '@/lib/translation.hook'
+import { safeWindow, safeQuerySelector, safeGetBoundingClientRect, safeAddEventListener } from '@/lib/safe-utils'
 
 interface TutorialStepProps {
   step: TutorialStepType
@@ -35,26 +36,28 @@ export function TutorialStep({
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
+      setIsMobile(safeWindow.getInnerWidth() < 768)
     }
     
     checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
+    const cleanup = safeAddEventListener(window, 'resize', checkMobile)
+    return cleanup
   }, [])
 
   useEffect(() => {
     if (step.targetElement) {
-      const element = document.querySelector(step.targetElement)
+      const element = safeQuerySelector(step.targetElement)
       if (element) {
-        const rect = element.getBoundingClientRect()
-        const viewportHeight = window.innerHeight
+        const rect = safeGetBoundingClientRect(element)
+        if (rect) {
+          const viewportHeight = safeWindow.getInnerHeight()
         
-        // Position modal based on element location
-        if (rect.top < viewportHeight / 2) {
-          setModalPosition('bottom')
-        } else {
-          setModalPosition('top')
+          // Position modal based on element location
+          if (rect.top < viewportHeight / 2) {
+            setModalPosition('bottom')
+          } else {
+            setModalPosition('top')
+          }
         }
       }
     }

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { X, Coffee, Heart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTranslation } from '@/lib/i18n'
+import { safeLocalStorage, safeWindow } from '@/lib/safe-utils'
 
 interface DonationModalProps {
   isOpen: boolean
@@ -60,9 +61,9 @@ export function DonationModal({ isOpen, onClose, generationCount, language = 'en
   const handleDonate = async () => {
     const buyMeACoffeeUrl = process.env.NEXT_PUBLIC_BUYMEACOFFEE_URL
     if (buyMeACoffeeUrl) {
-      window.open(buyMeACoffeeUrl, '_blank')
+      safeWindow.open(buyMeACoffeeUrl, '_blank')
       // Store donation timestamp for 30-day cooldown
-      localStorage.setItem('oops-ask-donation-timestamp', Date.now().toString())
+      safeLocalStorage.setItem('oops-ask-donation-timestamp', Date.now().toString())
       
       // Track donation analytics (don't await to avoid blocking)
       fetch('/api/analytics/track-donation', {

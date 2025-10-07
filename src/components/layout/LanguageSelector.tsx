@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useTranslation } from '@/lib/i18n'
+import { safeLocalStorage } from '@/lib/safe-utils'
 
 interface LanguageSelectorProps {
   className?: string
@@ -27,7 +28,7 @@ export function LanguageSelector({ className = '', isMobile = false }: LanguageS
       setLanguage(languageCode)
       
       // Save language preference to localStorage
-      localStorage.setItem('oops-ask-language', languageCode)
+      safeLocalStorage.setItem('oops-ask-language', languageCode)
       
       // Save to Supabase user session (if available)
       // This will be implemented when we have an active session
@@ -41,7 +42,7 @@ export function LanguageSelector({ className = '', isMobile = false }: LanguageS
 
   // Load saved language preference on mount
   useEffect(() => {
-    const savedLanguage = localStorage.getItem('oops-ask-language')
+    const savedLanguage = safeLocalStorage.getItem('oops-ask-language')
     if (savedLanguage && savedLanguage !== currentLanguage.code) {
       setLanguage(savedLanguage)
     }

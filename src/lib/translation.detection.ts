@@ -3,6 +3,7 @@
  */
 
 import { LanguageDetection } from './translation.types'
+import { safeNavigator, safeFetch } from './safe-utils'
 
 export class LanguageDetectionService {
   // Detect language from browser preferences
@@ -10,7 +11,7 @@ export class LanguageDetectionService {
     if (typeof window === 'undefined') return 'en'
 
     // Get browser language - GPT can handle any language
-    const browserLang = navigator.language || (navigator as { userLanguage?: string }).userLanguage || 'en'
+    const browserLang = safeNavigator.getLanguage()
     const primaryLang = browserLang.split('-')[0].toLowerCase()
 
     // Return the detected language - GPT will handle it
@@ -20,12 +21,12 @@ export class LanguageDetectionService {
   // Detect language from IP geolocation (using a free service)
   static async detectIPLanguage(): Promise<string> {
     try {
-      const response = await fetch('https://ipapi.co/json/', {
+      const response = await safeFetch('https://ipapi.co/json/', {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
         },
-      })
+      }, 5000) // 5 second timeout
 
       if (!response.ok) {
         throw new Error('IP detection failed')

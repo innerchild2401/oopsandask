@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from '@/lib/i18n'
 import { GenerateMessageRequest, GenerateMessageResponse } from '@/lib/types'
+import { safeLocalStorage, safeWindow, safeNavigator, safeAsync } from '@/lib/safe-utils'
 import { TranslationKey } from '@/lib/translation.types'
 
 interface UseGenerationOptions {
@@ -28,20 +29,26 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
 
   // Load generation count from localStorage
   useEffect(() => {
-    const savedCount = localStorage.getItem('oops-ask-generation-count')
+    const savedCount = safeLocalStorage.getItem('oops-ask-generation-count')
     if (savedCount) {
-      setGenerationCount(parseInt(savedCount, 10))
+      const count = parseInt(savedCount, 10)
+      if (!isNaN(count)) {
+        setGenerationCount(count)
+      }
     }
   }, [])
 
   // Check if donation modal should be shown (30-day cooldown)
   const shouldShowDonationModal = (count: number) => {
     // Check if user donated recently (30 days)
-    const donationTimestamp = localStorage.getItem('oops-ask-donation-timestamp')
+    const donationTimestamp = safeLocalStorage.getItem('oops-ask-donation-timestamp')
     if (donationTimestamp) {
-      const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000)
-      if (parseInt(donationTimestamp) > thirtyDaysAgo) {
-        return false // Still in cooldown period
+      const timestamp = parseInt(donationTimestamp, 10)
+      if (!isNaN(timestamp)) {
+        const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000)
+        if (timestamp > thirtyDaysAgo) {
+          return false // Still in cooldown period
+        }
       }
     }
     
@@ -53,7 +60,7 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
   const getCountryCode = () => {
     try {
       // Try to get country from browser language
-      const lang = navigator.language || 'en-US'
+      const lang = safeNavigator.getLanguage()
       const parts = lang.split('-')
       if (parts.length > 1) {
         return parts[1].toLowerCase()
@@ -102,7 +109,7 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
         recipientName: recipientName.trim(),
         recipientRelationship: recipientRelationship.trim(),
         language: currentLanguage.code,
-        sessionId: localStorage.getItem('oops-ask-session') || '',
+        sessionId: safeLocalStorage.getItem('oops-ask-session') || '',
         replyMode: replyMode || false,
         replyContext: replyContext || '',
         replyVoice: replyVoice || 'dramatic',
@@ -130,7 +137,7 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
       // Update generation count
       const newCount = generationCount + 1
       setGenerationCount(newCount)
-      localStorage.setItem('oops-ask-generation-count', newCount.toString())
+      safeLocalStorage.setItem('oops-ask-generation-count', newCount.toString())
       
       // Trigger donation modal with 30-day cooldown
       if (shouldShowDonationModal(newCount)) {
@@ -149,11 +156,17 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
   const handleCopy = async () => {
     try {
       // Copy just the generated text without bold formatting
-      await navigator.clipboard.writeText(generatedText)
-      setIsCopied(true)
-      setTimeout(() => setIsCopied(false), 2000)
+      const success = await safeNavigator.writeText(generatedText)
+      if (success) {
+        setIsCopied(true)
+        setTimeout(() => setIsCopied(false), 2000)
+      } else {
+        // Fallback: show alert for manual copy
+        alert('Copy not available. Please select and copy the text manually.')
+      }
     } catch (error) {
       console.error('Copy failed:', error)
+      alert('Copy not available. Please select and copy the text manually.')
     }
   }
 
@@ -196,7 +209,7 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
         const conversationId = data.conversationId
         
         // Get current domain dynamically
-        const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://oopsnandask.vercel.app'
+        const currentDomain = safeWindow.getLocationOrigin()
         
         // Create short, clean link with UUID
         const replyUrl = `${currentDomain}/reply?id=${conversationId}`
@@ -208,7 +221,7 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
     }
 
     // Fallback to old method if database fails
-    const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://oopsnandask.vercel.app'
+    const currentDomain = safeWindow.getLocationOrigin()
     const replyUrl = `${currentDomain}/reply?lang=${currentLanguage.code}&context=${encodeURIComponent(generatedText)}&message=${encodeURIComponent(originalText)}&voice=dramatic&recipient=${encodeURIComponent(recipientName || 'them')}`
     
     return `${formattedGeneratedText}\n\n${t('share.which_means')} **${originalText}**\n\n\n${t('share.reply_prompt')}\n\n${replyUrl}`
@@ -223,26 +236,34 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
       }
       
       // Use native share if available (Android/iOS Safari)
-      if (navigator.share) {
-        await navigator.share(shareData)
+      const shareSuccess = await safeNavigator.share(shareData)
+      if (shareSuccess) {
         setIsShared(true)
         setTimeout(() => setIsShared(false), 2000)
         return
       }
       
       // Fallback for desktop: copy to clipboard
-      await navigator.clipboard.writeText(formattedMessage)
-      setIsShared(true)
-      setTimeout(() => setIsShared(false), 2000)
+      const copySuccess = await safeNavigator.writeText(formattedMessage)
+      if (copySuccess) {
+        setIsShared(true)
+        setTimeout(() => setIsShared(false), 2000)
+      } else {
+        alert('Share not available. Please copy the text manually.')
+      }
       
     } catch (error) {
       console.error('Share failed:', error)
       // Final fallback: copy to clipboard
       try {
         const formattedMessage = await formatShareMessage(t) // Async call
-        await navigator.clipboard.writeText(formattedMessage)
-        setIsShared(true)
-        setTimeout(() => setIsShared(false), 2000)
+        const copySuccess = await safeNavigator.writeText(formattedMessage)
+        if (copySuccess) {
+          setIsShared(true)
+          setTimeout(() => setIsShared(false), 2000)
+        } else {
+          alert('Share not available. Please copy the text manually.')
+        }
       } catch (clipboardError) {
         console.error('Clipboard fallback failed:', clipboardError)
         // Show user-friendly error

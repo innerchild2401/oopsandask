@@ -6,6 +6,7 @@ import { ArrowRight, Globe } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTranslation } from '@/lib/i18n'
 import { generateSessionToken } from '@/lib/utils'
+import { safeLocalStorage } from '@/lib/safe-utils'
 
 export default function HomePage() {
   const { t, currentLanguage } = useTranslation()
@@ -13,10 +14,10 @@ export default function HomePage() {
 
   // Initialize session token
   useEffect(() => {
-    let token = localStorage.getItem('oops-ask-session')
+    let token = safeLocalStorage.getItem('oops-ask-session')
     if (!token) {
       token = generateSessionToken()
-      localStorage.setItem('oops-ask-session', token)
+      safeLocalStorage.setItem('oops-ask-session', token)
     }
     setSessionToken(token)
   }, [])
