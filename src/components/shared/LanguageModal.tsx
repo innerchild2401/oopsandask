@@ -25,9 +25,7 @@ export function LanguageModal({ isOpen, onClose, detectedLanguage }: LanguageMod
   const handleLanguageSelect = async (language: string) => {
     setIsSelecting(true)
     try {
-      // Force regeneration for Romanian to clear any bad cached data
-      const forceRegenerate = language === 'ro'
-      await setLanguage(language, forceRegenerate)
+      await setLanguage(language)
       onClose()
     } catch (error) {
       console.error('Failed to set language:', error)
@@ -38,7 +36,7 @@ export function LanguageModal({ isOpen, onClose, detectedLanguage }: LanguageMod
 
   const detectedLanguageName = detectedLanguage 
     ? LanguageDetectionService.getLanguageDisplayName(detectedLanguage)
-    : 'Unknown'
+    : t('ui.unknown')
   const detectedLanguageFlag = detectedLanguage 
     ? LanguageDetectionService.getLanguageFlag(detectedLanguage)
     : '🌍'

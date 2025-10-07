@@ -63,7 +63,7 @@ export function OutputCard({
         }
       default:
         return {
-          title: 'Generated Text',
+          title: t('ui.generated_text'),
           icon: '✨',
           gradient: 'from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800',
           color: 'text-gray-600'

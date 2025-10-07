@@ -249,3 +249,10 @@ export type TranslationKey =
   | 'language.finnish'
   | 'language.polish'
   | 'language.turkish'
+  
+  // Tutorial and UI elements
+  | 'tutorial.next'
+  | 'tutorial.finish'
+  | 'tutorial.start_tutorial'
+  | 'ui.generated_text'
+  | 'ui.unknown'

@@ -217,7 +217,14 @@ const ENGLISH_TRANSLATIONS: Record<TranslationKey, string> = {
   'language.danish': 'Dansk',
   'language.finnish': 'Suomi',
   'language.polish': 'Polski',
-  'language.turkish': 'Türkçe'
+  'language.turkish': 'Türkçe',
+  
+  // Tutorial and UI elements
+  'tutorial.next': 'Next',
+  'tutorial.finish': 'Finish',
+  'tutorial.start_tutorial': 'Start Tutorial',
+  'ui.generated_text': 'Generated Text',
+  'ui.unknown': 'Unknown'
 }
 
 const TranslationContext = createContext<TranslationContextType | undefined>(undefined)

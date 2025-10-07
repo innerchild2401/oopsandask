@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { X, ChevronLeft, ChevronRight, SkipForward, ArrowDown } from 'lucide-react'
 import { TutorialStep as TutorialStepType } from '@/lib/tutorial.types'
+import { useTranslation } from '@/lib/translation.hook'
 
 interface TutorialStepProps {
   step: TutorialStepType
@@ -28,6 +29,7 @@ export function TutorialStep({
   canGoBack,
   canGoForward
 }: TutorialStepProps) {
+  const { t } = useTranslation()
   const [isMobile, setIsMobile] = useState(false)
   const [modalPosition, setModalPosition] = useState<'bottom' | 'top' | 'center'>('bottom')
 
@@ -143,7 +145,7 @@ export function TutorialStep({
             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm md:text-base"
             size="sm"
           >
-            {canGoForward ? 'Next' : 'Finish'}
+            {canGoForward ? t('tutorial.next') : t('tutorial.finish')}
             {canGoForward && <ChevronRight className="w-4 h-4 ml-1" />}
           </Button>
         </div>
