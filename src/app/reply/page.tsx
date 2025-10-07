@@ -42,9 +42,9 @@ function ReplyPageContent() {
           setOriginalMessage(data.originalText)
           setReplyVoice(data.replyVoice || 'dramatic')
           
-          // Extract sender information for conversation context
-          setOriginalSenderName(data.recipientName || '')
-          setOriginalSenderRelationship(data.recipientRelationship || '')
+          // For reply context: the original message was sent TO data.recipientName
+          // We don't know who sent the original message, but we know who it was sent to
+          // The replier will input who they're replying TO in the form
           
           // DON'T auto-fill recipient name - let the replier input the original sender's name
           // The replier should input the name of the person they're replying TO

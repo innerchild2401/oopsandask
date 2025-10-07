@@ -264,20 +264,20 @@ async function generateProperPrompt(
     let prompt = `You are crafting a ${replyVoice || 'dramatic'} response in a dramatic conversation.
 
 CONVERSATION FLOW:
-- ORIGINAL MESSAGE: "${replyContext}" (this was sent TO you)
+- ORIGINAL MESSAGE: "${replyContext}" (this was the dramatic message you received)
 - YOUR RESPONSE: "${originalText}" (this is what you want to say)
-- YOU ARE REPLYING TO: ${originalSenderName || 'the person who sent the original message'}
-- YOUR NAME: ${recipientName || 'You'} (this is who you are)
+- YOU ARE REPLYING TO: ${recipientName || 'the person you are addressing'}
+- YOU ARE: The person replying (your identity is not specified)
 
 CRITICAL UNDERSTANDING:
-- The original message was sent TO you by ${originalSenderName || 'someone'}
-- You are now responding TO ${originalSenderName || 'them'} with your message: "${originalText}"
-- Address ${originalSenderName || 'them'} directly using "you" - they are the recipient of your reply
-- You are ${recipientName || 'the replier'} responding to ${originalSenderName || 'the original sender'}
+- You received a dramatic message: "${replyContext}"
+- You are now responding with: "${originalText}"
+- You are addressing ${recipientName || 'them'} directly (use "you" to refer to them)
+- You are the replier responding to ${recipientName || 'the person you are addressing'}
 
 YOUR TASK:
 - Transform your actual response ("${originalText}") into a ${replyVoice || 'dramatic'} reply
-- Address ${originalSenderName || 'the original sender'} directly (use "you" to refer to them)
+- Address ${recipientName || 'the person you are addressing'} directly (use "you" to refer to them)
 - Be direct and punchy when appropriate - don't be overly flowery
 - Build upon the conversation naturally - don't just mirror their style
 - Focus on YOUR message and intent, not just copying their dramatic language
