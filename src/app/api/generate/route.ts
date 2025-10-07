@@ -43,7 +43,19 @@ export async function POST(request: NextRequest) {
     // No caching for generated outputs - always generate fresh content
 
     // Prepare AI prompt based on mode and language using the proper prompt engine
-    const prompt = await generateProperPrompt(body.mode, body.originalText, body.recipientName, body.recipientRelationship, body.language, body.replyMode, body.replyContext, body.replyVoice)
+    const prompt = await generateProperPrompt(
+      body.mode, 
+      body.originalText, 
+      body.recipientName, 
+      body.recipientRelationship, 
+      body.language, 
+      body.replyMode, 
+      body.replyContext, 
+      body.replyVoice,
+      body.originalSenderName,
+      body.originalSenderRelationship,
+      body.conversationId
+    )
 
     console.log('🤖 Generating AI response:', {
       mode: body.mode,
@@ -225,16 +237,58 @@ async function getLanguageId(languageCode: string): Promise<string> {
   }
 }
 
-async function generateProperPrompt(mode: string, originalText: string, recipientName?: string, recipientRelationship?: string, language?: string, replyMode?: boolean, replyContext?: string, replyVoice?: string): Promise<string> {
-  // Handle reply mode
+async function generateProperPrompt(
+  mode: string, 
+  originalText: string, 
+  recipientName?: string, 
+  recipientRelationship?: string, 
+  language?: string, 
+  replyMode?: boolean, 
+  replyContext?: string, 
+  replyVoice?: string,
+  originalSenderName?: string,
+  originalSenderRelationship?: string,
+  conversationId?: string
+): Promise<string> {
+  // Handle reply mode with conversation awareness
   if (replyMode && replyContext) {
-    let prompt = `You are replying to this message: "${replyContext}"\n\nYour response: "${originalText}"`
+    // Build conversation context
+    const senderContext = originalSenderName 
+      ? ` (${originalSenderName}${originalSenderRelationship ? ` - ${originalSenderRelationship}` : ''})`
+      : ''
+    
+    const recipientContext = recipientName 
+      ? ` (addressing ${recipientName}${recipientRelationship ? ` - ${recipientRelationship}` : ''})`
+      : ''
+    
+    let prompt = `You are crafting a ${replyVoice || 'dramatic'} response in a dramatic conversation.
+
+CONVERSATION CONTEXT:
+- ${originalSenderName || 'Someone'}${senderContext} sent you this dramatic message: "${replyContext}"
+- You are now responding with: "${originalText}"
+- You are addressing ${originalSenderName || 'them'} directly in your response${recipientContext}
+
+YOUR TASK:
+- Transform your actual response ("${originalText}") into a ${replyVoice || 'dramatic'} reply
+- Address ${originalSenderName || 'them'} directly (use "you" to refer to them)
+- Build upon the conversation naturally - don't just mirror their style
+- Focus on YOUR message, not just copying their dramatic language
+- Make it feel like a real dramatic dialogue between two people
+- Be creative and unique - surprise them with your response!`
     
     // Add voice-specific instructions
     if (replyVoice === 'legal') {
-      prompt += `\n\nRespond in LEGAL VOICE with binding language, legal terminology, and contractual demands. Use phrases like "hereby demand", "binding agreement", "legal obligation", etc.`
+      prompt += `\n\nLEGAL VOICE INSTRUCTIONS:
+- Use binding language, legal terminology, and contractual demands
+- Use phrases like "hereby demand", "binding agreement", "legal obligation"
+- Sound like a dramatic lawyer or legal professional
+- Make it feel like a courtroom drama`
     } else {
-      prompt += `\n\nRespond in DRAMATIC VOICE with theatrical flair, over-the-top language, and dramatic expressions.`
+      prompt += `\n\nDRAMATIC VOICE INSTRUCTIONS:
+- Use theatrical flair, over-the-top language, and dramatic expressions
+- Be creative and unexpected in your responses
+- Use exclamation points, dramatic pauses, and emotional language
+- Make it feel like a soap opera or dramatic movie`
     }
     
     // CRITICAL: Reinforce language requirement in user prompt

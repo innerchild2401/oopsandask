@@ -12,9 +12,13 @@ interface UseGenerationOptions {
   replyMode?: boolean
   replyContext?: string
   replyVoice?: 'dramatic' | 'legal'
+  // Conversation context for better replies
+  originalSenderName?: string
+  originalSenderRelationship?: string
+  conversationId?: string
 }
 
-export function useGeneration({ mode, onGenerationComplete, replyMode, replyContext, replyVoice }: UseGenerationOptions) {
+export function useGeneration({ mode, onGenerationComplete, replyMode, replyContext, replyVoice, originalSenderName, originalSenderRelationship, conversationId }: UseGenerationOptions) {
   const { t, currentLanguage, isDetecting, isLoading } = useTranslation()
   const [originalText, setOriginalText] = useState('')
   const [recipientName, setRecipientName] = useState('')
@@ -113,7 +117,11 @@ export function useGeneration({ mode, onGenerationComplete, replyMode, replyCont
         replyMode: replyMode || false,
         replyContext: replyContext || '',
         replyVoice: replyVoice || 'dramatic',
-        countryCode: getCountryCode()
+        countryCode: getCountryCode(),
+        // Conversation context for better replies
+        originalSenderName,
+        originalSenderRelationship,
+        conversationId
       }
 
       // Sending request to API

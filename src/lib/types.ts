@@ -116,6 +116,10 @@ export interface GenerateMessageRequest {
   replyContext?: string
   replyVoice?: 'dramatic' | 'legal'
   countryCode?: string
+  // Conversation context for better replies
+  originalSenderName?: string
+  originalSenderRelationship?: string
+  conversationId?: string
 }
 
 export interface GenerateMessageResponse {

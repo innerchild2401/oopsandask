@@ -15,6 +15,9 @@ function ReplyPageContent() {
   const [replyVoice, setReplyVoice] = useState<'dramatic' | 'legal'>('dramatic')
   const [replyContext, setReplyContext] = useState('')
   const [originalMessage, setOriginalMessage] = useState('')
+  const [originalSenderName, setOriginalSenderName] = useState('')
+  const [originalSenderRelationship, setOriginalSenderRelationship] = useState('')
+  const [conversationId, setConversationId] = useState('')
   
   // Get context from URL parameters
   useEffect(() => {
@@ -26,6 +29,7 @@ function ReplyPageContent() {
     
     // New UUID-based system
     if (conversationId) {
+      setConversationId(conversationId)
       fetch(`/api/conversations?id=${conversationId}`)
         .then(response => response.json())
         .then(data => {
@@ -37,6 +41,10 @@ function ReplyPageContent() {
           setReplyContext(data.generatedText)
           setOriginalMessage(data.originalText)
           setReplyVoice(data.replyVoice || 'dramatic')
+          
+          // Extract sender information for conversation context
+          setOriginalSenderName(data.recipientName || '')
+          setOriginalSenderRelationship(data.recipientRelationship || '')
           
           // DON'T auto-fill recipient name - let the replier input the original sender's name
           // The replier should input the name of the person they're replying TO
@@ -82,7 +90,11 @@ function ReplyPageContent() {
     mode: 'ask', 
     replyMode: true,
     replyContext,
-    replyVoice
+    replyVoice,
+    // Conversation context for better replies
+    originalSenderName,
+    originalSenderRelationship,
+    conversationId
   })
 
   const relationships = [
@@ -130,6 +142,14 @@ function ReplyPageContent() {
               <div className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-words overflow-wrap-anywhere max-w-full w-full overflow-hidden">
                 {originalMessage}
               </div>
+              {originalSenderName && (
+                <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+                  <span className="font-medium">From:</span> {originalSenderName}
+                  {originalSenderRelationship && (
+                    <span className="ml-2">({originalSenderRelationship})</span>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
