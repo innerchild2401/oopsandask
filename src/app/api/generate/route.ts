@@ -261,6 +261,9 @@ async function generateProperPrompt(
       ? ` (addressing ${recipientName}${recipientRelationship ? ` - ${recipientRelationship}` : ''})`
       : ''
     
+    // Detect if the original message is an apology
+    const isApology = /(apolog|sorry|forgiv|pardon|regret|mistake|wrong|fault|blame|ashamed|humble|beg|plead)/i.test(replyContext)
+    
     let prompt = `You are crafting a ${replyVoice || 'dramatic'} response in a dramatic conversation.
 
 CONVERSATION FLOW:
@@ -274,6 +277,15 @@ CRITICAL UNDERSTANDING:
 - You are now responding with: "${originalText}"
 - You are addressing ${recipientName || 'them'} directly (use "you" to refer to them)
 - You are the replier responding to ${recipientName || 'the person you are addressing'}
+
+${isApology ? `🎭 IRONY DETECTED - APOLOGY RESPONSE:
+- The original message appears to be an apology or admission of fault
+- DO NOT respond with another apology or submissive tone
+- Instead, respond with FORGIVING GRANDEUR and superiority
+- Show power through magnanimity - grant forgiveness with dramatic flair
+- Be the magnanimous one who forgives, not the one who apologizes
+- Use phrases like "I hereby grant you pardon", "I forgive you", "You are forgiven"
+- Show your superiority through gracious forgiveness` : ''}
 
 YOUR TASK:
 - Transform your actual response ("${originalText}") into a ${replyVoice || 'dramatic'} reply
@@ -291,7 +303,10 @@ YOUR TASK:
 - Use phrases like "hereby demand", "binding agreement", "legal obligation"
 - Sound like a dramatic lawyer or legal professional
 - Be direct and authoritative - don't be wishy-washy
-- Make it feel like a courtroom drama with clear, punchy statements`
+- Make it feel like a courtroom drama with clear, punchy statements${isApology ? `
+- If responding to an apology: Grant legal pardon with judicial authority
+- Use phrases like "I hereby grant you legal pardon", "The court forgives you", "You are hereby absolved"
+- Show judicial superiority through legal forgiveness` : ''}`
     } else {
       prompt += `\n\nDRAMATIC VOICE INSTRUCTIONS:
 - Use theatrical flair, over-the-top language, and dramatic expressions
@@ -299,7 +314,10 @@ YOUR TASK:
 - Be direct and punchy when the situation calls for it
 - Use exclamation points, dramatic pauses, and emotional language
 - Don't be overly flowery - sometimes a sharp, direct response is more dramatic
-- Make it feel like a soap opera or dramatic movie`
+- Make it feel like a soap opera or dramatic movie${isApology ? `
+- If responding to an apology: Grant royal pardon with theatrical grandeur
+- Use phrases like "I hereby grant you royal pardon", "You are forgiven by royal decree", "Rise, you are absolved"
+- Show regal superiority through dramatic forgiveness` : ''}`
     }
     
     // CRITICAL: Reinforce language requirement in user prompt
