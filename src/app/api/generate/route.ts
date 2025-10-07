@@ -263,16 +263,24 @@ async function generateProperPrompt(
     
     let prompt = `You are crafting a ${replyVoice || 'dramatic'} response in a dramatic conversation.
 
-CONVERSATION CONTEXT:
-- ${originalSenderName || 'Someone'}${senderContext} sent you this dramatic message: "${replyContext}"
-- You are now responding with: "${originalText}"
-- You are addressing ${originalSenderName || 'them'} directly in your response${recipientContext}
+CONVERSATION FLOW:
+- ORIGINAL MESSAGE: "${replyContext}" (this was sent TO you)
+- YOUR RESPONSE: "${originalText}" (this is what you want to say)
+- YOU ARE REPLYING TO: ${originalSenderName || 'the person who sent the original message'}
+- YOUR NAME: ${recipientName || 'You'} (this is who you are)
+
+CRITICAL UNDERSTANDING:
+- The original message was sent TO you by ${originalSenderName || 'someone'}
+- You are now responding TO ${originalSenderName || 'them'} with your message: "${originalText}"
+- Address ${originalSenderName || 'them'} directly using "you" - they are the recipient of your reply
+- You are ${recipientName || 'the replier'} responding to ${originalSenderName || 'the original sender'}
 
 YOUR TASK:
 - Transform your actual response ("${originalText}") into a ${replyVoice || 'dramatic'} reply
-- Address ${originalSenderName || 'them'} directly (use "you" to refer to them)
+- Address ${originalSenderName || 'the original sender'} directly (use "you" to refer to them)
+- Be direct and punchy when appropriate - don't be overly flowery
 - Build upon the conversation naturally - don't just mirror their style
-- Focus on YOUR message, not just copying their dramatic language
+- Focus on YOUR message and intent, not just copying their dramatic language
 - Make it feel like a real dramatic dialogue between two people
 - Be creative and unique - surprise them with your response!`
     
@@ -282,12 +290,15 @@ YOUR TASK:
 - Use binding language, legal terminology, and contractual demands
 - Use phrases like "hereby demand", "binding agreement", "legal obligation"
 - Sound like a dramatic lawyer or legal professional
-- Make it feel like a courtroom drama`
+- Be direct and authoritative - don't be wishy-washy
+- Make it feel like a courtroom drama with clear, punchy statements`
     } else {
       prompt += `\n\nDRAMATIC VOICE INSTRUCTIONS:
 - Use theatrical flair, over-the-top language, and dramatic expressions
 - Be creative and unexpected in your responses
+- Be direct and punchy when the situation calls for it
 - Use exclamation points, dramatic pauses, and emotional language
+- Don't be overly flowery - sometimes a sharp, direct response is more dramatic
 - Make it feel like a soap opera or dramatic movie`
     }
     
